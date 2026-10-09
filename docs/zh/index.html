@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>codex-plan-ledger：Codex /plan 的决策账本</title>
+<meta name="description" content="把 Codex 问过的问题、未定选项和计划默认写入仓库里的 decisions.json，可在 PR 里 diff；写完代码后再做范围偏离检查。早期原型。">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#FAF6F1">
+<link rel="alternate" hreflang="en" href="https://minilv.github.io/codex-plan-ledger/">
+<link rel="alternate" hreflang="zh-CN" href="https://minilv.github.io/codex-plan-ledger/zh/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23D97757'/%3E%3Cpath d='M9 11h14M9 16h14M9 21h9' stroke='%23FFFCF8' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<script>if (/[?&]lang=en/.test(location.search)) location.replace('../' + location.hash);</script>
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<a class="skip" href="#main">跳到正文</a>
+<header class="top">
+  <div class="col">
+    <a class="brand" href="./">codex-plan-ledger</a>
+    <nav class="links" aria-label="页面导航">
+      <a class="opt" href="#how">用法</a>
+      <a class="opt" href="#status">实测</a>
+      <a href="https://github.com/miniLV/codex-plan-ledger">GitHub</a>
+      <span class="lang"><span aria-current="page">中文</span> · <a href="../" hreflang="en" lang="en">English</a></span>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="hero">
+  <div class="col">
+    <p class="status">早期原型 · v0.1</p>
+    <h1>Codex <code>/plan</code> 的决策账本</h1>
+    <p class="lede">把 Codex 问过的问题、未定选项和计划默认写入 <code>decisions.json</code>，可在 PR 里 diff；写完代码后再做范围偏离检查。</p>
+    <p class="measured">实测：n = 3 对里，轮数没有变少；范围偏离 3/3 抓到；文件内矛盾 0/3 抓到。<a href="#status">详情</a></p>
+    <div class="install">
+      <code id="cmd">npm i -g github:miniLV/codex-plan-ledger &amp;&amp; plan-ledger init --write</code>
+      <button type="button" id="copy" aria-describedby="copied">复制安装命令</button>
+    </div>
+    <p id="copied" role="status" aria-live="polite"></p>
+    <div class="actions">
+      <a class="btn" href="https://github.com/miniLV/codex-plan-ledger">看 GitHub</a>
+      <a href="#demo">打开演示</a>
+    </div>
+  </div>
+</div>
+
+<section id="how" aria-labelledby="how-h">
+  <div class="col">
+    <h2 id="how-h">怎么用</h2>
+    <p class="intro">Codex 原生 Plan 模式照常用，提问仍在 Codex 里答。渲染不调用模型。</p>
+    <ol class="steps">
+      <li><h3>Stop hook 写入账本</h3><p>计划到达时解析并写 <code>decisions.json</code> 与离线 HTML，本轮正常结束。从不阻塞，从不等待。</p></li>
+      <li><h3>一页复核</h3><p>待定、已答、默认分开展示；改完后复制回传 JSON，粘到 Codex 下一条消息。</p></li>
+      <li><h3>决策进 PR</h3><p>账本与代码在同一个 PR 里 review：选了什么，为什么。</p></li>
+      <li><h3>范围偏离检查</h3><p><code>plan-ledger check --base main</code> 对照改动文件与计划范围。</p></li>
+    </ol>
+  </div>
+  <div class="wide">
+    <figure>
+      <img src="../assets/ledger-flow.svg" width="960" height="330" loading="lazy" alt="流程示意：Codex /plan（Codex 自己的问答和计划）→ 仓库里的 decisions.json → PR 里的 diff → 写完代码后的 plan-ledger check。">
+      <figcaption>流程示意，不含测量数据。</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="page" aria-labelledby="page-h">
+  <div class="wide split">
+    <div>
+      <h2 id="page-h">决策放在一页里复核</h2>
+      <p>每项一张卡片：选项、推荐、默认、影响的文件。Codex 里已答的会标出；计划默认可改但不算待答。未答记为保留默认，不算同意。</p>
+      <ul class="plain">
+        <li>纯模板，不调用模型，不联网，单个文件。</li>
+        <li>hook 不等待。</li>
+        <li>计划改版时沿用旧答，并标明是沿用的。</li>
+      </ul>
+    </div>
+    <figure>
+      <img src="../assets/decision-page-zh.png" width="1200" height="1500" loading="lazy" alt="决策页截图：每项决策一张卡片，有选项、推荐标记、默认值和影响的文件，底部是生成回传 JSON 的按钮。">
+      <figcaption>无头 Chrome 截取；内容来自仓库合成样例 fixture。</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="demo" class="alt" aria-labelledby="demo-h">
+  <div class="wide">
+    <h2 id="demo-h">演示</h2>
+    <p class="intro">这就是 hook 写出的页面，内容来自仓库自带的合成样例计划（<code>test/fixtures/send-later.message.md</code>），外加一个合成的“已在 Codex 里回答”的问题。选几个选项，再点底部按钮。所有操作只在你的浏览器里。</p>
+    <div class="demo">
+      <div class="demo-bar">docs/plans/demo-send-later-for-drafts/plan.html</div>
+      <iframe src="../demo/plan-zh.html" title="决策页演示" loading="lazy" allow="clipboard-write"></iframe>
+    </div>
+    <p class="small"><a href="../demo/plan-zh.html">在新标签页打开演示</a> · 决策页 → PR diff → check 的录屏：<a href="../assets/demo-flow-zh.mp4">MP4</a> · <a href="../assets/demo-flow-zh.gif">GIF</a>（合成示例，仓库脚本生成）</p>
+  </div>
+</section>
+
+<section id="drift" aria-labelledby="drift-h">
+  <div class="col">
+    <h2 id="drift-h">范围偏离检查</h2>
+    <p>对照 <code>git diff</code> 与各决策的 <code>affected</code> 文件、计划正文提到的文件，报出计划外文件与没碰到的决策。加 <code>--strict</code> 时有偏离就退出码 1，可用于 CI 或 pre-commit。</p>
+    <div class="callout">
+      <span class="label">已知局限</span>
+      <p>只比对文件，不读计划内文件的代码内容。文件内与决策相反的实现，当前抓不到。所以叫“范围偏离检查”，不叫决策合规检查。</p>
+    </div>
+  </div>
+  <div class="wide">
+    <figure>
+      <img src="../assets/ledger-pr-diff.svg" width="960" height="440" loading="lazy" alt="示例：PR 里 decisions.json 的 diff，d2 从默认值改成了已作答的选项，并附上理由。">
+      <figcaption>示例，仓库脚本生成，非某次真实 PR。</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="status" class="alt" aria-labelledby="status-h">
+  <div class="wide">
+    <h2 id="status-h">现状与实测</h2>
+    <div class="callout">
+      <span class="label">注意</span>
+      <p>方向性数据，两轮共 n = 3 对，不是效果证据。轮数上一对都没赢（输 2、平 1）。不以省轮次为目标。</p>
+    </div>
+    <div class="table">
+      <table>
+        <caption>每对是同一任务上原生 Plan 与 plan-ledger 各跑 1 次，任务在 vercel/ms@2.1.3，同一模型与设置（codex-cli 0.156.0，medium）。第 2 轮换了更省的运行配置（两组相同），token 只能在同一轮内比较。</caption>
+        <thead><tr><th scope="col">轮 / 任务</th><th scope="col">定稿前轮数<br>原生 / plan-ledger</th><th scope="col">计划阶段 input token<br>原生 / plan-ledger</th><th scope="col">总 token<br>原生 / plan-ledger</th><th scope="col">验收</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">1 / strict-option</th><td class="num">1 / 2</td><td class="num">294,933 / 372,651</td><td class="num">717,487 / 586,971</td><td class="ok">都通过</td></tr>
+          <tr><th scope="row">2 / strict-option</th><td class="num">1 / 2</td><td class="num">65,931 / 83,141</td><td class="num">180,208 / 205,644</td><td class="ok">都通过</td></tr>
+          <tr><th scope="row">2 / month-unit</th><td class="num">1 / 1</td><td class="num">79,553 / 66,354</td><td class="num">179,053 / 140,020</td><td class="ok">都通过</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p>范围偏离检查（3 次 plan-ledger 运行，实现后埋入）：干净树无误报 3/3；计划外新文件 3/3 抓到；该改未改 3/3 抓到；在计划内文件写与决策相反的代码 0/3 抓到，与已知局限一致。</p>
+    <p><a href="https://github.com/miniLV/codex-plan-ledger/blob/main/bench/results/2026-10-09-round1/summary.md">第 1 轮</a> · <a href="https://github.com/miniLV/codex-plan-ledger/blob/main/bench/results/2026-10-09-round2/summary.md">第 2 轮</a> · <a href="https://github.com/miniLV/codex-plan-ledger/blob/main/docs/measurement-plan.md">实测计划</a></p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="col">
+    <p><a href="https://github.com/miniLV/codex-plan-ledger">github.com/miniLV/codex-plan-ledger</a> · MIT · Codex CLI · Node 20+ · 零依赖</p>
+    <p>思路上参考过社区里把计划渲染成 HTML 的做法；未复制其代码。</p>
+  </div>
+</footer>
+
+<script>
+document.getElementById('copy').addEventListener('click', function () {
+  var text = document.getElementById('cmd').textContent, out = document.getElementById('copied');
+  function done(ok) { out.textContent = ok ? '已复制' : '请手动选中复制'; }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+  else done(false);
+});
+</script>
+</body>
+</html>

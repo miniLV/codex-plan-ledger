@@ -1,38 +1,38 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="960" height="330" viewBox="0 0 960 330" role="img" aria-label="Flow: Codex /plan (its own questions and answers, plus the proposed plan) is recorded in decisions.json in the repo, reviewed as a PR diff together with the code, and checked for scope drift after coding with plan-ledger check.">
-<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#656d76"/></marker></defs>
-<rect x="0.5" y="0.5" width="959" height="329" rx="12" fill="#ffffff" stroke="#d0d7de"/>
-<text x="480" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="13" font-weight="400" fill="#656d76" text-anchor="middle">流程示意 / flow · 不含测量数据 / no measured data</text>
-<rect x="14" y="56" width="218" height="196" rx="8" fill="#f6f8fa" stroke="#d0d7de"/>
-<text x="123" y="90" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="16" font-weight="600" fill="#1f2328" text-anchor="middle">Codex /plan</text>
-<text x="123" y="112" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#656d76" text-anchor="middle">原生 Plan 模式照常用</text>
-<line x1="30" y1="128" x2="216" y2="128" stroke="#d0d7de" stroke-opacity="0.5"/>
-<text x="123" y="156" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1f2328" text-anchor="middle">Codex 自己的提问和你的回答</text>
-<text x="123" y="186" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1f2328" text-anchor="middle">its own questions + your replies</text>
-<text x="123" y="216" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1f2328" text-anchor="middle">计划 / proposed plan</text>
-<line x1="234" y1="154" x2="250" y2="154" stroke="#656d76" stroke-width="1.6" marker-end="url(#ah)"/>
-<rect x="252" y="56" width="218" height="196" rx="8" fill="#ddf4ff" stroke="#0969da"/>
-<text x="361" y="90" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="600" fill="#0969da" text-anchor="middle">decisions.json</text>
-<text x="361" y="112" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#656d76" text-anchor="middle">写进仓库 / in the repo</text>
-<line x1="268" y1="128" x2="454" y2="128" stroke="#0969da" stroke-opacity="0.5"/>
-<text x="361" y="156" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1f2328" text-anchor="middle">Codex 里已答 / answered in Codex</text>
-<text x="361" y="186" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1f2328" text-anchor="middle">待你定 / open, one page</text>
-<text x="361" y="216" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1f2328" text-anchor="middle">计划默认，可复核 / plan defaults</text>
-<line x1="472" y1="154" x2="488" y2="154" stroke="#656d76" stroke-width="1.6" marker-end="url(#ah)"/>
-<rect x="490" y="56" width="218" height="196" rx="8" fill="#f6f8fa" stroke="#d0d7de"/>
-<text x="599" y="90" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="16" font-weight="600" fill="#1f2328" text-anchor="middle">PR diff</text>
-<text x="599" y="112" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#656d76" text-anchor="middle">和代码一起 review</text>
-<line x1="506" y1="128" x2="692" y2="128" stroke="#d0d7de" stroke-opacity="0.5"/>
-<text x="599" y="156" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1f2328" text-anchor="middle">选了什么、为什么</text>
-<text x="599" y="186" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1f2328" text-anchor="middle">what was chosen and why</text>
-<text x="599" y="216" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1f2328" text-anchor="middle">reviewed with the code</text>
-<line x1="710" y1="154" x2="726" y2="154" stroke="#656d76" stroke-width="1.6" marker-end="url(#ah)"/>
-<rect x="728" y="56" width="218" height="196" rx="8" fill="#dafbe1" stroke="#1a7f37"/>
-<text x="837" y="90" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="600" fill="#1a7f37" text-anchor="middle">plan-ledger check</text>
-<text x="837" y="112" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#656d76" text-anchor="middle">写完代码后 / after coding</text>
-<line x1="744" y1="128" x2="930" y2="128" stroke="#1a7f37" stroke-opacity="0.5"/>
-<text x="837" y="156" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1f2328" text-anchor="middle">计划外改动的文件</text>
-<text x="837" y="186" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1f2328" text-anchor="middle">files outside the plan</text>
-<text x="837" y="216" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1f2328" text-anchor="middle">没碰到的决策 / untouched decisions</text>
-<text x="480" y="290" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#656d76" text-anchor="middle">只看改了哪些文件，不看改动内容是否和决策一致</text>
-<text x="480" y="310" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#656d76" text-anchor="middle">checks which files changed, not whether the content matches the decisions</text>
+<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#78716C"/></marker></defs>
+<rect x="0.5" y="0.5" width="959" height="329" rx="12" fill="#FFFCF8" stroke="#E7E0D6"/>
+<text x="480" y="32" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="13" font-weight="400" fill="#78716C" text-anchor="middle">流程示意 / flow · 不含测量数据 / no measured data</text>
+<rect x="14" y="56" width="218" height="196" rx="8" fill="#F3EDE4" stroke="#E7E0D6"/>
+<text x="123" y="90" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="16" font-weight="600" fill="#1C1917" text-anchor="middle">Codex /plan</text>
+<text x="123" y="112" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#78716C" text-anchor="middle">原生 Plan 模式照常用</text>
+<line x1="30" y1="128" x2="216" y2="128" stroke="#E7E0D6" stroke-opacity="0.5"/>
+<text x="123" y="156" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1C1917" text-anchor="middle">Codex 自己的提问和你的回答</text>
+<text x="123" y="186" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1C1917" text-anchor="middle">its own questions + your replies</text>
+<text x="123" y="216" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1C1917" text-anchor="middle">计划 / proposed plan</text>
+<line x1="234" y1="154" x2="250" y2="154" stroke="#78716C" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="252" y="56" width="218" height="196" rx="8" fill="#F3E0D8" stroke="#D97757"/>
+<text x="361" y="90" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="600" fill="#A84F2E" text-anchor="middle">decisions.json</text>
+<text x="361" y="112" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#78716C" text-anchor="middle">写进仓库 / in the repo</text>
+<line x1="268" y1="128" x2="454" y2="128" stroke="#D97757" stroke-opacity="0.5"/>
+<text x="361" y="156" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1C1917" text-anchor="middle">Codex 里已答 / answered in Codex</text>
+<text x="361" y="186" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1C1917" text-anchor="middle">待你定 / open, one page</text>
+<text x="361" y="216" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1C1917" text-anchor="middle">计划默认，可复核 / plan defaults</text>
+<line x1="472" y1="154" x2="488" y2="154" stroke="#78716C" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="490" y="56" width="218" height="196" rx="8" fill="#F3EDE4" stroke="#E7E0D6"/>
+<text x="599" y="90" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="16" font-weight="600" fill="#1C1917" text-anchor="middle">PR diff</text>
+<text x="599" y="112" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#78716C" text-anchor="middle">和代码一起 review</text>
+<line x1="506" y1="128" x2="692" y2="128" stroke="#E7E0D6" stroke-opacity="0.5"/>
+<text x="599" y="156" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1C1917" text-anchor="middle">选了什么、为什么</text>
+<text x="599" y="186" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1C1917" text-anchor="middle">what was chosen and why</text>
+<text x="599" y="216" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1C1917" text-anchor="middle">reviewed with the code</text>
+<line x1="710" y1="154" x2="726" y2="154" stroke="#78716C" stroke-width="1.6" marker-end="url(#ah)"/>
+<rect x="728" y="56" width="218" height="196" rx="8" fill="#E3ECE2" stroke="#3F6B4A"/>
+<text x="837" y="90" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="16" font-weight="600" fill="#3F6B4A" text-anchor="middle">plan-ledger check</text>
+<text x="837" y="112" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#78716C" text-anchor="middle">写完代码后 / after coding</text>
+<line x1="744" y1="128" x2="930" y2="128" stroke="#3F6B4A" stroke-opacity="0.5"/>
+<text x="837" y="156" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1C1917" text-anchor="middle">计划外改动的文件</text>
+<text x="837" y="186" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1C1917" text-anchor="middle">files outside the plan</text>
+<text x="837" y="216" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#1C1917" text-anchor="middle">没碰到的决策 / untouched decisions</text>
+<text x="480" y="290" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#78716C" text-anchor="middle">只看改了哪些文件，不看改动内容是否和决策一致</text>
+<text x="480" y="310" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif" font-size="12" font-weight="400" fill="#78716C" text-anchor="middle">checks which files changed, not whether the content matches the decisions</text>
 </svg>

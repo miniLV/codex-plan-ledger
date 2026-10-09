@@ -86,6 +86,6 @@ plan-ledger check --base main --strict # 有偏离时 exit 1，可以放进 CI
 - 按内容核对决策（也就是上面那个 0/3）。
 - 更多任务、每组至少 3 次重复，测账本对一次会话里决策的覆盖程度和偏离检测。
 
-欢迎试用、提 issue：<https://github.com/miniLV/codex-plan-ledger> · 主页和在线演示：<https://minilv.github.io/codex-plan-ledger/?lang=zh>
+欢迎试用、提 issue：<https://github.com/miniLV/codex-plan-ledger> · 主页和在线演示：<https://minilv.github.io/codex-plan-ledger/zh/>
 
 思路上受到 html-plan 和 answer-me-with-html 的启发，没有复用代码。

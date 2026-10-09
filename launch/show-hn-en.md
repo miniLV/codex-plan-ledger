@@ -21,4 +21,4 @@ One live end-to-end check of the native Q&A capture: in a real Plan-mode session
 
 Early prototype (v0.1). Next: checking decisions against code content, and more tasks with ≥ 3 runs per arm. Feedback on the ledger format (there's a JSON Schema) is very welcome.
 
-Demo: https://minilv.github.io/codex-plan-ledger/?lang=en
+Demo: https://minilv.github.io/codex-plan-ledger/

@@ -9,7 +9,9 @@ import { fileURLToPath } from 'node:url';
 
 const FONT = `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif`;
 const MONO = `ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
-const C = { bg: '#ffffff', panel: '#f6f8fa', line: '#d0d7de', fg: '#1f2328', muted: '#656d76', acc: '#0969da', accBg: '#ddf4ff', q: '#bf8700', qBg: '#fff8c5', ok: '#1a7f37', okBg: '#dafbe1', del: '#cf222e', delBg: '#ffebe9' };
+// Warm palette shared with the landing page (ivory background, warm near-black
+// text, terracotta accent). accText is a darker terracotta for legible text.
+const C = { bg: '#FFFCF8', panel: '#F3EDE4', line: '#E7E0D6', fg: '#1C1917', muted: '#78716C', acc: '#D97757', accText: '#A84F2E', accBg: '#F3E0D8', ok: '#3F6B4A', okBg: '#E3ECE2', del: '#A8402B', delBg: '#F6E1D9' };
 
 function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -36,7 +38,7 @@ export function flowFigure() {
   p.push(text(W / 2, 32, '流程示意 / flow · 不含测量数据 / no measured data', { size: 13, fill: C.muted, anchor: 'middle' }));
   const boxes = [
     { title: 'Codex /plan', sub: '原生 Plan 模式照常用', lines: ['Codex 自己的提问和你的回答', 'its own questions + your replies', '计划 / proposed plan'], fill: C.panel, stroke: C.line, color: C.fg },
-    { title: 'decisions.json', mono: true, sub: '写进仓库 / in the repo', lines: ['Codex 里已答 / answered in Codex', '待你定 / open, one page', '计划默认，可复核 / plan defaults'], fill: C.accBg, stroke: C.acc, color: C.acc },
+    { title: 'decisions.json', mono: true, sub: '写进仓库 / in the repo', lines: ['Codex 里已答 / answered in Codex', '待你定 / open, one page', '计划默认，可复核 / plan defaults'], fill: C.accBg, stroke: C.acc, color: C.accText },
     { title: 'PR diff', sub: '和代码一起 review', lines: ['选了什么、为什么', 'what was chosen and why', 'reviewed with the code'], fill: C.panel, stroke: C.line, color: C.fg },
     { title: 'plan-ledger check', mono: true, sub: '写完代码后 / after coding', lines: ['计划外改动的文件', 'files outside the plan', '没碰到的决策 / untouched decisions'], fill: C.okBg, stroke: C.ok, color: C.ok },
   ];
