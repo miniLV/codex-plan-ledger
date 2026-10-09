@@ -22,6 +22,11 @@
 </p>
 
 <p align="center">
+  <img src="./docs/assets/story-zh.gif" alt="故事向动图：痛点（决策只在对话里）→ 决策页改一项写理由 → PR 里 decisions.json diff → plan-ledger check 抓计划外文件 → 诚实边界。由 scripts/gen-story-video.mjs 生成。" width="860">
+  <br><sub>故事向短片（痛点 → 改一项 → PR diff → check → 诚实边界）。合成示例，由 <code>scripts/gen-story-video.mjs</code> 生成（<a href="./docs/assets/story-zh.mp4">MP4</a>）。</sub>
+</p>
+
+<p align="center">
   <code>npm i -g github:miniLV/codex-plan-ledger && plan-ledger init --write</code>
 </p>
 
@@ -239,6 +244,7 @@ npm test              # node --test，零依赖
 npm run figures       # 重新生成 docs/assets/*.svg（确定性输出，测试会核对）
 npm run demo          # 重新生成落地页的在线演示页
 npm run demo:video    # 重新生成 docs/assets/demo-flow-*.{gif,mp4}（需要无头 Chrome 和 ffmpeg）
+npm run story:video   # 重新生成 docs/assets/story-zh.{gif,mp4}（故事向短片）
 ```
 
 ## 致谢

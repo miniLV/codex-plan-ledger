@@ -17,6 +17,7 @@
     "test": "node --test test/*.test.js",
     "figures": "node scripts/gen-figures.mjs",
     "demo:video": "node scripts/gen-demo-video.mjs",
+    "story:video": "node scripts/gen-story-video.mjs",
     "demo": "node scripts/gen-demo.mjs"
   }
 }
