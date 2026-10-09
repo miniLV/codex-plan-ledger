@@ -22,7 +22,7 @@ const { escapeHtml: e } = await import('../src/util.js');
 const CHROME = process.env.CHROME || ['google-chrome', 'chromium', 'chromium-browser'].find((c) => spawnSync('which', [c]).status === 0);
 if (!CHROME) throw new Error('headless Chrome not found (set CHROME=...)');
 
-const W = 1280, H = 720, SCALE = 1.25, FPS = 30, DUR = 10.6;
+const W = 1280, H = 720, SCALE = 1.25, FPS = 30, DUR = 10.6, HOLD_AT = 8.6; // HOLD_AT: GIF opening frame
 const SCENES = [0, 2.6, 4.9, 6.9, 9.0, DUR]; // A codex · B ledger · C coding · D check · E end
 
 const T = {
@@ -186,9 +186,14 @@ export async function build(outDir = join(ROOT, 'docs', 'assets'), langs = ['en'
       const ff = (...a) => execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', ...a], { stdio: 'inherit' });
       const mp4 = join(outDir, `intro-${lang}.mp4`), gif = join(outDir, `intro-${lang}.gif`);
       ff('-framerate', String(FPS), '-i', join(work, 'f%04d.png'), '-vf', `scale=${W * SCALE}:${H * SCALE}:flags=lanczos,format=yuv420p`, '-c:v', 'libx264', '-preset', 'slow', '-crf', '20', '-tune', 'stillimage', '-movflags', '+faststart', '-map_metadata', '-1', mp4);
-      ff('-framerate', String(FPS), '-i', join(work, 'f%04d.png'), '-vf', 'fps=12,scale=880:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=96:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle', '-loop', '0', gif);
+      // GIF: open on the check/DRIFT frame for 1 s so static previews are not blank,
+      // then play the whole sequence.
+      const hold = join(work, `f${String(Math.round(HOLD_AT * FPS)).padStart(4, '0')}.png`);
+      ff('-loop', '1', '-framerate', String(FPS), '-t', '1', '-i', hold, '-framerate', String(FPS), '-i', join(work, 'f%04d.png'),
+        '-filter_complex', '[0:v][1:v]concat=n=2:v=1:a=0,fps=12,scale=880:-1:flags=lanczos,split[a][b];[a]palettegen=max_colors=96:stats_mode=diff[p];[b][p]paletteuse=dither=bayer:bayer_scale=4:diff_mode=rectangle',
+        '-loop', '0', gif);
       const poster = join(outDir, `intro-${lang}-poster.jpg`);
-      ff('-ss', '8.5', '-i', mp4, '-frames:v', '1', '-q:v', '3', poster);
+      ff('-ss', String(HOLD_AT), '-i', mp4, '-frames:v', '1', '-q:v', '3', poster);
       outs.push(mp4, gif, poster);
       console.log(`wrote ${mp4} and ${gif}`);
     } finally {
