@@ -102,3 +102,18 @@ footer a{color:var(--muted)}
   .install code{white-space:pre-wrap;word-break:break-all}
   .install button{border-left:0;border-top:1px solid var(--line)}
 }
+
+/* hero v2: value first, video, three points, status lower */
+.eyebrow{font-size:15px;color:var(--muted);margin:0 0 14px}
+.eyebrow code{background:none;padding:0;color:var(--acc-ink)}
+.hero h1{max-width:none}
+
+figure.video{margin:12px 0 36px}
+figure.video video{display:block;width:100%;height:auto;border-radius:12px;border:1px solid var(--line);background:var(--bg2);box-shadow:0 12px 40px rgba(28,25,23,.10)}
+ul.points{list-style:none;padding:0;margin:0 0 28px}
+ul.points li{padding:14px 0;border-top:1px solid var(--line)}
+ul.points li:last-child{border-bottom:1px solid var(--line)}
+ul.points strong{font-weight:600;margin-right:4px}
+.status-line{margin:28px 0 0;font-size:15px;color:var(--muted)}
+.status-line .status{margin:0 8px 0 0;font-size:13px}
+figure img[src$=".svg"]{border:0;background:none;border-radius:0}

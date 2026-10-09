@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>codex-plan-ledger：Codex /plan 的决策账本</title>
-<meta name="description" content="把 Codex 问过的问题、未定选项和计划默认写入仓库里的 decisions.json，可在 PR 里 diff；写完代码后再做范围偏离检查。早期原型。">
+<meta name="description" content="代码写完，一条命令看出哪些改动超出了 Codex /plan 的计划；决策写进 decisions.json，在 PR 里 review。早期原型。">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#FAF6F1">
 <link rel="alternate" hreflang="en" href="https://minilv.github.io/codex-plan-ledger/">
@@ -30,10 +30,22 @@
 <main id="main">
 <div class="hero">
   <div class="col">
-    <p class="status">早期原型 · v0.1</p>
-    <h1>Codex <code>/plan</code> 的决策账本</h1>
-    <p class="lede">把 Codex 问过的问题、未定选项和计划默认写入 <code>decisions.json</code>，可在 PR 里 diff；写完代码后再做范围偏离检查。</p>
-    <p class="measured">实测：n = 3 对里，轮数没有变少；范围偏离 3/3 抓到；文件内矛盾 0/3 抓到。<a href="#status">详情</a></p>
+    <p class="eyebrow">Codex <code>/plan</code> 的决策账本</p>
+    <h1>代码写完，一条命令看出哪些改动超出了计划。</h1>
+    <p class="lede">Codex 和你定好了计划。<code>plan-ledger check</code> 列出计划没提到却被改的文件；每项决策都以 <code>decisions.json</code> 的 diff 留在 PR 里。</p>
+  </div>
+  <div class="wide">
+    <figure class="video">
+      <video src="../assets/intro-zh.mp4" poster="../assets/intro-zh-poster.jpg" width="1600" height="900" autoplay muted loop playsinline aria-label="10 秒介绍：Codex /plan 提问并作答；回答写进 decisions.json；写代码时多改了一个计划外文件；plan-ledger check 报出这个文件。"></video>
+      <figcaption>hook 和 check 的输出是在仓库样例上真实运行所得；Codex 窗口按样例会话记录重绘，代码改动由脚本写入。</figcaption>
+    </figure>
+  </div>
+  <div class="col">
+    <ul class="points">
+      <li><strong>查范围偏离。</strong>列出计划没提到却被改的文件，以及计划要改却没碰的文件。3 次埋点测试里：计划外文件 3/3 抓到，该改未改 3/3 抓到，干净时 3/3 无误报。</li>
+      <li><strong>决策进 PR。</strong>Codex 问过你的问题、计划里的待定项和默认做法写进 <code>decisions.json</code>，评审能看到选了什么、为什么。</li>
+      <li><strong>不打断会话。</strong>作为 Codex Stop hook 运行：不额外调用模型、不联网、从不等待。</li>
+    </ul>
     <div class="install">
       <code id="cmd">npm i -g github:miniLV/codex-plan-ledger &amp;&amp; plan-ledger init --write</code>
       <button type="button" id="copy" aria-describedby="copied">复制安装命令</button>
@@ -43,6 +55,7 @@
       <a class="btn" href="https://github.com/miniLV/codex-plan-ledger">看 GitHub</a>
       <a href="#demo">打开演示</a>
     </div>
+    <p class="status-line"><span class="status">早期原型 · v0.1</span> 实测 3 对任务里，来回轮数没有变少（输 2、平 1）。检查只看文件列表、不读代码：计划内文件里与决策相反的改动 0/3 抓到。<a href="#status">详情</a></p>
   </div>
 </div>
 
@@ -59,8 +72,7 @@
   </div>
   <div class="wide">
     <figure>
-      <img src="../assets/ledger-flow.svg" width="960" height="330" loading="lazy" alt="流程示意：Codex /plan（Codex 自己的问答和计划）→ 仓库里的 decisions.json → PR 里的 diff → 写完代码后的 plan-ledger check。">
-      <figcaption>流程示意，不含测量数据。</figcaption>
+      <img src="../assets/flow-zh.svg" width="960" height="150" loading="lazy" alt="示意：Codex /plan 提问并作答 → decisions.json → Pull request → plan-ledger check 报出计划外改动的文件。">
     </figure>
   </div>
 </section>
@@ -83,6 +95,19 @@
   </div>
 </section>
 
+<section id="ledger" aria-labelledby="ledger-h">
+  <div class="col">
+    <h2 id="ledger-h">决策进 PR</h2>
+    <p>账本是和代码放在一起的普通 JSON 文件。评审在同一个 diff 里看到计划范围、Codex 问过的问题和你的回答。</p>
+  </div>
+  <div class="wide">
+    <figure>
+      <img src="../assets/shot-diff.svg" width="960" loading="lazy" alt="PR 里新增的 decisions.json：计划范围列出的文件，以及 Codex 问过的问题，记为 source codex-native、chosen a、status answered。">
+      <figcaption>同一次运行里 plan-ledger hook-stop 写出的 decisions.json。节选，折叠的行已标出。</figcaption>
+    </figure>
+  </div>
+</section>
+
 <section id="demo" class="alt" aria-labelledby="demo-h">
   <div class="wide">
     <h2 id="demo-h">演示</h2>
@@ -91,7 +116,7 @@
       <div class="demo-bar">docs/plans/demo-send-later-for-drafts/plan.html</div>
       <iframe src="../demo/plan-zh.html" title="决策页演示" loading="lazy" allow="clipboard-write"></iframe>
     </div>
-    <p class="small"><a href="../demo/plan-zh.html">在新标签页打开演示</a> · 决策页 → PR diff → check 的录屏：<a href="../assets/demo-flow-zh.mp4">MP4</a> · <a href="../assets/demo-flow-zh.gif">GIF</a>（合成示例，仓库脚本生成）</p>
+    <p class="small"><a href="../demo/plan-zh.html">在新标签页打开演示</a> · <a href="../assets/intro-zh.mp4">介绍视频（MP4）</a></p>
   </div>
 </section>
 
@@ -106,8 +131,8 @@
   </div>
   <div class="wide">
     <figure>
-      <img src="../assets/ledger-pr-diff.svg" width="960" height="440" loading="lazy" alt="示例：PR 里 decisions.json 的 diff，d2 从默认值改成了已作答的选项，并附上理由。">
-      <figcaption>示例，仓库脚本生成，非某次真实 PR。</figcaption>
+      <img src="../assets/shot-check.svg" width="960" loading="lazy" alt="终端：git status 列出 5 个改动文件；plan-ledger check --base main 对计划没提到的 src/utils/analytics.ts 报出 DRIFT。">
+      <figcaption>真实输出：在仓库样例生成的临时仓库上运行（路径显示为 ~/mail-app）。</figcaption>
     </figure>
   </div>
 </section>

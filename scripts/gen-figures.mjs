@@ -1,108 +1,196 @@
-// Deterministic SVG figures for the README. No randomness, no dates, no fonts
-// embedded. Run: node scripts/gen-figures.mjs  (writes docs/assets/*.svg)
+// Deterministic SVG figures for the README and the site. No randomness, no dates.
+// Run: node scripts/gen-figures.mjs  (writes docs/assets/*.svg)
 //
-// The flow figure is illustrative only: it contains no measured numbers.
-
+// shot-check.svg  terminal pane with the real `git status` and `plan-ledger check`
+//                 output from scripts/capture-session.mjs (scratch repo, fixtures).
+// shot-diff.svg   the decisions.json that `plan-ledger hook-stop` really wrote in
+//                 that run, as it appears in a PR (excerpt; folded lines marked).
+// flow-{en,zh}.svg  a minimal line diagram. Schematic; no measured data.
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { captureSession, SHOWN_DIR, EXTRA_FILE } from './capture-session.mjs';
 
-const FONT = `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif`;
-const MONO = `ui-monospace, SFMono-Regular, Menlo, Consolas, monospace`;
-// Warm palette shared with the landing page (ivory background, warm near-black
-// text, terracotta accent). accText is a darker terracotta for legible text.
-const C = { bg: '#FFFCF8', panel: '#F3EDE4', line: '#E7E0D6', fg: '#1C1917', muted: '#78716C', acc: '#D97757', accText: '#A84F2E', accBg: '#F3E0D8', ok: '#3F6B4A', okBg: '#E3ECE2', del: '#A8402B', delBg: '#F6E1D9' };
+const SANS = `Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif`;
+const MONO = `'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Noto Sans Mono CJK SC', monospace`;
+const C = {
+  cream: '#FAF6F1', paper: '#FFFCF8', sand: '#F3EDE4', line: '#E7E0D6', rule: '#D6CCBF', ink: '#1C1917', muted: '#6F6863',
+  acc: '#D97757', accInk: '#A84F2E', accTint: '#F7E8E1',
+  term: '#1C1917', termBar: '#292524', termFg: '#E7E0D6', termMuted: '#A8A29E', termDot: '#57534E', termAcc: '#EE9B7E', termOk: '#9CC9A5',
+  addBg: '#EEF3EC', addSign: '#3F6B4A',
+};
 
 function esc(s) {
   return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
-
-function text(x, y, s, { size = 14, weight = 400, fill = C.fg, anchor = 'start', font = FONT, pre = false } = {}) {
-  return `<text${pre ? ' xml:space="preserve" style="white-space:pre"' : ''} x="${x}" y="${y}" font-family="${esc(font)}" font-size="${size}" font-weight="${weight}" fill="${fill}" text-anchor="${anchor}">${esc(s)}</text>`;
+const cols = (s) => [...s].reduce((n, ch) => n + (/[\u2E80-\uFFEF]/.test(ch) ? 2 : 1), 0);
+// Word wrap for display; continuation lines keep the label column (7 spaces).
+function wrap(line, width) {
+  if (cols(line) <= width) return [line];
+  const indent = /^(DRIFT|OK|info) /.test(line) ? ' '.repeat(7) : '';
+  const words = line.split(/(?<= )/);
+  const out = []; let cur = '';
+  for (const w of words) {
+    if (cur && cols(cur + w) > width) { out.push(cur.replace(/ +$/, '')); cur = indent; }
+    if (cols(w) > width) { for (const ch of w) { if (cols(cur + ch) > width) { out.push(cur); cur = indent; } cur += ch; } continue; }
+    cur += w;
+  }
+  if (cur.trim()) out.push(cur);
+  return out;
 }
-
-function rect(x, y, w, h, { fill = C.bg, stroke = C.line, r = 8, dash = null } = {}) {
-  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${fill}" stroke="${stroke}"${dash ? ` stroke-dasharray="${dash}"` : ''}/>`;
+const tspan = (s, attrs = '') => `<tspan${attrs}>${esc(s)}</tspan>`;
+function textRow(x, y, inner, { size = 13, font = MONO, fill = C.ink, weight = 400 } = {}) {
+  return `<text x="${x}" y="${y}" xml:space="preserve" font-family="${esc(font)}" font-size="${size}" font-weight="${weight}" fill="${fill}">${inner}</text>`;
 }
+const shadow = `<defs><filter id="sh" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#1C1917" flood-opacity="0.10"/></filter></defs>`;
 
-function arrow(x1, y1, x2, y2, color = C.muted) {
-  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="1.6" marker-end="url(#ah)"/>`;
-}
-
-export function flowFigure() {
-  const W = 960, H = 330;
+export function checkShot(s = captureSession()) {
+  const WRAP = 96, LH = 21, PAD = 24, BAR = 38, W = 920;
+  const rows = [];
+  rows.push({ kind: 'cmd', text: 'git status --short' });
+  for (const l of s.status.split('\n')) rows.push({ kind: l.includes(EXTRA_FILE) ? 'hit' : 'status', text: l });
+  rows.push({ kind: 'blank', text: '' });
+  rows.push({ kind: 'cmd', text: 'plan-ledger check --base main' });
+  let section = '';
+  for (const raw of s.check.split('\n')) {
+    const m = /^(DRIFT|OK|info)\b/.exec(raw);
+    if (m) section = m[1];
+    else if (/^(Note|说明)/.test(raw)) section = 'note';
+    else if (raw === '') section = '';
+    const kind = raw.includes(EXTRA_FILE) ? 'hit' : m ? m[1] : section === 'note' || section === 'info' ? 'muted' : raw === '' ? 'blank' : 'plain';
+    wrap(raw, WRAP).forEach((t, i) => rows.push({ kind: i === 0 ? kind : (kind === 'DRIFT' || kind === 'OK' ? 'plain' : kind), text: t }));
+  }
+  const H = BAR + PAD * 2 + rows.length * LH - 6;
   const p = [];
-  p.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Flow: Codex /plan (its own questions and answers, plus the proposed plan) is recorded in decisions.json in the repo, reviewed as a PR diff together with the code, and checked for scope drift after coding with plan-ledger check.">`);
-  p.push(`<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${C.muted}"/></marker></defs>`);
-  p.push(rect(0.5, 0.5, W - 1, H - 1, { fill: C.bg, r: 12 }));
-  p.push(text(W / 2, 32, '流程示意 / flow · 不含测量数据 / no measured data', { size: 13, fill: C.muted, anchor: 'middle' }));
-  const boxes = [
-    { title: 'Codex /plan', sub: '原生 Plan 模式照常用', lines: ['Codex 自己的提问和你的回答', 'its own questions + your replies', '计划 / proposed plan'], fill: C.panel, stroke: C.line, color: C.fg },
-    { title: 'decisions.json', mono: true, sub: '写进仓库 / in the repo', lines: ['Codex 里已答 / answered in Codex', '待你定 / open, one page', '计划默认，可复核 / plan defaults'], fill: C.accBg, stroke: C.acc, color: C.accText },
-    { title: 'PR diff', sub: '和代码一起 review', lines: ['选了什么、为什么', 'what was chosen and why', 'reviewed with the code'], fill: C.panel, stroke: C.line, color: C.fg },
-    { title: 'plan-ledger check', mono: true, sub: '写完代码后 / after coding', lines: ['计划外改动的文件', 'files outside the plan', '没碰到的决策 / untouched decisions'], fill: C.okBg, stroke: C.ok, color: C.ok },
-  ];
-  const bw = 218, gap = 20, x0 = (W - (bw * 4 + gap * 3)) / 2, y = 56, bh = 196;
-  boxes.forEach((b, i) => {
-    const x = x0 + i * (bw + gap);
-    p.push(rect(x, y, bw, bh, { fill: b.fill, stroke: b.stroke }));
-    p.push(text(x + bw / 2, y + 34, b.title, { size: 16, weight: 600, anchor: 'middle', fill: b.color, font: b.mono ? MONO : FONT }));
-    p.push(text(x + bw / 2, y + 56, b.sub, { size: 12, anchor: 'middle', fill: C.muted }));
-    p.push(`<line x1="${x + 16}" y1="${y + 72}" x2="${x + bw - 16}" y2="${y + 72}" stroke="${b.stroke}" stroke-opacity="0.5"/>`);
-    b.lines.forEach((l, k) => p.push(text(x + bw / 2, y + 100 + k * 30, l, { size: 12, anchor: 'middle' })));
-    if (i < boxes.length - 1) p.push(arrow(x + bw + 2, y + bh / 2, x + bw + gap - 2, y + bh / 2));
+  p.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${W + 40}" height="${H + 44}" viewBox="0 0 ${W + 40} ${H + 44}" role="img" aria-label="Terminal: git status shows five changed files; plan-ledger check --base main reports DRIFT: 1 changed file not covered by any decision or the plan: ${EXTRA_FILE}. Real output from the bundled fixtures.">`);
+  p.push(shadow);
+  p.push(`<g transform="translate(20 14)">`);
+  p.push(`<rect x="0" y="0" width="${W}" height="${H}" rx="12" fill="${C.term}" filter="url(#sh)"/>`);
+  p.push(`<path d="M0 12a12 12 0 0 1 12-12h${W - 24}a12 12 0 0 1 12 12v${BAR - 12}h-${W}z" fill="${C.termBar}"/>`);
+  [20, 38, 56].forEach((cx) => p.push(`<circle cx="${cx}" cy="${BAR / 2}" r="5.5" fill="${C.termDot}"/>`));
+  p.push(`<text x="${W / 2}" y="${BAR / 2 + 4}" text-anchor="middle" font-family="${esc(SANS)}" font-size="12" fill="${C.termMuted}">${esc(SHOWN_DIR)} — feature</text>`);
+  rows.forEach((r, i) => {
+    const y = BAR + PAD + i * LH + 10;
+    if (r.kind === 'hit') {
+      p.push(`<rect x="12" y="${y - 15}" width="${W - 24}" height="${LH}" rx="4" fill="${C.termAcc}" fill-opacity="0.14"/>`);
+      p.push(`<rect x="12" y="${y - 15}" width="3" height="${LH}" rx="1.5" fill="${C.termAcc}"/>`);
+    }
+    let inner;
+    if (r.kind === 'cmd') inner = tspan('$ ', ` fill="${C.termAcc}"`) + tspan(r.text, ` fill="${C.paper}" font-weight="600"`);
+    else if (r.kind === 'hit') inner = tspan(r.text, ` fill="${C.termAcc}" font-weight="600"`);
+    else if (r.kind === 'DRIFT') inner = tspan(r.text.slice(0, 7), ` fill="${C.termAcc}" font-weight="700"`) + tspan(r.text.slice(7), ` fill="${C.termFg}"`);
+    else if (r.kind === 'OK') inner = tspan(r.text.slice(0, 7), ` fill="${C.termOk}" font-weight="700"`) + tspan(r.text.slice(7), ` fill="${C.termFg}"`);
+    else if (r.kind === 'status') inner = tspan(r.text.slice(0, 3), ` fill="${C.termMuted}"`) + tspan(r.text.slice(3), ` fill="${C.termFg}"`);
+    else if (r.kind === 'info' || r.kind === 'muted') inner = tspan(r.text, ` fill="${C.termMuted}"`);
+    else inner = tspan(r.text, ` fill="${C.termFg}"`);
+    if (r.text) p.push(textRow(PAD, y, inner, { size: 13 }));
   });
-  p.push(text(W / 2, 290, '只看改了哪些文件，不看改动内容是否和决策一致', { size: 12, fill: C.muted, anchor: 'middle' }));
-  p.push(text(W / 2, 310, 'checks which files changed, not whether the content matches the decisions', { size: 12, fill: C.muted, anchor: 'middle' }));
+  p.push('</g></svg>');
+  return p.join('\n') + '\n';
+}
+
+export function diffExcerpt(text) {
+  const lines = text.replace(/\n$/, '').split('\n');
+  const find = (re, from = 0) => { const i = lines.findIndex((l, k) => k >= from && re.test(l)); if (i < 0) throw new Error(`not found: ${re}`); return i; };
+  const a = find(/"plan_id"/);
+  const sc = find(/"scope": \{/);
+  const scEnd = find(/^  \},?$/, sc);
+  const dec = find(/"decisions": \[/);
+  const nat = find(/"source": "codex-native"/, dec);
+  const chosen = find(/"chosen":/, nat);
+  const status = find(/"status":/, chosen);
+  const ranges = [[a, a + 1], [sc, scEnd], [dec, nat], [chosen, status]];
+  const hi = (l) => /"codex-native"|"chosen"|"status": "answered"|"src\//.test(l);
+  const out = [];
+  let prev = -1;
+  for (const [s, e] of ranges) {
+    if (s > prev + 1) out.push({ fold: true, n: s - prev - 1 });
+    for (let k = s; k <= e; k++) out.push({ no: k + 1, text: lines[k], hi: hi(lines[k]) });
+    prev = e;
+  }
+  if (prev < lines.length - 1) out.push({ fold: true, n: lines.length - 1 - prev });
+  return { rows: out, total: lines.length };
+}
+
+export function diffShot(s = captureSession()) {
+  const { rows, total } = diffExcerpt(s.ledgerText);
+  const W = 920, BAR = 44, LH = 22, PADT = 8, GUT = 52;
+  const H = BAR + PADT * 2 + rows.length * LH;
+  const p = [];
+  p.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${W + 40}" height="${H + 44}" viewBox="0 0 ${W + 40} ${H + 44}" role="img" aria-label="Pull request view of ${esc(s.ledgerRel)} as written by plan-ledger hook-stop: the plan scope files, and the question Codex asked, recorded with source codex-native, chosen a, status answered. Excerpt; folded lines are marked.">`);
+  p.push(shadow);
+  p.push(`<g transform="translate(20 14)">`);
+  p.push(`<rect x="0.5" y="0.5" width="${W - 1}" height="${H - 1}" rx="12" fill="${C.paper}" stroke="${C.line}" filter="url(#sh)"/>`);
+  p.push(`<path d="M0.5 12.5a12 12 0 0 1 12-12h${W - 25}a12 12 0 0 1 12 12v${BAR - 12.5}h-${W - 1}z" fill="${C.sand}"/>`);
+  p.push(`<line x1="0.5" y1="${BAR}" x2="${W - 0.5}" y2="${BAR}" stroke="${C.line}"/>`);
+  p.push(textRow(18, BAR / 2 + 4.5, tspan(s.ledgerRel), { size: 12.5, weight: 600, fill: C.ink }));
+  p.push(`<text x="${W - 18}" y="${BAR / 2 + 4.5}" text-anchor="end" font-family="${esc(SANS)}" font-size="12" fill="${C.muted}">new file <tspan fill="${C.addSign}" font-weight="600">+${total}</tspan></text>`);
+  rows.forEach((r, i) => {
+    const y = BAR + PADT + i * LH;
+    if (r.fold) {
+      p.push(`<rect x="1" y="${y}" width="${W - 2}" height="${LH}" fill="${C.sand}" fill-opacity="0.6"/>`);
+      p.push(textRow(GUT + 22, y + 15, tspan(`⋯  ${r.n} lines`), { size: 12, fill: C.muted, font: SANS }));
+      return;
+    }
+    p.push(`<rect x="1" y="${y}" width="${W - 2}" height="${LH}" fill="${C.addBg}"/>`);
+    if (r.hi) p.push(`<rect x="1" y="${y}" width="3" height="${LH}" fill="${C.acc}"/>`);
+    p.push(`<text x="${GUT - 12}" y="${y + 15}" text-anchor="end" font-family="${esc(MONO)}" font-size="11.5" fill="${C.muted}">${r.no}</text>`);
+    p.push(textRow(GUT, y + 15, tspan('+', ` fill="${C.addSign}"`) + tspan('  ' + r.text, ` fill="${C.ink}"${r.hi ? ' font-weight="600"' : ''}`), { size: 12.5 }));
+  });
+  p.push('</g></svg>');
+  return p.join('\n') + '\n';
+}
+
+const FLOW = {
+  en: { label: 'How the pieces connect. Schematic.', nodes: [
+    ['Codex /plan', 'Codex asks; you answer in Codex'],
+    ['decisions.json', 'answers, open items, defaults'],
+    ['Pull request', 'reviewed as a diff with the code'],
+    ['plan-ledger check', 'flags files outside the plan'],
+  ] },
+  zh: { label: '各部分如何衔接。示意图。', nodes: [
+    ['Codex /plan', 'Codex 提问，你在 Codex 里答'],
+    ['decisions.json', '问答、待定项、默认写进仓库'],
+    ['Pull request', '和代码一起 diff、review'],
+    ['plan-ledger check', '报出计划外改动的文件'],
+  ] },
+};
+
+export function flowFigure(lang = 'en') {
+  const t = FLOW[lang];
+  const W = 960, H = 150, x0 = 130, x1 = W - 130, yL = 66;
+  const step = (x1 - x0) / (t.nodes.length - 1);
+  const p = [];
+  p.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t.nodes.map((n) => `${n[0]}: ${n[1]}`).join(' → '))}">`);
+  p.push(`<rect x="0" y="0" width="${W}" height="${H}" rx="12" fill="${C.cream}"/>`);
+  p.push(`<text x="32" y="32" font-family="${esc(SANS)}" font-size="12" fill="${C.muted}">${esc(t.label)}</text>`);
+  p.push(`<line x1="${x0}" y1="${yL}" x2="${x1}" y2="${yL}" stroke="${C.rule}" stroke-width="1"/>`);
+  t.nodes.forEach(([title, sub], i) => {
+    const x = x0 + i * step, last = i === t.nodes.length - 1;
+    p.push(`<circle cx="${x}" cy="${yL}" r="${last ? 6 : 4.5}" fill="${last ? C.acc : C.cream}" stroke="${last ? C.acc : C.ink}" stroke-width="1.25"/>`);
+    const mono = /\.json|check|\/plan/.test(title);
+    p.push(`<text x="${x}" y="${yL + 36}" text-anchor="middle" font-family="${esc(mono ? MONO : SANS)}" font-size="15" font-weight="600" fill="${last ? C.accInk : C.ink}">${esc(title)}</text>`);
+    p.push(`<text x="${x}" y="${yL + 60}" text-anchor="middle" font-family="${esc(SANS)}" font-size="13" fill="${C.muted}">${esc(sub)}</text>`);
+  });
   p.push('</svg>');
   return p.join('\n') + '\n';
 }
 
-export function diffFigure() {
-  const W = 960, H = 440;
-  const p = [];
-  p.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Example pull request diff of decisions.json: decision d2 changes from the default to an answered option with a rationale.">`);
-  p.push(rect(0.5, 0.5, W - 1, H - 1, { fill: C.bg, r: 12 }));
-  p.push(text(24, 34, '示例 / example · PR 里的 decisions.json diff', { size: 13, fill: C.muted }));
-  p.push(rect(24, 48, 912, 320, { fill: C.bg }));
-  p.push(`<path d="M24.5 56 a8 8 0 0 1 8 -7.5 h895 a8 8 0 0 1 8 7.5 v28 h-911z" fill="${C.panel}"/>`);
-  p.push(`<line x1="24" y1="84" x2="936" y2="84" stroke="${C.line}"/>`);
-  p.push(text(40, 71, 'docs/plans/2026-10-09-send-later-for-drafts/decisions.json', { size: 13, weight: 600, font: MONO }));
-  const lines = [
-    [' ', '  "id": "d2",'],
-    [' ', '  "title": "What happens if sending fails at the scheduled time?",'],
-    [' ', '  "default": "a",'],
-    ['-', '  "chosen": "a",'],
-    ['+', '  "chosen": "b",'],
-    [' ', '  "other": null,'],
-    ['-', '  "status": "default",'],
-    ['+', '  "status": "answered",'],
-    [' ', '  "affected": { "files": ["src/jobs/sendScheduled.ts"], "modules": [] },'],
-    ['-', '  "rationale": null'],
-    ['+', '  "rationale": "Users must know right away; silent retries hide outages."'],
-    [' ', '},'],
-  ];
-  lines.forEach(([sign, code], i) => {
-    const y = 88 + i * 23;
-    const bg = sign === '-' ? C.delBg : sign === '+' ? C.okBg : null;
-    if (bg) p.push(`<rect x="25" y="${y}" width="910" height="23" fill="${bg}"/>`);
-    p.push(text(44, y + 16, sign, { size: 13, font: MONO, fill: sign === '-' ? C.del : sign === '+' ? C.ok : C.muted }));
-    p.push(text(64, y + 16, code, { size: 13, font: MONO, pre: true }));
-  });
-  p.push(rect(24, 380, 912, 46, { fill: C.panel }));
-  p.push(text(40, 400, 'Reviewer: 为什么失败后不重试？/ why no retry?', { size: 13, weight: 600 }));
-  p.push(text(40, 418, '答案和理由都在账本里，和代码一起 review / the choice and the why are in the ledger, reviewed with the code', { size: 12, fill: C.muted }));
-  p.push('</svg>');
-  return p.join('\n') + '\n';
+export function allFigures() {
+  const s = captureSession();
+  return {
+    'shot-check.svg': checkShot(s),
+    'shot-diff.svg': diffShot(s),
+    'flow-en.svg': flowFigure('en'),
+    'flow-zh.svg': flowFigure('zh'),
+  };
 }
-
-export const FIGURES = { 'ledger-flow.svg': flowFigure, 'ledger-pr-diff.svg': diffFigure };
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const dir = join(dirname(fileURLToPath(import.meta.url)), '..', 'docs', 'assets');
   mkdirSync(dir, { recursive: true });
-  for (const [name, fn] of Object.entries(FIGURES)) {
-    writeFileSync(join(dir, name), fn());
+  for (const [name, svg] of Object.entries(allFigures())) {
+    writeFileSync(join(dir, name), svg);
     console.log(`wrote docs/assets/${name}`);
   }
 }

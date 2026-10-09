@@ -2,29 +2,31 @@
 
 # codex-plan-ledger
 
-**Codex `/plan` 的决策账本**
+**Codex `/plan` 的决策账本。** Codex 和你定好了计划；代码写完，一条命令就能看出改动有没有超出计划，每项决策都以 diff 的形式留在 PR 里。
 
-把 Codex 问过的问题、计划里未定的选项、计划写明的默认做法，写入仓库里的 `decisions.json`，能在 PR 里 diff 和 review。代码写完后，用范围偏离检查对照改动文件和计划范围。
+[![10 秒介绍：Codex /plan 提问并作答 → 回答写进 decisions.json → 写代码时多改了一个计划外文件 → plan-ledger check 报出这个文件](./docs/assets/intro-zh.gif)](./docs/assets/intro-zh.mp4)
 
-[主页](https://minilv.github.io/codex-plan-ledger/zh/) · [Skill](./skills/plan-ledger/SKILL.md) · [Schema](./schema/decisions.schema.json) · [实测计划](./docs/measurement-plan.md)
+<sub>10 秒介绍（[MP4](./docs/assets/intro-zh.mp4)）。hook 和 check 的输出是在仓库样例上真实运行所得；Codex 窗口按样例会话记录重绘，代码改动由脚本写入。</sub>
+
+- **查范围偏离。** `plan-ledger check` 列出计划没提到却被改的文件，以及计划要改却没碰的文件。3 次埋点测试里：计划外文件 3/3 抓到，该改未改 3/3 抓到，干净时 3/3 无误报。
+- **决策进 PR。** Codex 问过你的问题、计划里的待定项和默认做法写进 `decisions.json`，评审能看到选了什么、为什么。
+- **不打断会话。** 作为 Codex `Stop` hook 运行：不额外调用模型、不联网、从不等待。
 
 ```sh
 npm i -g github:miniLV/codex-plan-ledger && plan-ledger init --write
 ```
 
-Codex CLI · Node.js 20+ · 零依赖 · 不额外调用模型 · MIT
+[主页](https://minilv.github.io/codex-plan-ledger/zh/) · [Skill](./skills/plan-ledger/SKILL.md) · [Schema](./schema/decisions.schema.json) · [实测计划](./docs/measurement-plan.md) · Codex CLI · Node.js 20+ · 零依赖 · MIT
 
-> **实测一句话：** 在 n = 3 对任务里，轮数没有变少（输 2、平 1）；范围偏离（计划外文件、该改未改）3/3 抓到；文件内与决策相反的改动 0/3 抓到。详见 [实测](#实测两轮方向性共-n--3-对)。
->
-> **状态：早期原型 v0.1。** 功能可用，有测试。它不替代 Codex 的原生提问，也不以减少轮次为目标；它把决策留成记录，并在写完代码后查范围。
+<img src="./docs/assets/shot-check.svg" alt="终端：git status 列出 5 个改动文件，其中 src/utils/analytics.ts 被标出；plan-ledger check --base main 报出 DRIFT：1 个改动文件不在任何决策或计划里：src/utils/analytics.ts。" width="760">
 
-<img src="./docs/assets/decision-page-zh.png" alt="决策页截图：顶部写着需要你定几项、几项是计划写明的默认，每项一张卡片，有选项、推荐标记、默认值和影响的文件，底部是“生成回传 JSON 并复制”按钮。" width="720">
+<sub>`plan-ledger check` 的真实输出：在仓库样例生成的临时仓库上运行（路径显示为 `~/mail-app`）。</sub>
 
-<sub>决策页。无头 Chrome 截取；内容来自仓库合成样例 fixture（`test/fixtures/send-later.message.md`），外加一个合成的“已在 Codex 里回答”的问题。</sub>
+<img src="./docs/assets/shot-diff.svg" alt="PR 里新增的 decisions.json：计划范围列出的文件，以及 Codex 问过的问题，记为 source codex-native、chosen a、status answered。" width="760">
 
-<img src="./docs/assets/ledger-pr-diff.svg" alt="示例：PR 里 decisions.json 的 diff，d2 从默认值改成了已作答的选项，并附上理由。" width="720">
+<sub>同一次运行里 `plan-ledger hook-stop` 写出的 `decisions.json`（节选，折叠的行已标出）。</sub>
 
-<sub>PR 里的 `decisions.json` diff。示例，仓库脚本生成，非某次真实 PR。</sub>
+> **状态：早期原型 v0.1。** 实测 3 对任务里，来回轮数没有变少（输 2、平 1），所以它不以省轮次为目标。检查只看文件列表、不读代码：计划内文件里与决策相反的改动 0/3 抓到。详见 [实测](#实测两轮方向性共-n--3-对)。
 
 ## 它是什么
 
@@ -41,17 +43,7 @@ Codex 原生 Plan 模式照常用，提问仍在 Codex 里答。计划出来后�
 
 ## 工作流程
 
-```mermaid
-flowchart LR
-  A["Codex /plan<br/>原生问答 + proposed_plan"] --> B["Stop hook<br/>plan-ledger hook-stop"]
-  B --> C["docs/plans/id/<br/>decisions.json + plan.md"]
-  B --> D["plan.html<br/>复核 / 修改"]
-  D -->|"复制回传 JSON"| E["你的下一条消息"]
-  E -->|"UserPromptSubmit（可选）<br/>记进账本"| C
-  E --> F["Codex 按决策实现"]
-  F --> G["plan-ledger check<br/>范围偏离检查"]
-  C --> G
-```
+<img src="./docs/assets/flow-zh.svg" alt="示意：Codex /plan 提问并作答 → decisions.json → Pull request → plan-ledger check 报出计划外改动的文件。" width="760">
 
 1. 在 Codex 里照常 `/plan` 并回答原生问题。出现 `<proposed_plan>` 时，Stop hook 只做解析、渲染、写账本，然后正常结束；从不阻塞、从不等待。Codex 问过的问题记为 `source: "codex-native"`、已作答，不会再问一遍。
 2. 打开 `plan.html` 复核。待定项一次答完；计划写明的默认标为可复核，不算待答。未选的项记为「未作答，保留默认」，不算同意。
@@ -60,7 +52,13 @@ flowchart LR
 
 渲染不调用模型。`<proposed_plan>` 解析失败时原样放行，退出码 0。
 
-演示素材（合成示例，仓库脚本生成）：[在线演示](https://minilv.github.io/codex-plan-ledger/zh/#demo) · [流程录屏 MP4](./docs/assets/demo-flow-zh.mp4) · [GIF](./docs/assets/demo-flow-zh.gif) · [故事向短片 MP4](./docs/assets/story-zh.mp4)
+<details>
+<summary>决策页截图</summary>
+
+<img src="./docs/assets/decision-page-zh.png" alt="决策页截图：每项决策一张卡片，有选项、推荐标记、默认值和影响的文件，底部是“生成回传 JSON 并复制”按钮。" width="720">
+
+无头 Chrome 截取；内容来自仓库合成样例 fixture。也可以看[在线演示](https://minilv.github.io/codex-plan-ledger/zh/#demo)。
+</details>
 
 ## 安装
 
@@ -225,11 +223,11 @@ Codex 改版计划时，之前的回答会沿用到 id 相同（或者标题相�
 
 ```sh
 npm test              # node --test，零依赖
-npm run figures       # 重新生成 docs/assets/*.svg（确定性输出，测试会核对）
+npm run figures       # 重新生成 docs/assets/*.svg（真实运行样例，确定性输出，测试会核对）
 npm run demo          # 重新生成落地页的在线演示页
 npm run screens       # 重新生成 docs/assets/decision-page-*.png（需要无头 Chrome）
+npm run intro:video   # 重新生成 docs/assets/intro-*.{mp4,gif}（10 秒介绍；需要无头 Chrome 和 ffmpeg）
 npm run demo:video    # 重新生成 docs/assets/demo-flow-*.{gif,mp4}（需要无头 Chrome 和 ffmpeg）
-npm run story:video   # 重新生成 docs/assets/story-zh.{gif,mp4}（故事向短片）
 ```
 
 ## 致谢

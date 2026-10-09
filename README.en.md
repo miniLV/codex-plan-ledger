@@ -2,29 +2,31 @@
 
 # codex-plan-ledger
 
-**A decision ledger for Codex `/plan`**
+**A decision ledger for Codex `/plan`.** Codex agreed to a plan with you. After coding, one command shows whether the change touched files outside that plan, and every decision is in the PR as a diff.
 
-The questions Codex asked you, the open choices in the plan, and the defaults the plan stated are written to `decisions.json` in your repo so they diff and get reviewed in the PR. After coding, a scope drift check compares the changed files with the plan's scope.
+[![10-second intro: Codex /plan asks and you answer → the answer lands in decisions.json → coding touches one file the plan never named → plan-ledger check flags that file](./docs/assets/intro-en.gif)](./docs/assets/intro-en.mp4)
 
-[Homepage](https://minilv.github.io/codex-plan-ledger/) · [Skill](./skills/plan-ledger/SKILL.md) · [Schema](./schema/decisions.schema.json) · [Measurement plan](./docs/measurement-plan.md)
+<sub>10-second intro ([MP4](./docs/assets/intro-en.mp4)). The hook and check output is real, from running the tool on the repo's fixtures. The Codex pane is redrawn from the fixture transcript, and the code edits are written by a script.</sub>
+
+- **Scope drift check.** `plan-ledger check` lists changed files the plan never named, and planned files nobody touched. In 3 runs with planted drift: unplanned file caught 3/3, untouched planned files caught 3/3, no false alarm on a clean tree 3/3.
+- **Decisions in the PR.** The questions Codex asked you, the plan's open choices and its stated defaults are written to `decisions.json`, so the reviewer sees what was chosen and why.
+- **Stays out of the way.** Runs as a Codex `Stop` hook: no extra model calls, no network, never waits.
 
 ```sh
 npm i -g github:miniLV/codex-plan-ledger && plan-ledger init --write
 ```
 
-Codex CLI · Node.js 20+ · zero dependencies · no extra model calls · MIT
+[Homepage](https://minilv.github.io/codex-plan-ledger/) · [Skill](./skills/plan-ledger/SKILL.md) · [Schema](./schema/decisions.schema.json) · [Measurement plan](./docs/measurement-plan.md) · Codex CLI · Node.js 20+ · zero dependencies · MIT
 
-> **Measured, in one line:** across n = 3 pairs, rounds did not improve (2 losses, 1 tie); scope drift (unplanned files, planned files left untouched) was caught 3/3; in-file contradictions of a decision were caught 0/3. See [Measured](#measured-two-rounds-directional-n--3-pairs).
->
-> **Status: early prototype, v0.1.** It works and has tests. It does not replace Codex's native questions and does not aim to cut rounds. It keeps decisions as a record and checks scope after coding.
+<img src="./docs/assets/shot-check.svg" alt="Terminal: git status lists five changed files with src/utils/analytics.ts marked; plan-ledger check --base main reports DRIFT: 1 changed file not covered by any decision or the plan: src/utils/analytics.ts." width="760">
 
-<img src="./docs/assets/decision-page-en.png" alt="Screenshot of the decision page: a summary of how many decisions need you and how many are plan defaults, one card per decision with options, a recommended badge, the default and the affected files, and a button that copies the reply JSON." width="720">
+<sub>Real `plan-ledger check` output, run on a scratch repo built from the repo's fixtures (path shown as `~/mail-app`).</sub>
 
-<sub>Decision page. Headless Chrome; synthetic fixture from the repo (`test/fixtures/send-later.message.md`) plus one synthetic question answered in Codex.</sub>
+<img src="./docs/assets/shot-diff.svg" alt="The new decisions.json in a PR: the files in the plan's scope, and the question Codex asked, recorded with source codex-native, chosen a, status answered." width="760">
 
-<img src="./docs/assets/ledger-pr-diff.svg" alt="Example: a PR diff of decisions.json where decision d2 moves from the default to an answered option with a rationale." width="720">
+<sub>The `decisions.json` that `plan-ledger hook-stop` wrote in the same run (excerpt; folded lines are marked).</sub>
 
-<sub>`decisions.json` diff in a PR. Example generated in the repo, not from a real PR.</sub>
+> **Status: early prototype, v0.1.** Across 3 measured pairs, rounds did not improve (2 losses, 1 tie), so it does not aim to cut rounds. The check reads file lists, not code: contradictions of a decision inside a planned file were caught 0/3. See [Measured](#measured-two-rounds-directional-n--3-pairs).
 
 ## What it is
 
@@ -41,17 +43,7 @@ Keep using Codex's native Plan mode and answer its questions in Codex. When the 
 
 ## How it works
 
-```mermaid
-flowchart LR
-  A["Codex /plan<br/>native Q&A + proposed_plan"] --> B["Stop hook<br/>plan-ledger hook-stop"]
-  B --> C["docs/plans/id/<br/>decisions.json + plan.md"]
-  B --> D["plan.html<br/>review / edit"]
-  D -->|"copy reply JSON"| E["your next message"]
-  E -->|"UserPromptSubmit (optional)<br/>record in ledger"| C
-  E --> F["Codex implements"]
-  F --> G["plan-ledger check<br/>scope drift check"]
-  C --> G
-```
+<img src="./docs/assets/flow-en.svg" alt="Schematic: Codex /plan asks and you answer → decisions.json → Pull request → plan-ledger check flags files outside the plan." width="760">
 
 1. Run `/plan` as usual and answer Codex's own questions. When a `<proposed_plan>` appears, the Stop hook only parses, renders, and writes the ledger, then ends the turn. It never blocks and never waits. Questions Codex asked are recorded as `source: "codex-native"`, answered, and are not asked again.
 2. Open `plan.html` to review. Answer remaining open items in one pass. Stated defaults are reviewable and do not count as open. Unanswered items are stored as "not answered; default kept", not as agreement.
@@ -60,7 +52,13 @@ flowchart LR
 
 Rendering never calls a model. If `<proposed_plan>` parsing fails, the turn is left alone (exit 0).
 
-Demo material (synthetic, generated in the repo): [live demo](https://minilv.github.io/codex-plan-ledger/#demo) · [screen recording MP4](./docs/assets/demo-flow-en.mp4) · [GIF](./docs/assets/demo-flow-en.gif)
+<details>
+<summary>Decision page screenshot</summary>
+
+<img src="./docs/assets/decision-page-en.png" alt="Screenshot of the decision page: one card per decision with options, a Recommended badge, the default and the affected files, and a button that builds the reply JSON." width="720">
+
+Headless Chrome; synthetic fixture from the repo. Or try the [live demo](https://minilv.github.io/codex-plan-ledger/#demo).
+</details>
 
 ## Install
 
@@ -225,9 +223,10 @@ Early prototype v0.1. Only the directional runs above. It does not aim to save r
 
 ```sh
 npm test              # node --test, zero dependencies
-npm run figures       # regenerate docs/assets/*.svg (deterministic; tests compare them)
+npm run figures       # regenerate docs/assets/*.svg (real run on fixtures; deterministic; tests compare them)
 npm run demo          # regenerate the landing-page demo pages
 npm run screens       # docs/assets/decision-page-*.png (headless Chrome)
+npm run intro:video   # regenerate docs/assets/intro-*.{mp4,gif} (10-second intro; needs headless Chrome and ffmpeg)
 npm run demo:video    # regenerate docs/assets/demo-flow-*.{gif,mp4} (needs headless Chrome and ffmpeg)
 ```
 

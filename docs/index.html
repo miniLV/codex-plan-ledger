@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>codex-plan-ledger: a decision ledger for Codex /plan</title>
-<meta name="description" content="The questions Codex asked, the open choices and the plan's stated defaults go into decisions.json in your repo, so they diff in the PR. After coding, a scope drift check compares changed files with the plan. Early prototype.">
+<meta name="description" content="After coding, one command shows which changed files the Codex /plan never named. Decisions go into decisions.json and are reviewed in the PR. Early prototype.">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#FAF6F1">
 <link rel="alternate" hreflang="en" href="https://minilv.github.io/codex-plan-ledger/">
@@ -30,10 +30,22 @@
 <main id="main">
 <div class="hero">
   <div class="col">
-    <p class="status">Early prototype · v0.1</p>
-    <h1>A decision ledger for Codex <code>/plan</code></h1>
-    <p class="lede">The questions Codex asked, the open choices, and the plan's stated defaults go into <code>decisions.json</code> so they diff in the PR. After coding, a scope drift check compares changed files with the plan.</p>
-    <p class="measured">Measured across n = 3 pairs: rounds did not improve; scope drift caught 3/3; in-file contradictions caught 0/3. <a href="#status">Details</a></p>
+    <p class="eyebrow">A decision ledger for Codex <code>/plan</code></p>
+    <h1>After coding, one command shows what changed outside the plan.</h1>
+    <p class="lede">Codex agreed to a plan with you. <code>plan-ledger check</code> lists the changed files that plan never named, and every decision sits in the PR as a diff of <code>decisions.json</code>.</p>
+  </div>
+  <div class="wide">
+    <figure class="video">
+      <video src="assets/intro-en.mp4" poster="assets/intro-en-poster.jpg" width="1600" height="900" autoplay muted loop playsinline aria-label="10-second intro: Codex /plan asks and you answer; the answer lands in decisions.json; coding touches one file the plan never named; plan-ledger check flags it."></video>
+      <figcaption>Hook and check output: real runs on the repo's fixtures. The Codex pane is redrawn from the fixture transcript; the code edits are written by a script.</figcaption>
+    </figure>
+  </div>
+  <div class="col">
+    <ul class="points">
+      <li><strong>Scope drift check.</strong> Lists changed files the plan never named, and planned files nobody touched. In 3 runs with planted drift: unplanned file caught 3/3, untouched planned files 3/3, no false alarm on a clean tree 3/3.</li>
+      <li><strong>Decisions in the PR.</strong> The questions Codex asked you, the plan's open choices and its stated defaults are written to <code>decisions.json</code>, so the reviewer sees what was chosen and why.</li>
+      <li><strong>Stays out of the way.</strong> Runs as a Codex Stop hook: no extra model calls, no network, never waits.</li>
+    </ul>
     <div class="install">
       <code id="cmd">npm i -g github:miniLV/codex-plan-ledger &amp;&amp; plan-ledger init --write</code>
       <button type="button" id="copy" aria-describedby="copied">Copy install</button>
@@ -43,6 +55,7 @@
       <a class="btn" href="https://github.com/miniLV/codex-plan-ledger">View on GitHub</a>
       <a href="#demo">Open demo</a>
     </div>
+    <p class="status-line"><span class="status">Early prototype · v0.1</span> Across 3 measured pairs, rounds did not improve (2 losses, 1 tie). The check reads file lists, not code: contradictions inside a planned file were caught 0/3. <a href="#status">Details</a></p>
   </div>
 </div>
 
@@ -59,8 +72,7 @@
   </div>
   <div class="wide">
     <figure>
-      <img src="assets/ledger-flow.svg" width="960" height="330" loading="lazy" alt="Flow: Codex /plan (its own questions and answers, plus the plan) → decisions.json in the repo → PR diff → plan-ledger check after coding.">
-      <figcaption>Schematic. No measured data.</figcaption>
+      <img src="assets/flow-en.svg" width="960" height="150" loading="lazy" alt="Schematic: Codex /plan asks and you answer → decisions.json → Pull request → plan-ledger check flags files outside the plan.">
     </figure>
   </div>
 </section>
@@ -83,6 +95,19 @@
   </div>
 </section>
 
+<section id="ledger" aria-labelledby="ledger-h">
+  <div class="col">
+    <h2 id="ledger-h">Decisions in the PR</h2>
+    <p>The ledger is a plain JSON file next to the code. Reviewers see the plan's scope, the question Codex asked and the answer, in the same diff as the change.</p>
+  </div>
+  <div class="wide">
+    <figure>
+      <img src="assets/shot-diff.svg" width="960" loading="lazy" alt="The new decisions.json in a PR: the plan's scope files, and the question Codex asked recorded with source codex-native, chosen a, status answered.">
+      <figcaption>The decisions.json that plan-ledger hook-stop wrote in the same run. Excerpt; folded lines are marked.</figcaption>
+    </figure>
+  </div>
+</section>
+
 <section id="demo" class="alt" aria-labelledby="demo-h">
   <div class="wide">
     <h2 id="demo-h">Demo</h2>
@@ -91,7 +116,7 @@
       <div class="demo-bar">docs/plans/demo-send-later-for-drafts/plan.html</div>
       <iframe src="demo/plan-en.html" title="Decision page demo" loading="lazy" allow="clipboard-write"></iframe>
     </div>
-    <p class="small"><a href="demo/plan-en.html">Open the demo in a full tab</a> · Screen recording of page → PR diff → check: <a href="assets/demo-flow-en.mp4">MP4</a> · <a href="assets/demo-flow-en.gif">GIF</a> (synthetic, generated in the repo)</p>
+    <p class="small"><a href="demo/plan-en.html">Open the demo in a full tab</a> · <a href="assets/intro-en.mp4">Intro video (MP4)</a></p>
   </div>
 </section>
 
@@ -106,8 +131,8 @@
   </div>
   <div class="wide">
     <figure>
-      <img src="assets/ledger-pr-diff.svg" width="960" height="440" loading="lazy" alt="Example: the diff of decisions.json in a PR, where decision d2 changes from the default to an answered option with a reason.">
-      <figcaption>Example generated in the repo, not from a real PR.</figcaption>
+      <img src="assets/shot-check.svg" width="960" loading="lazy" alt="Terminal: git status lists five changed files; plan-ledger check --base main reports DRIFT for src/utils/analytics.ts, a file the plan never named.">
+      <figcaption>Real output, run on a scratch repo built from the repo's fixtures (path shown as ~/mail-app).</figcaption>
     </figure>
   </div>
 </section>
