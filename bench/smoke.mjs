@@ -1,5 +1,6 @@
 // Live smoke test: real Codex Plan mode via app-server, with plan-ledger's Stop hook
 // configured in the session config layer. Usage: node bench/smoke.mjs <scratch-repo-dir> <out-dir>
+// Env: BENCH_ARGS (JSON array of codex args), SMOKE_PROMPT, SMOKE_PERSIST=1 (non-ephemeral thread), SMOKE_DRY=1.
 import { mkdirSync, writeFileSync, appendFileSync } from 'node:fs';
 import { join, resolve, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -47,7 +48,7 @@ try {
     process.exit(0);
   }
   const th = await s.request('thread/start', {
-    cwd: repo, approvalPolicy: 'never', sandbox: 'read-only', ephemeral: true,
+    cwd: repo, approvalPolicy: 'never', sandbox: 'read-only', ephemeral: !process.env.SMOKE_PERSIST, // SMOKE_PERSIST=1 keeps a transcript (needed for codex-native capture)
     config: { hooks, bypass_hook_trust: true, ...(process.env.BENCH_LEAN ? JSON.parse(process.env.BENCH_LEAN) : {}) },
   });
   const threadId = th.thread.id;

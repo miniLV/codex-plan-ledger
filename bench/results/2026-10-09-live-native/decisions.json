@@ -1,0 +1,92 @@
+{
+  "$schema": "https://raw.githubusercontent.com/miniLV/codex-plan-ledger/main/schema/decisions.schema.json",
+  "schema_version": 1,
+  "plan_id": "2026-10-09-add-multilingual-greetings-to-hello-js",
+  "title": "Add multilingual greetings to hello.js",
+  "source": "codex-plan-mode",
+  "created_at": "2026-10-09T13:23:19.206Z",
+  "updated_at": "2026-10-09T13:23:19.206Z",
+  "revision": 1,
+  "plan_sha256": "eb6ad97c34a990e264baebc70da2d7ce2897c866d0b83f8ab530c019cf88b28b",
+  "summary": "Support English, Spanish, and French, selected with `--lang en|es|fr`.",
+  "scope": {
+    "files": [],
+    "modules": []
+  },
+  "decisions": [
+    {
+      "id": "n-languages",
+      "title": "Languages",
+      "question": "Which languages should hello.js support in addition to English?",
+      "kind": "question",
+      "source": "codex-native",
+      "native": {
+        "call_id": "call_dc5fbd7ba0ba4454a3335a6ae4408f90",
+        "question_id": "languages"
+      },
+      "options": [
+        {
+          "id": "a",
+          "label": "Spanish and French",
+          "recommended": true
+        },
+        {
+          "id": "b",
+          "label": "Spanish, French, German",
+          "recommended": false
+        },
+        {
+          "id": "c",
+          "label": "Chinese and Japanese",
+          "recommended": false
+        }
+      ],
+      "default": "a",
+      "chosen": "a",
+      "other": null,
+      "status": "answered",
+      "affected": {
+        "files": [],
+        "modules": []
+      },
+      "rationale": null
+    },
+    {
+      "id": "n-selection",
+      "title": "Selection",
+      "question": "How should users select the greeting language?",
+      "kind": "question",
+      "source": "codex-native",
+      "native": {
+        "call_id": "call_dc5fbd7ba0ba4454a3335a6ae4408f90",
+        "question_id": "selection"
+      },
+      "options": [
+        {
+          "id": "a",
+          "label": "Named flag",
+          "recommended": true
+        },
+        {
+          "id": "b",
+          "label": "Second positional argument",
+          "recommended": false
+        },
+        {
+          "id": "c",
+          "label": "Environment variable",
+          "recommended": false
+        }
+      ],
+      "default": "a",
+      "chosen": "a",
+      "other": null,
+      "status": "answered",
+      "affected": {
+        "files": [],
+        "modules": []
+      },
+      "rationale": null
+    }
+  ]
+}

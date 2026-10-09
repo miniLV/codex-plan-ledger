@@ -1,0 +1,43 @@
+{
+ "model": "codex/gpt-6.1-sol",
+ "threadId": "01a120d4-9d4b-77b1-b1b4-62fffd7a9353",
+ "status": "completed",
+ "itemTypes": [
+  "userMessage",
+  "agentMessage",
+  "commandExecution",
+  "commandExecution",
+  "plan"
+ ],
+ "requestUserInputRounds": 1,
+ "hooks": [
+  {
+   "event": "userPromptSubmit",
+   "status": "completed",
+   "entries": []
+  },
+  {
+   "event": "stop",
+   "status": "completed",
+   "entries": [
+    {
+     "kind": "warning",
+     "text": "plan-ledger: nothing to answer; 2 answered in Codex \u2192 file://~/cpl-bench/live-native/repo/docs/plans/2026-10-09-add-multilingual-greetings-to-hello-js/plan.html (ledger: docs/plans/2026-10-09-add-multilingual-greetings-to-hello-js/decisions.json)"
+    }
+   ]
+  },
+  {
+   "event": "stop",
+   "status": "completed",
+   "entries": []
+  }
+ ],
+ "usage": {
+  "totalTokens": 42990,
+  "inputTokens": 42497,
+  "cachedInputTokens": 20864,
+  "cacheWriteInputTokens": 0,
+  "outputTokens": 493,
+  "reasoningOutputTokens": 0
+ }
+}

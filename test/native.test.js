@@ -105,3 +105,17 @@ test('ledger: a page edit to a native answer survives later revisions; captures 
   assert.equal(v3.revision, 3);
   assert.equal(v3.decisions.filter((d) => d.source === 'codex-native').length, 2);
 });
+
+test('live check replay: the real hook output from a live Plan-mode session is reproduced', () => {
+  // bench/results/2026-10-09-live-native: real Stop payload had last_assistant_message null,
+  // the plan came from the transcript; here the plan is passed directly and the Q&A from
+  // the transcript excerpt.
+  const { dir } = tempRepo();
+  const plan = readFileSync(REAL('live-native.plan.message.md'), 'utf8');
+  const r = run(['hook-stop'], { cwd: dir, input: stopPayload(plan, dir, { transcript_path: REAL('live-native.rollout.jsonl') }) });
+  assert.match(JSON.parse(r.stdout).systemMessage, /^plan-ledger: nothing to answer; 2 answered in Codex → file:/);
+  const live = JSON.parse(readFileSync(join(ROOT, 'bench/results/2026-10-09-live-native/decisions.json'), 'utf8'));
+  const got = JSON.parse(readFileSync(join(dir, 'docs/plans', live.plan_id, 'decisions.json'), 'utf8'));
+  assert.deepEqual(got.decisions, live.decisions);
+  assert.equal(got.plan_sha256, live.plan_sha256);
+});
