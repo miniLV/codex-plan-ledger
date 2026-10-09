@@ -21,7 +21,7 @@ Assumptions). They are not captured from a real Codex session.
 
 How they were captured (2026-10-09): codex-cli 0.156.0, native Plan mode started through
 `codex app-server` (`collaborationMode: plan`), model `codex/gpt-6.1-sol`, reasoning effort
-medium, repo vercel/ms@2.1.3 with `bench/ledger-arm.AGENTS.md`. The text is the assistant
+medium, repo vercel/ms@2.1.3 with the round-1 `AGENTS.md` (`bench/results/2026-10-09-round1/ledger-arm.AGENTS.round1.md`). The text is the assistant
 message copied verbatim from the session transcript (`~/.codex/sessions/.../rollout-*.jsonl`),
 including the `<proposed_plan>` tags Codex emitted. Nothing was edited.
 Full run: `bench/results/2026-10-09-round1/`.

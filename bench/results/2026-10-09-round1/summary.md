@@ -20,7 +20,7 @@ was left for the next round. Its oracle, prompt and planted content are in `benc
   ([`lib/responder.mjs`](../../lib/responder.mjs)) answers from it in both arms with the same matching rules.
 - **native**: Plan mode as shipped; `request_user_input` questions are answered by the responder.
 - **ledger**: Plan mode + plan-ledger's Stop and UserPromptSubmit hooks (session config, trust bypassed for
-  the run) + [`ledger-arm.AGENTS.md`](../../ledger-arm.AGENTS.md). Open decisions are answered all at once with a
+  the run) + [`ledger-arm.AGENTS.round1.md`](ledger-arm.AGENTS.round1.md) (the version used in this round). Open decisions are answered all at once with a
   `plan-ledger answers` message built from the oracle.
 - Then one implementation turn (`Implement the plan now.`, workspace-write) and the held-out verify script
   (`verify/strict-option.cjs` from intent-tests).
@@ -85,3 +85,8 @@ Base = the setup commit; `plan-ledger check --base <base> --json` on copies of t
 - `<task>-<arm>/diff.patch`: the code change. Ledger arm also has `decisions.json`, `plan.md`, `plan.html` as the hook wrote them.
 
 Token use for this milestone: about 0.56M for three smoke tests, 1.30M for this round.
+
+## Re-analysis with the later parser
+
+An offline replay of these recorded plans with the parser and ledger fixes made after this
+round (no new Codex calls) is in [`reanalysis.md`](reanalysis.md). Rounds stay 2 vs 1.

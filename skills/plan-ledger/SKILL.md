@@ -8,6 +8,14 @@ description: Use when the user wants to answer the decisions of a Codex plan on 
 Use this when the Codex hooks are not installed or not trusted. It runs the same
 renderer as the `Stop` hook: pure templates, no extra model calls.
 
+## Writing a plan that renders well
+
+If you are the one writing the plan in Plan mode: end the reply with a complete
+`<proposed_plan>` block, also on the first turn, instead of a draft or a list of questions.
+Put each open choice under `## Decisions` as `- D1: <question>` with 2-3 options as
+sub-items, `(Recommended)` after your pick, and an `Affects:` sub-item with the files.
+Do not mark decisions as resolved yourself; the user answers them on the page.
+
 ## Render a plan
 
 1. Get the plan text.

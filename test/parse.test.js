@@ -114,3 +114,16 @@ test('real Codex plan (captured, not synthetic): resolved items are not asked ag
   assert.equal(p2.decisions.length, 0);
   assert.deepEqual([...p2.scope.files].sort(), ['index.js', 'readme.md']);
 });
+
+test('AGENTS snippet: bench ledger arm uses the shipped snippet, and its format parses', async () => {
+  const { readFileSync } = await import('node:fs');
+  const { join } = await import('node:path');
+  const { ROOT } = await import('./helpers.js');
+  const snippet = readFileSync(join(ROOT, 'examples/codex/AGENTS.md.snippet'), 'utf8');
+  assert.equal(readFileSync(join(ROOT, 'bench/ledger-arm.AGENTS.md'), 'utf8'), snippet);
+  assert.match(snippet, /first one/);
+  const p = parsePlan('# T\n\n## Decisions\n\n- D1: Where to store?\n  - column (Recommended)\n  - table\n  - Affects: src/db/**, src/api/drafts.ts\n');
+  assert.deepEqual(p.decisions.map((d) => [d.id, d.options.map((o) => o.label), d.default, d.affected.files]), [
+    ['d1', ['column', 'table'], 'a', ['src/db/**', 'src/api/drafts.ts']],
+  ]);
+});

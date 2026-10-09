@@ -16,7 +16,7 @@ node bench/run.mjs strict-option ledger out/strict-option-ledger
 | `lib/appserver.mjs` | Minimal JSON-RPC client for `codex app-server` (stdio) |
 | `lib/responder.mjs` | Scripted user: answers questions / decisions from the hidden `oracle.json` |
 | `smoke.mjs` | Live smoke test: one Plan-mode turn with the hooks in session config |
-| `ledger-arm.AGENTS.md` | The only instruction the ledger arm adds |
+| `ledger-arm.AGENTS.md` | The only instruction the ledger arm adds; kept identical to `examples/codex/AGENTS.md.snippet` (a test checks this) |
 | `tasks/<task>/` | Prompt (what the agent sees), oracle (hidden), planted content-drift code |
 | `results/` | Raw JSONL and a summary per round |
 

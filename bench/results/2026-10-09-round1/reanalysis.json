@@ -1,0 +1,137 @@
+{
+  "kind": "offline re-analysis (no new Codex calls)",
+  "task": "strict-option",
+  "round": "2026-10-09-round1",
+  "parser": "current src/parse.js + src/ledger.js",
+  "ledger": {
+    "recorded": {
+      "rounds": 2,
+      "rounds_detail": {
+        "request_user_input": 0,
+        "text_followups": 1,
+        "ledger_answers": 1
+      },
+      "decisions_per_revision": [
+        3,
+        3
+      ],
+      "hook_message_final": [
+        "plan-ledger: 3 decision(s) to answer → file://… (ledger: docs/plans/2026-10-09-add-opt-in-strict-parsing-to-ms/decisions.json)"
+      ],
+      "answers_sent": [
+        {
+          "id": "d-d1-resolved",
+          "title": "D1 resolved",
+          "matched": "api",
+          "choice": "other: An opt-in `{ strict: true }` option on the existing ms() call. No new function."
+        },
+        {
+          "id": "d-d2-resolved",
+          "title": "D2 resolved",
+          "matched": "error",
+          "choice": "other: Throw a plain `Error` whose message contains the offending input string."
+        },
+        {
+          "id": "d-limit-changes-to-index-js-tests-js-and",
+          "title": "Limit changes to `index.js`, `tests.js`, and `readme.md`; add no dependencies or new exports.",
+          "matched": "docs-tests",
+          "choice": "other: Update readme.md. Do not add or change test files."
+        }
+      ]
+    },
+    "replay": {
+      "rounds": 2,
+      "rounds_detail": {
+        "request_user_input": 0,
+        "text_followups": 1,
+        "ledger_answers": 1
+      },
+      "stopped_early": null,
+      "revisions": [
+        {
+          "plan_turn": 2,
+          "decisions": [
+            {
+              "id": "d-limit-changes-to-index-js-tests-js-and",
+              "title": "Limit changes to `index.js`, `tests.js`, and `readme.md`; add no dependencies or new exports.",
+              "options": 0,
+              "status": "default",
+              "carried": null,
+              "affected": [
+                "index.js",
+                "tests.js",
+                "readme.md"
+              ]
+            }
+          ],
+          "open": 1,
+          "earlier_answers": [],
+          "changes": {
+            "added": [],
+            "removed": [],
+            "carried": []
+          },
+          "answers": [
+            {
+              "id": "d-limit-changes-to-index-js-tests-js-and",
+              "title": "Limit changes to `index.js`, `tests.js`, and `readme.md`; add no dependencies or new exports.",
+              "matched": "docs-tests",
+              "choice": "other: Update readme.md. Do not add or change test files."
+            }
+          ]
+        },
+        {
+          "plan_turn": 3,
+          "decisions": [],
+          "open": 0,
+          "earlier_answers": [
+            {
+              "id": "d-limit-changes-to-index-js-tests-js-and",
+              "title": "Limit changes to `index.js`, `tests.js`, and `readme.md`; add no dependencies or new exports.",
+              "chosen": "other",
+              "chosen_label": null,
+              "other": "Update readme.md. Do not add or change test files.",
+              "rationale": null,
+              "from_revision": 1,
+              "reason": "decision not in this revision"
+            }
+          ],
+          "changes": {
+            "added": [],
+            "removed": [
+              "d-limit-changes-to-index-js-tests-js-and"
+            ],
+            "carried": []
+          }
+        }
+      ]
+    }
+  },
+  "native": {
+    "recorded_rounds": 1,
+    "final_plan_decisions_if_rendered": []
+  },
+  "drift_replay": {
+    "base_commit": "7cc5b42e632ecc9b0f783396917ae6078d384afe",
+    "clean": {
+      "has_drift": false,
+      "files_outside_plan": [],
+      "decisions_not_touched": []
+    },
+    "scope_S1_unplanned_file": {
+      "has_drift": true,
+      "files_outside_plan": [
+        "lib/planted.js"
+      ],
+      "decisions_not_touched": []
+    },
+    "scope_S2_revert_affected": {
+      "skipped": "the final ledger has no decision with concrete affected files, so there is nothing to revert"
+    },
+    "content_C1_contradicting_code_in_index_js": {
+      "has_drift": false,
+      "files_outside_plan": [],
+      "decisions_not_touched": []
+    }
+  }
+}
