@@ -18,6 +18,10 @@ function git(root, args) {
   return execFileSync('git', args, { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 64 * 1024 * 1024 });
 }
 
+function gitHas(root, ref, file) {
+  try { execFileSync('git', ['cat-file', '-e', `${ref}:${file}`], { cwd: root, stdio: 'ignore' }); return true; } catch { return false; }
+}
+
 /** Files changed between `base` and the working tree, plus untracked files. */
 export function changedFiles(root, base) {
   const out = new Set();
@@ -80,7 +84,10 @@ export function scopeDriftCheck({ root, ledger, base = 'HEAD', intentFile = null
   const changed = new Set(files);
   const plannedFiles = (ledger.scope?.files || []).filter((f) => !/[*?[\]{}]/.test(f) && !f.endsWith('/') && !ignorePatterns.some((p) => matchPattern(f, p)));
   // Files that a decision (or earlier answer) lists are covered by decisions_not_touched instead.
-  const plannedUntouched = plannedFiles.filter((f) => !changed.has(f) && !withScope.some((d) => matchAffected(f, d.affected)));
+  // Only files that exist (at base or now): plan text also names things like `options.strict`
+  // that look like file names. A planned new file that was never created is not reported.
+  const exists = (f) => existsSync(join(root, f)) || gitHas(root, base, f);
+  const plannedUntouched = plannedFiles.filter((f) => !changed.has(f) && !withScope.some((d) => matchAffected(f, d.affected)) && exists(f));
 
   return {
     check: 'scope-drift',

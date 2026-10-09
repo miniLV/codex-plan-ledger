@@ -134,3 +134,13 @@ test('scope drift: files the plan names but nobody changed are reported; "do not
   assert.deepEqual(r.drift.planned_files_not_touched, []);
   assert.equal(r.has_drift, false);
 });
+
+test('scope drift: plan words that look like file names (options.strict) are not reported', () => {
+  const md = '# T\n\n## Implementation\n\n- In `index.js`, read `options.strict` and throw.\n';
+  const ledger = buildLedger({ planId: 't2', planText: md, parsed: parsePlan(md) }).ledger;
+  const { dir } = repoWith(['index.js']);
+  put(dir, 'index.js', 'changed\n');
+  const r = scopeDriftCheck({ root: dir, ledger, base: 'HEAD' });
+  assert.deepEqual(r.drift.planned_files_not_touched, [], JSON.stringify(ledger.scope));
+  assert.equal(r.has_drift, false, JSON.stringify(r.drift));
+});
