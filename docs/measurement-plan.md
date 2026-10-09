@@ -1,8 +1,10 @@
 # Measurement plan / 实测计划
 
-Status: **planned, not run.** No numbers in the README until this has been run and the raw data is published.
+Status: **round 1 run (directional, n = 1 pair: 1 task × 2 arms × 1 run).** It does not meet the decision lines below. Raw data and summary: [`bench/results/2026-10-09-round1/`](../bench/results/2026-10-09-round1/summary.md). Harness: [`bench/`](../bench/README.md).
 
-状态：**还没跑。** 跑完并公开原始数据之前，README 不写任何数字。
+状态：**第 1 轮已跑（方向性，n = 1 对：1 个任务 × 2 组 × 1 次）**，还达不到下面的判定线。原始数据和小结见 [`bench/results/2026-10-09-round1/`](../bench/results/2026-10-09-round1/summary.md)，测试脚手架见 [`bench/`](../bench/README.md)。
+
+Change from the first draft of this plan: runs use `codex app-server` with native Plan mode (`collaborationMode: plan`) instead of `codex exec`, because `codex exec` cannot select Plan mode. So arm A gets the real `request_user_input` questions, and the responder answers them through the same API. Rounds = `request_user_input` calls + plain-text replies + `plan-ledger answers` messages before the final plan.
 
 ## Question
 

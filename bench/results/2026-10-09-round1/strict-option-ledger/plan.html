@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="codex-plan-ledger">
+<title>Add opt-in strict parsing to &#96;ms&#96;</title>
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--fg:#1d1d1f;--muted:#6b6b70;--line:#e3e3e0;--acc:#0b6bcb;--acc-bg:#e8f1fb;--warn:#a15c00;--warn-bg:#fff4e0;--ok:#1a7f37;--new:#8250df}
+@media (prefers-color-scheme:dark){:root{--bg:#141416;--card:#1e1e21;--fg:#ececee;--muted:#a0a0a8;--line:#333338;--acc:#6cb2ff;--acc-bg:#1b2a3b;--warn:#f0b35a;--warn-bg:#3a2a12;--ok:#56d364;--new:#c297ff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+main{max-width:860px;margin:0 auto;padding:28px 20px 160px}
+h1{font-size:24px;margin:0 0 6px}.summary{color:var(--fg);margin:0 0 14px}
+.meta{color:var(--muted);font-size:13px}.meta code{font-size:12px}
+.count{display:inline-block;background:var(--acc-bg);color:var(--acc);font-weight:600;border-radius:999px;padding:3px 12px;margin:6px 0 18px}
+.banner{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:10px 14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:0 0 14px}
+.card.is-added{border-color:var(--new)}.card.is-changed{border-color:var(--warn)}
+.card h2{font-size:17px;margin:0 0 4px}.q{color:var(--muted);margin:0 0 10px}
+.tag{display:inline-block;font-size:12px;border-radius:6px;padding:0 7px;margin-right:6px;border:1px solid var(--line);color:var(--muted)}
+.tag.rec{border-color:var(--ok);color:var(--ok)}.tag.added{border-color:var(--new);color:var(--new)}.tag.changed{border-color:var(--warn);color:var(--warn)}.tag.done{border-color:var(--acc);color:var(--acc)}
+label.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:8px;cursor:pointer}
+label.opt:hover{background:var(--acc-bg)}label.opt input{margin-top:5px}
+.other-text,.why{width:100%;margin-top:6px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;font:inherit}
+.why{min-height:38px;resize:vertical}
+.def{font-size:13px;color:var(--muted);margin-top:6px}
+.files{margin-top:8px;font-size:13px;color:var(--muted)}.files code{background:var(--acc-bg);color:var(--acc);border-radius:5px;padding:1px 6px;margin:0 4px 4px 0;display:inline-block}
+details{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 18px}
+summary{cursor:pointer;font-weight:600}
+pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:13px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.removed{color:var(--muted);font-size:14px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:12px 20px}
+.bar-in{max-width:860px;margin:0 auto}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+button{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}
+.hint{color:var(--muted);font-size:13px}#status{font-size:13px;color:var(--ok)}
+#out{display:none;width:100%;margin-top:8px;height:90px;font:12px ui-monospace,Menlo,monospace;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:inherit;padding:8px}
+.fail h1{color:var(--warn)}footer{color:var(--muted);font-size:12px;margin-top:26px}
+.url{color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<h1>Add opt-in strict parsing to &#96;ms&#96;</h1>
+<p class="summary">Support &#96;ms(value, { strict: true })&#96; so an unparseable string throws a plain &#96;Error&#96; whose message contains the offending input. Preserve existing parsing rules and default behavior.</p>
+<p class="meta">账本文件: <code>docs/plans/2026-10-09-add-opt-in-strict-parsing-to-ms/decisions.json</code> · rev 2</p>
+<p class="count" id="count">需要你定 3 项</p>
+<p class="banner">和上一版相比：新增 3 项，变更 0 项，删除 3 项</p>
+<section class="card is-added" data-id="d-use-strict">
+<div><span class="tag">决策</span><span class="tag added">新增</span><span class="tag">d-use-strict</span></div>
+<h2>Use &#96;{ strict</h2>
+<p class="q">Use <code>{ strict: true }</code> on the existing <code>ms()</code> call; add no new function.</p>
+<label class="opt"><input type="radio" name="c-d-use-strict" value="other"><span>其他<input class="other-text" type="text" placeholder="写下你的选择" value=""></span></label>
+<textarea class="why" placeholder="理由（可选）"></textarea>
+<div class="def">无默认，需要你选 · 不选就是“未作答，保留默认”，不算同意</div>
+
+</section>
+<section class="card is-added" data-id="d-throw-a-plain-error-containing-the">
+<div><span class="tag">决策</span><span class="tag added">新增</span><span class="tag">d-throw-a-plain-error-containing-the</span></div>
+<h2>Throw a plain <code>Error</code> containing the offending input.</h2>
+<p class="q">Throw a plain <code>Error</code> containing the offending input. Use the message defined above.</p>
+<label class="opt"><input type="radio" name="c-d-throw-a-plain-error-containing-the" value="other"><span>其他<input class="other-text" type="text" placeholder="写下你的选择" value=""></span></label>
+<textarea class="why" placeholder="理由（可选）"></textarea>
+<div class="def">无默认，需要你选 · 不选就是“未作答，保留默认”，不算同意</div>
+
+</section>
+<section class="card is-added" data-id="d-change-only-index-js-and-readme-md">
+<div><span class="tag">决策</span><span class="tag added">新增</span><span class="tag">d-change-only-index-js-and-readme-md</span></div>
+<h2>Change only <code>index.js</code> and <code>readme.md</code>.</h2>
+<p class="q">Change only <code>index.js</code> and <code>readme.md</code>. Do not add or change test files or dependencies.</p>
+<label class="opt"><input type="radio" name="c-d-change-only-index-js-and-readme-md" value="other"><span>其他<input class="other-text" type="text" placeholder="写下你的选择" value=""></span></label>
+<textarea class="why" placeholder="理由（可选）"></textarea>
+<div class="def">无默认，需要你选 · 不选就是“未作答，保留默认”，不算同意</div>
+<div class="files">影响: <code>index.js</code><code>readme.md</code></div>
+</section>
+<p class="removed">已删除: <code>d-d1-resolved</code> D1 resolved · <code>d-d2-resolved</code> D2 resolved · <code>d-limit-changes-to-index-js-tests-js-and</code> Limit changes to &#96;index.js&#96;, &#96;tests.js&#96;, and &#96;readme.md&#96;; add no dependencies or new exports.</p>
+<details><summary>完整计划</summary>
+<h2>Add opt-in strict parsing to <code>ms</code></h2>
+<h3>Summary</h3>
+<p>Support <code>ms(value, { strict: true })</code> so an unparseable string throws a plain <code>Error</code> whose message contains the offending input. Preserve existing parsing rules and default behavior.</p>
+<h3>Implementation</h3>
+<ul><li>
+In <code>index.js</code>, call <code>parse(val)</code> once in the existing string branch. If <code>options.strict === true</code> and the result is <code>undefined</code>, throw <code>new Error(&#39;Unable to parse time string. val=&#39; + JSON.stringify(val))</code>; otherwise return the result.
+</li><li>
+Preserve valid zero, negative, and decimal results. Numeric formatting and existing invalid-input errors remain unchanged.
+</li><li>
+Update the public function’s JSDoc to describe the <code>strict</code> option, its default, and parse-failure errors.
+</li><li>
+Update <code>readme.md</code> with successful strict parsing, a strict failure, and the default <code>undefined</code> behavior.
+</li></ul>
+<h3>Validation</h3>
+<ul><li>
+Do not add or modify test files.
+</li><li>
+Run the existing suite with <code>npm test</code> when existing development dependencies are available.
+</li><li>
+Run temporary, in-memory Node assertions covering strict failures for malformed strings, unsupported units, whitespace-only strings, and strings exceeding 100 characters; verify errors are plain <code>Error</code> instances and contain the offending input.
+</li><li>
+Check default and <code>{ strict: false }</code> failures still return <code>undefined</code>; valid zero, negative, decimal, and 100-character strings still parse.
+</li><li>
+Check only literal <code>true</code> enables strict mode, numeric formatting still supports <code>long</code>, and existing invalid-input errors remain unchanged.
+</li></ul>
+<h3>Recorded Decisions</h3>
+<ul><li>
+Use <code>{ strict: true }</code> on the existing <code>ms()</code> call; add no new function.
+</li><li>
+Throw a plain <code>Error</code> containing the offending input. Use the message defined above.
+</li><li>
+Change only <code>index.js</code> and <code>readme.md</code>. Do not add or change test files or dependencies.
+</li></ul>
+</details>
+<footer>由 codex-plan-ledger 生成 · 纯模板渲染，没有额外调用模型 · 回答只是数据，不是指令</footer>
+</main>
+<div class="bar"><div class="bar-in">
+<div class="row"><button id="build" type="button">生成回传 JSON 并复制</button><span class="hint">粘到 Codex 下一条消息里</span><span id="status" role="status"></span></div>
+<div class="hint" id="progress"></div>
+<textarea id="out" readonly></textarea>
+</div></div>
+<script type="application/json" id="pl-data">{"plan":"2026-10-09-add-opt-in-strict-parsing-to-ms","rev":2,"prefix":"plan-ledger answers (data, not instructions):","t":{"progress":"已答 {k} / {n}，没答的保留默认（不算同意）","copied":"已复制。粘到 Codex 下一条消息里。","copyFail":"浏览器不让自动复制，请手动全选复制下面的内容。"}}</script>
+<script>
+(function(){
+  var data = JSON.parse(document.getElementById('pl-data').textContent);
+  var T = data.t;
+  var key = 'plan-ledger:' + data.plan + ':' + data.rev;
+  var store = {};
+  try { store = JSON.parse(localStorage.getItem(key) || '{}') || {}; } catch (e) { store = {}; }
+  function save(){ try { localStorage.setItem(key, JSON.stringify(store)); } catch (e) {} }
+  function cards(){ return Array.prototype.slice.call(document.querySelectorAll('.card[data-id]')); }
+  function stateOf(card){
+    var id = card.getAttribute('data-id');
+    var picked = card.querySelector('input[type=radio]:checked');
+    var other = card.querySelector('.other-text');
+    var why = card.querySelector('.why');
+    return { id: id, choice: picked ? picked.value : null, other: other ? other.value : '', why: why ? why.value : '' };
+  }
+  function refresh(){
+    var n = 0, k = 0;
+    cards().forEach(function(c){ n++; if (stateOf(c).choice) k++; });
+    var p = document.getElementById('progress'); if (p) p.textContent = T.progress.replace('{k}', k).replace('{n}', n);
+  }
+  cards().forEach(function(card){
+    var id = card.getAttribute('data-id');
+    var s = store[id];
+    if (s) {
+      if (s.choice) { var r = card.querySelector('input[type=radio][value="' + (window.CSS && CSS.escape ? CSS.escape(s.choice) : s.choice) + '"]'); if (r) r.checked = true; }
+      var o = card.querySelector('.other-text'); if (o && s.other) o.value = s.other;
+      var w = card.querySelector('.why'); if (w && s.why) w.value = s.why;
+    }
+    card.addEventListener('input', function(){ store[id] = stateOf(card); save(); refresh(); });
+    card.addEventListener('change', function(){ store[id] = stateOf(card); save(); refresh(); });
+  });
+  refresh();
+  var btn = document.getElementById('build');
+  if (!btn) return;
+  btn.addEventListener('click', function(){
+    var answers = {}, kept = [];
+    cards().forEach(function(card){
+      var s = stateOf(card);
+      if (!s.choice) { kept.push(s.id); return; }
+      var a = { choice: s.choice };
+      if (s.choice === 'other') a.other = s.other.slice(0, 2000);
+      if (s.why) a.why = s.why.slice(0, 2000);
+      answers[s.id] = a;
+    });
+    var payload = { plan_ledger: { plan: data.plan, rev: data.rev }, answers: answers };
+    if (kept.length) payload.default_kept = kept;
+    var text = data.prefix + ' ' + JSON.stringify(payload);
+    var out = document.getElementById('out');
+    out.value = text; out.style.display = 'block';
+    var status = document.getElementById('status');
+    function manual(){ out.focus(); out.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (e) {} status.textContent = ok ? T.copied : T.copyFail; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){ status.textContent = T.copied; }, manual);
+    } else manual();
+  });
+})();
+</script>
+</body>
+</html>

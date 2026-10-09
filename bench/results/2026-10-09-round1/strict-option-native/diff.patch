@@ -1,0 +1,121 @@
+diff --git a/index.js b/index.js
+index ea734fb..c36b51b 100644
+--- a/index.js
++++ b/index.js
+@@ -15,10 +15,12 @@ var y = d * 365.25;
+  * Options:
+  *
+  *  - `long` verbose formatting [false]
++ *  - `strict` throw on unparseable strings when exactly true [false]
+  *
+  * @param {String|Number} val
+  * @param {Object} [options]
+  * @throws {Error} throw an error if val is not a non-empty string or a number
++ * @throws {Error} throw an error if strict is true and val cannot be parsed
+  * @return {String|Number}
+  * @api public
+  */
+@@ -27,7 +29,11 @@ module.exports = function (val, options) {
+   options = options || {};
+   var type = typeof val;
+   if (type === 'string' && val.length > 0) {
+-    return parse(val);
++    var result = parse(val);
++    if (result === undefined && options.strict === true) {
++      throw new Error('Cannot parse time value. val=' + JSON.stringify(val));
++    }
++    return result;
+   } else if (type === 'number' && isFinite(val)) {
+     return options.long ? fmtLong(val) : fmtShort(val);
+   }
+diff --git a/readme.md b/readme.md
+index 0fc1abb..e2def5e 100644
+--- a/readme.md
++++ b/readme.md
+@@ -39,6 +39,21 @@ ms(-3 * 60000, { long: true })        // "-3 minutes"
+ ms(ms('10 hours'), { long: true })    // "10 hours"
+ ```
+ 
++### Strict Parsing
++
++Pass `{ strict: true }` to throw an error when a non-empty string cannot be parsed:
++
++```js
++ms('1m', { strict: true })      // 60000
++ms('invalid', { strict: true }) // throws Error: Cannot parse time value. val="invalid"
++ms('invalid')                  // undefined
++```
++
++Only the boolean `true` enables strict parsing. Invalid syntax, unsupported units,
++whitespace-only strings, and strings longer than 100 characters throw in strict
++mode. Numeric formatting is unaffected, and empty strings and invalid input
++types continue to throw regardless of strict mode.
++
+ ## Features
+ 
+ - Works both in [Node.js](https://nodejs.org) and in the browser
+diff --git a/tests.js b/tests.js
+index 1d0d663..b38a88a 100644
+--- a/tests.js
++++ b/tests.js
+@@ -80,6 +80,60 @@ describe('ms(string)', function() {
+   });
+ });
+ 
++describe('ms(string, { strict: true })', function() {
++  var invalidStrings = ['☃', '10-.5', '1 fortnight', '   ', new Array(102).join('1')];
++
++  it('should throw a descriptive error for unparseable strings', function() {
++    invalidStrings.forEach(function(value) {
++      expect(function() {
++        ms(value, { strict: true });
++      }).to.throwError(function(error) {
++        expect(error).to.be.an(Error);
++        expect(error.message).to.be(
++          'Cannot parse time value. val=' + JSON.stringify(value)
++        );
++      });
++    });
++  });
++
++  it('should return undefined unless strict is exactly true', function() {
++    invalidStrings.forEach(function(value) {
++      expect(ms(value)).to.be(undefined);
++      [false, undefined, null, 0, 1, 'true', {}].forEach(function(strict) {
++        expect(ms(value, { strict: strict })).to.be(undefined);
++      });
++    });
++  });
++
++  it('should preserve valid parsing, including zero', function() {
++    expect(ms('0', { strict: true })).to.be(0);
++    expect(ms('0ms', { strict: true })).to.be(0);
++    expect(ms('-100ms', { strict: true })).to.be(-100);
++    expect(ms('-.5h', { strict: true })).to.be(-1800000);
++    expect(ms('1.5H', { strict: true })).to.be(5400000);
++    expect(ms('1   s', { strict: true })).to.be(1000);
++    expect(ms(new Array(101).join('0'), { strict: true })).to.be(0);
++  });
++
++  it('should preserve numeric formatting', function() {
++    expect(ms(60000, { strict: true })).to.be('1m');
++    expect(ms(60000, { strict: true, long: true })).to.be('1 minute');
++  });
++
++  it('should preserve existing invalid-input errors', function() {
++    ['', undefined, null, [], {}, NaN, Infinity, -Infinity].forEach(function(value) {
++      expect(function() {
++        ms(value, { strict: true });
++      }).to.throwError(function(error) {
++        expect(error.message).to.be(
++          'val is not a non-empty string or a valid number. val=' +
++            JSON.stringify(value)
++        );
++      });
++    });
++  });
++});
++
+ // long strings
+ 
+ describe('ms(long string)', function() {

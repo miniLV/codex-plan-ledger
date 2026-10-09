@@ -1,0 +1,58 @@
+diff --git a/index.js b/index.js
+index ea734fb..7e80ea6 100644
+--- a/index.js
++++ b/index.js
+@@ -15,11 +15,13 @@ var y = d * 365.25;
+  * Options:
+  *
+  *  - `long` verbose formatting [false]
++ *  - `strict` throw on unparseable strings when true [false]
+  *
+  * @param {String|Number} val
+  * @param {Object} [options]
+  * @throws {Error} throw an error if val is not a non-empty string or a number
+- * @return {String|Number}
++ * @throws {Error} throw an error if strict is true and val cannot be parsed
++ * @return {String|Number|undefined}
+  * @api public
+  */
+ 
+@@ -27,7 +29,11 @@ module.exports = function (val, options) {
+   options = options || {};
+   var type = typeof val;
+   if (type === 'string' && val.length > 0) {
+-    return parse(val);
++    var result = parse(val);
++    if (options.strict === true && result === undefined) {
++      throw new Error('Unable to parse time string. val=' + JSON.stringify(val));
++    }
++    return result;
+   } else if (type === 'number' && isFinite(val)) {
+     return options.long ? fmtLong(val) : fmtShort(val);
+   }
+diff --git a/readme.md b/readme.md
+index 0fc1abb..3e649f1 100644
+--- a/readme.md
++++ b/readme.md
+@@ -21,6 +21,21 @@ ms('-1h')     // -3600000
+ ms('-200')    // -200
+ ```
+ 
++### Strict Parsing
++
++Pass `{ strict: true }` to throw an `Error` containing the input when a string
++cannot be parsed, including strings longer than 100 characters. Only literal
++`true` enables strict mode. By default, unparseable strings return `undefined`.
++
++```js
++ms('2 days', { strict: true }) // 172800000
++ms('invalid')                 // undefined
++ms('invalid', { strict: true }) // throws Error: Unable to parse time string. val="invalid"
++```
++
++Strict mode does not affect numeric formatting. Empty strings and invalid input
++types continue to throw regardless of the strict option.
++
+ ### Convert from Milliseconds
+ 
+ ```js

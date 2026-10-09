@@ -24,16 +24,21 @@
 </p>
 
 <p align="center">
-  <img src="./docs/assets/plan-rounds.svg" alt="示意图：原生 /plan 每轮问几个问题、要来回好几轮；codex-plan-ledger 一页列出所有决策、一次答完并写进仓库。早期原型，无实测数据。" width="860">
+  <img src="./docs/assets/plan-rounds.svg" alt="示意图：原生 /plan 每轮问几个问题、要来回好几轮；codex-plan-ledger 一页列出所有决策、一次答完并写进仓库。图本身不含测量数据。" width="860">
 </p>
 
-> **状态：早期原型 v0.1。** 功能能用、有测试覆盖，但**还没有任何实测数据**，不宣称能省多少轮次或 token。上面的图只是示意。怎么测、什么结果算成立，见 [实测计划](docs/measurement-plan.md)。
+> **状态：早期原型 v0.1。** 功能能用、有测试覆盖。目前只有一轮方向性的实测（1 个任务、每组 1 次，n = 1 对），**不足以说明省了轮次或 token**，见下面的 [实测（第 1 轮）](#实测第-1-轮方向性n--1-对)。上面的图只是示意，不是测量结果。怎么测、什么结果算成立，见 [实测计划](docs/measurement-plan.md)。
+
+<p align="center">
+  <img src="./docs/assets/decision-page-zh.png" alt="决策页截图：顶部“需要你定 6 项”，每项一张卡片，有选项、推荐标记、默认值和影响的文件，底部是“生成回传 JSON 并复制”按钮。" width="720">
+  <br><sub>决策页截图（无头 Chrome 截取）。页面内容来自合成样例 <code>test/fixtures/send-later.message.md</code>。</sub>
+</p>
 
 ## 它是什么
 
 | 部分 | 作用 |
 | --- | --- |
-| `plan-ledger hook-stop` | Codex `Stop` hook。从 `last_assistant_message` 里取出 `<proposed_plan>`，用纯模板渲染成一页 HTML，写 `decisions.json` 和 `plan.md`，打印 HTML 路径，然后正常结束这一轮。**从不阻塞、从不等你。** |
+| `plan-ledger hook-stop` | Codex `Stop` hook。从 `last_assistant_message` 里取出 `<proposed_plan>`（取不到时读 `transcript_path` 指向的会话记录，见下文“实测发现”），用纯模板渲染成一页 HTML，写 `decisions.json` 和 `plan.md`，打印 HTML 路径，然后正常结束这一轮。**从不阻塞、从不等你。** |
 | 决策页 `plan.html` | 单文件、离线、没有外部资源。顶部写“需要你定 N 项”，每项一张卡片：选项、计划里的推荐、影响的文件。底部按钮“生成回传 JSON 并复制”，提示“粘到 Codex 下一条消息里”。页面默认中文，英文用 `PLAN_LEDGER_LANG=en` 或 `--lang en`。 |
 | 决策账本 `decisions.json` | 带 `schema_version` 的 JSON，附 [JSON Schema](schema/decisions.schema.json) 和校验命令。和代码放在同一个 PR 里，评审人能看到当初选了什么、为什么。 |
 | `plan-ledger check` | 范围偏离检查：对比 `git diff` 和每项决策的 `affected` 文件，报出计划外被改的文件，以及计划里该改却没碰的决策。 |
@@ -74,7 +79,7 @@ plan-ledger init --write    # 写入 <repo>/.codex/hooks.json 和 .agents/skills
 # 或者 plan-ledger init --user --write  → ~/.codex/hooks.json 和 ~/.agents/skills/
 ```
 
-然后启动 Codex，打开 `/hooks`，审核并信任这两个 hook。Codex 会按 hook 定义的 hash 记录信任；没信任之前 hook 不会运行。
+然后启动 Codex，打开 `/hooks`，审核并信任这两个 hook。Codex 会按 hook 定义的 hash 记录信任；没信任之前 hook 不会运行。信任只能在 `/hooks` 里交互完成（它写的是配置里的 `hooks.state.<key>.trusted_hash`）；非交互的跑法只有 `codex exec --dangerously-bypass-hook-trust` 或线程配置 `bypass_hook_trust: true`，它们会让**所有**未信任的 hook 都运行，只适合一次性的测试环境。
 
 手动配置也行。`<repo>/.codex/hooks.json` 或 `~/.codex/hooks.json`：
 
@@ -181,14 +186,37 @@ plan-ledger validate                        # 校验 docs/plans/ 下所有账本
 | | 状态 |
 | --- | --- |
 | 解析、渲染、写账本、`render` / `answer` / `validate` / `check` | 能用，有测试覆盖（`npm test`，不联网） |
-| `Stop` hook 的输入输出约定 | 按官方文档和生成的 schema 写成，有测试覆盖；还没在真实 Codex 会话里跑过 |
+| `Stop` hook 的输入输出约定 | 在真实 Codex 会话里跑通过（codex-cli 0.156.0，Plan 模式，见“实测发现”）；有测试覆盖 |
 | `UserPromptSubmit` hook（`ledger:apply`、自动记账） | 实验性 |
-| 决策点识别 | 启发式。测试用的 3 份计划是按 Codex Plan 模式格式手写的合成样例，不是真实会话记录 |
+| 决策点识别 | 启发式。测试里有 3 份手写的合成计划和 2 份真实 Codex 会话里抓到的计划（`test/fixtures/real/`）。真实会话里模型没按要求的选项格式写决策，见“实测发现” |
 | Windows | 没测过 |
+
+## 实测（第 1 轮，方向性，n = 1 对）
+
+**这不是效果证据。** 只有 1 个任务（vercel/ms@2.1.3 上加 `strict` 选项），原生 Plan 模式和 plan-ledger 各跑 1 次，同一模型（`codex/gpt-6.1-sol`，medium）、同一套设置。回答问题的是读隐藏 `oracle.json` 的脚本，两组规则相同。原计划 2 个任务，但这一对就用了 130 万 token，第二个任务留到下一轮。完整数据：[bench/results/2026-10-09-round1](bench/results/2026-10-09-round1/summary.md)。
+
+| | 原生 Plan 模式 | plan-ledger |
+| --- | --- | --- |
+| 计划定稿前的来回轮数 | 1 | 2 |
+| 计划阶段 token：input / cached / output / reasoning | 294,933 / 236,416 / 941 / 65 | 372,651 / 307,456 / 1,632 / 119 |
+| 含实现的总 token（`totalTokens`） | 717,487 | 586,971 |
+| 耗时（计划 / 总计） | 69 s / 151 s | 90 s / 132 s |
+| 隐藏验收脚本 | 通过 | 通过 |
+| 改到意图范围外的文件 | `tests.js` | 无 |
+
+这一对里，plan-ledger **没有**减少轮数：第一轮模型只给了草稿、没给计划块，多了一次回复。原生组问了 1 个问题，没问到要不要改测试文件，结果改了 `tests.js`；plan-ledger 组的计划把“改哪些文件”列成了一项决策，按 oracle 的回答没有改测试文件。一对数据说明不了规律。
+
+埋入偏离（plan-ledger 组，实现之后，在副本上跑 `plan-ledger check`）：不埋时无误报；计划外新文件（范围）抓到；把决策影响的文件改回原样（范围）抓到；在计划内的 `index.js` 里写与决策相反的代码（内容）没抓到，和上面写的已知局限一致。
+
+### 实测发现
+
+- 在 codex-cli 0.156.0 的 Plan 模式里，`Stop` hook 会触发，但计划以单独的 `plan` 条目给出，payload 里的 `last_assistant_message` 是空字符串。会话记录（`transcript_path`）里还保留带 `<proposed_plan>` 标签的原文，所以 `hook-stop` 现在会退回去读它；这样真实 hook 写出了账本和页面。临时（ephemeral）会话没有 `transcript_path`，这时 hook 拿不到计划。
+- payload 里的 `permission_mode` 是 `bypassPermissions` 而不是 `plan`，plan-ledger 不依赖这个字段。
+- 模型没按 AGENTS.md 要求的“选项 + 推荐 + Affects”格式写决策，而是写成 `**D1 resolved:** …`，答完后又加了 `## Recorded Decisions`。这一轮用的旧解析器把它们当成待答项；之后已改为跳过“已决”条目和这类段落，并用抓到的真实计划加了测试。
 
 ## 状态
 
-早期原型 v0.1，**暂无实测数据**。它有没有用，要靠配对实测来回答：在同一批任务上对比原生 `/plan` 和 plan-ledger 的定稿轮数、分项 token（input / cached / output / reasoning），以及埋入的偏离能抓到几处。方法和判定线见 [docs/measurement-plan.md](docs/measurement-plan.md)。数据出来之前，这里不写任何数字。
+早期原型 v0.1。只有上面这一轮方向性实测（n = 1 对）。要回答“有没有用”，需要按 [docs/measurement-plan.md](docs/measurement-plan.md) 在多个任务上每组至少跑 3 次。
 
 ## 开发
 

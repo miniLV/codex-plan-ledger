@@ -1,0 +1,14 @@
+{
+  "_note": "Hidden from the agent. The scripted responder answers questions/decisions from this file in both arms. Source of truth: intent-tests examples/tasks/intents/strict-option.md.",
+  "intent_scope": ["index.js", "readme.md"],
+  "verify": "strict-option.cjs",
+  "entries": [
+    { "id": "non-string", "topic": "non-string|non string|invalid type|empty string|NaN|existing (type)?error|other input types", "option": "keep|unchanged|existing|as.is", "answer": "Keep the existing error for non-string, non-number input unchanged." },
+    { "id": "format", "topic": "format|number input|numbers|ms\\(\\s*number", "option": "no effect|ignore|unchanged|parse only|parsing only", "answer": "strict has no effect when formatting numbers." },
+    { "id": "default", "topic": "default|breaking|backward|compatib|existing behavio|opt.in or", "option": "opt.in|unchanged|keep|undefined|non.breaking|off by default", "answer": "Opt-in only. Without the option, invalid strings still return undefined (no breaking change)." },
+    { "id": "error", "topic": "error|throw|exception|message|class|type of", "option": "^(?!.*(TypeError|RangeError|custom|subclass)).*(\\bError\\b|include.*input|message.*input|input.*message)", "answer": "Throw a plain `Error` whose message contains the offending input string." },
+    { "id": "api", "topic": "api|signature|opt.in|enable|flag|separate function|expose|option shape|how should callers", "option": "\\{\\s*strict|options? (object|argument|flag)|strict: ?true|existing (call|function)", "answer": "An opt-in `{ strict: true }` option on the existing ms() call. No new function." },
+    { "id": "docs-tests", "topic": "readme|doc|test", "option": "readme(?!.*test)|docs? only|no (new )?tests?", "answer": "Update readme.md. Do not add or change test files." },
+    { "id": "scope", "topic": "typescript|\\.d\\.ts|types|scope|which files", "option": "index\\.js only|only index", "answer": "Change only index.js and readme.md." }
+  ]
+}

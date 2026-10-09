@@ -1,0 +1,72 @@
+{
+  "$schema": "https://raw.githubusercontent.com/miniLV/codex-plan-ledger/main/schema/decisions.schema.json",
+  "schema_version": 1,
+  "plan_id": "2026-10-09-add-opt-in-strict-parsing-to-ms",
+  "title": "Add opt-in strict parsing to `ms`",
+  "source": "codex-plan-mode",
+  "created_at": "2026-10-09T12:41:06.386Z",
+  "updated_at": "2026-10-09T12:41:21.513Z",
+  "revision": 2,
+  "plan_sha256": "72250041042e185abbf595f490866a2d576e5690dc3beed262297cea26f8c486",
+  "summary": "Support `ms(value, { strict: true })` so an unparseable string throws a plain `Error` whose message contains the offending input. Preserve existing parsing rules and default behavior.",
+  "scope": {
+    "files": [
+      "index.js",
+      "readme.md"
+    ],
+    "modules": []
+  },
+  "decisions": [
+    {
+      "id": "d-use-strict",
+      "title": "Use `{ strict",
+      "question": "Use `{ strict: true }` on the existing `ms()` call; add no new function.",
+      "kind": "decision",
+      "options": [],
+      "default": null,
+      "chosen": null,
+      "other": null,
+      "status": "default",
+      "affected": {
+        "files": [],
+        "modules": []
+      },
+      "rationale": null
+    },
+    {
+      "id": "d-throw-a-plain-error-containing-the",
+      "title": "Throw a plain `Error` containing the offending input.",
+      "question": "Throw a plain `Error` containing the offending input. Use the message defined above.",
+      "kind": "decision",
+      "options": [],
+      "default": null,
+      "chosen": null,
+      "other": null,
+      "status": "default",
+      "affected": {
+        "files": [],
+        "modules": []
+      },
+      "rationale": null
+    },
+    {
+      "id": "d-change-only-index-js-and-readme-md",
+      "title": "Change only `index.js` and `readme.md`.",
+      "question": "Change only `index.js` and `readme.md`. Do not add or change test files or dependencies.",
+      "kind": "decision",
+      "options": [],
+      "default": null,
+      "chosen": null,
+      "other": null,
+      "status": "default",
+      "affected": {
+        "files": [
+          "index.js",
+          "readme.md"
+        ],
+        "modules": []
+      },
+      "rationale": null
+    }
+  ]
+}
