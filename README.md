@@ -17,6 +17,11 @@
 </p>
 
 <p align="center">
+  <img src="./docs/assets/demo-flow-zh.gif" alt="动图：决策页上改一项并写理由 → PR 里 decisions.json 的 diff → plan-ledger check 报出计划外文件和没碰到的决策。由 scripts/gen-demo-video.mjs 生成。" width="860">
+  <br><sub>决策页 → PR 里的 <code>decisions.json</code> diff → <code>plan-ledger check</code>。合成示例，由 <code>scripts/gen-demo-video.mjs</code> 用无头 Chrome + ffmpeg 生成（<a href="./docs/assets/demo-flow-zh.mp4">MP4</a>）。</sub>
+</p>
+
+<p align="center">
   <code>npm i -g github:miniLV/codex-plan-ledger && plan-ledger init --write</code>
 </p>
 
@@ -195,7 +200,7 @@ Codex 改版计划时，之前的回答会沿用到 id 相同（或者标题相�
 | 解析、渲染、写账本、`render` / `answer` / `validate` / `check` | 能用，有测试覆盖（`npm test`，不联网） |
 | `Stop` hook 的输入输出约定 | 在真实 Codex 会话里跑通过（codex-cli 0.156.0，Plan 模式，见“实测发现”）；有测试覆盖 |
 | `UserPromptSubmit` hook（`ledger:apply`、自动记账） | 实验性 |
-| 从会话记录读出 Codex 原生问答（`request_user_input`） | 实验性。会话记录格式不是公开约定；按 codex-cli 0.156.0 实际观察到的格式解析，测试用的是真实会话里截取的片段。读不到时跳过，不影响其他功能 |
+| 从会话记录读出 Codex 原生问答（`request_user_input`） | 实验性。会话记录格式不是公开约定；按 codex-cli 0.156.0 实际观察到的格式解析，测试用的是真实会话里截取的片段；在一次真实 Plan 模式会话里由真实 hook 跑通过（见“实测发现”）。读不到时跳过，不影响其他功能 |
 | 决策点识别 | 启发式。测试里有 3 份手写的合成计划和 2 份真实 Codex 会话里抓到的计划（`test/fixtures/real/`）。真实会话里模型没按要求的选项格式写决策，见“实测发现” |
 | Windows | 没测过 |
 
@@ -218,6 +223,7 @@ Codex 改版计划时，之前的回答会沿用到 id 相同（或者标题相�
 ### 实测发现
 
 - 在 codex-cli 0.156.0 的 Plan 模式里，`Stop` hook 会触发，但计划以单独的 `plan` 条目给出，payload 里的 `last_assistant_message` 是空字符串。会话记录（`transcript_path`）里还保留带 `<proposed_plan>` 标签的原文，所以 `hook-stop` 现在会退回去读它；这样真实 hook 写出了账本和页面。临时（ephemeral）会话没有 `transcript_path`，这时 hook 拿不到计划。
+- 原生问答记账的实机检查（2026-10-09，一次 Plan 模式会话，约 4.3 万 token）：Codex 用 `request_user_input` 问了 2 个问题，真实 `Stop` hook 从会话记录里读出问答，写进 `decisions.json`，两项都是 `source: "codex-native"`、已作答，hook 输出 `nothing to answer; 2 answered in Codex`。这次提示词明确要求 Codex 先问，这是功能检查，不是测量。见 [bench/results/2026-10-09-live-native](bench/results/2026-10-09-live-native/README.md)。
 - payload 里的 `permission_mode` 是 `bypassPermissions` 而不是 `plan`，plan-ledger 不依赖这个字段。
 - 第 2 轮：两次 plan-ledger 运行都由真实 `Stop` hook 写出账本（经会话记录回退），`UserPromptSubmit` hook 记下了回答。
 - 模型没按 AGENTS.md 要求的“选项 + 推荐 + Affects”格式写决策，而是写成 `**D1 resolved:** …`，答完后又加了 `## Recorded Decisions`。这一轮用的旧解析器把它们当成待答项；之后已改为跳过“已决”条目和这类段落，并用抓到的真实计划加了测试。
@@ -231,6 +237,8 @@ Codex 改版计划时，之前的回答会沿用到 id 相同（或者标题相�
 ```sh
 npm test              # node --test，零依赖
 npm run figures       # 重新生成 docs/assets/*.svg（确定性输出，测试会核对）
+npm run demo          # 重新生成落地页的在线演示页
+npm run demo:video    # 重新生成 docs/assets/demo-flow-*.{gif,mp4}（需要无头 Chrome 和 ffmpeg）
 ```
 
 ## 致谢
