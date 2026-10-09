@@ -165,32 +165,27 @@ footer .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
   <div class="wrap">
     <h2 id="status-h"><span lang="en">Status: early prototype</span><span lang="zh-CN">现状：早期原型</span></h2>
     <div class="note">
-      <p lang="en" style="margin:0"><strong>Directional only, n = 1 pair.</strong> One task (add a <code>strict</code> option to vercel/ms@2.1.3), one run of native Plan mode and one with plan-ledger, same model and settings, questions answered by a script from a hidden oracle. This is not evidence of an effect. <strong>In this pair plan-ledger did not win on rounds</strong> (2 vs 1).</p>
-      <p lang="zh-CN" style="margin:0"><strong>只有方向性数据，n = 1 对。</strong>1 个任务（给 vercel/ms@2.1.3 加 <code>strict</code> 选项），原生 Plan 模式和 plan-ledger 各跑 1 次，同一模型和设置，问题由脚本按隐藏的 oracle 回答。这不是效果证据。<strong>这一对里 plan-ledger 在轮数上没有赢</strong>（2 对 1）。</p>
+      <p lang="en" style="margin:0"><strong>Directional only, n = 3 pairs over two rounds.</strong> Each pair is one run of native Plan mode and one with plan-ledger on the same task (vercel/ms@2.1.3), same model and settings, questions answered by a script from a hidden oracle. This is not evidence of an effect. <strong>plan-ledger did not win on rounds in any pair</strong> (2 losses, 1 tie), and total tokens went both ways. Codex Plan mode kept asking with its built-in questions even when told to list decisions instead.</p>
+      <p lang="zh-CN" style="margin:0"><strong>只有方向性数据，两轮共 n = 3 对。</strong>每对是同一任务（vercel/ms@2.1.3）上原生 Plan 模式和 plan-ledger 各跑 1 次，同一模型和设置，问题由脚本按隐藏的 oracle 回答。这不是效果证据。<strong>轮数上 plan-ledger 一对都没赢</strong>（输 2、平 1），总 token 有高有低。即使要求把决策列出来，Codex Plan 模式仍然先用自带的提问。</p>
     </div>
     <div class="table">
       <table>
-        <caption><span lang="en">Round 1, 2026-10-09. codex-cli 0.156.0, native Plan mode via app-server, medium effort.</span><span lang="zh-CN">第 1 轮，2026-10-09。codex-cli 0.156.0，经 app-server 使用原生 Plan 模式，medium。</span></caption>
-        <thead><tr><th scope="col"></th><th scope="col"><span lang="en">native Plan mode</span><span lang="zh-CN">原生 Plan 模式</span></th><th scope="col">plan-ledger</th></tr></thead>
+        <caption><span lang="en">codex-cli 0.156.0, native Plan mode via app-server, medium effort. Round 2 used a leaner profile (same for both arms), so tokens compare only within a round.</span><span lang="zh-CN">codex-cli 0.156.0，经 app-server 使用原生 Plan 模式，medium。第 2 轮换了更省的运行配置（两组相同），token 只能在同一轮内比较。</span></caption>
+        <thead><tr><th scope="col"><span lang="en">Round / task</span><span lang="zh-CN">轮 / 任务</span></th><th scope="col"><span lang="en">Rounds until final (native / plan-ledger)</span><span lang="zh-CN">定稿前轮数（原生 / plan-ledger）</span></th><th scope="col"><span lang="en">Planning input tokens (native / plan-ledger)</span><span lang="zh-CN">计划阶段 input token（原生 / plan-ledger）</span></th><th scope="col"><span lang="en">Total tokens (native / plan-ledger)</span><span lang="zh-CN">总 token（原生 / plan-ledger）</span></th><th scope="col"><span lang="en">Verify</span><span lang="zh-CN">验收</span></th></tr></thead>
         <tbody>
-          <tr><th scope="row"><span lang="en">Rounds until the plan was final</span><span lang="zh-CN">计划定稿前的来回轮数</span></th><td class="num">1</td><td class="num">2</td></tr>
-          <tr><th scope="row"><span lang="en">Planning tokens: input / cached / output / reasoning</span><span lang="zh-CN">计划阶段 token：input / cached / output / reasoning</span></th><td class="num">294,933 / 236,416 / 941 / 65</td><td class="num">372,651 / 307,456 / 1,632 / 119</td></tr>
-          <tr><th scope="row"><span lang="en">Total tokens incl. implementation</span><span lang="zh-CN">含实现的总 token</span></th><td class="num">717,487</td><td class="num">586,971</td></tr>
-          <tr><th scope="row"><span lang="en">Wall time (planning / total)</span><span lang="zh-CN">耗时（计划 / 总计）</span></th><td class="num">69 s / 151 s</td><td class="num">90 s / 132 s</td></tr>
-          <tr><th scope="row"><span lang="en">Held-out verify</span><span lang="zh-CN">隐藏验收脚本</span></th><td><span lang="en">pass</span><span lang="zh-CN">通过</span></td><td><span lang="en">pass</span><span lang="zh-CN">通过</span></td></tr>
-          <tr><th scope="row"><span lang="en">Files changed outside the intent's scope</span><span lang="zh-CN">改到意图范围外的文件</span></th><td><code>tests.js</code></td><td><span lang="en">none</span><span lang="zh-CN">无</span></td></tr>
+          <tr><th scope="row">1 / strict-option</th><td class="num">1 / 2</td><td class="num">294,933 / 372,651</td><td class="num">717,487 / 586,971</td><td><span lang="en">both pass</span><span lang="zh-CN">都通过</span></td></tr>
+          <tr><th scope="row">2 / strict-option</th><td class="num">1 / 2</td><td class="num">65,931 / 83,141</td><td class="num">180,208 / 205,644</td><td><span lang="en">both pass</span><span lang="zh-CN">都通过</span></td></tr>
+          <tr><th scope="row">2 / month-unit</th><td class="num">1 / 1</td><td class="num">79,553 / 66,354</td><td class="num">179,053 / 140,020</td><td><span lang="en">both pass</span><span lang="zh-CN">都通过</span></td></tr>
         </tbody>
       </table>
     </div>
     <ul class="plain" style="margin-top:20px">
-      <li lang="en">Planted drift in the plan-ledger run: an unplanned new file and reverted decision files were caught; code in a planned file that contradicts a decision was not caught, as expected for v0.1.</li>
-      <li lang="zh-CN">plan-ledger 那次的埋入偏离：计划外新文件、把决策涉及的文件改回原样，都抓到了；在计划内文件里写与决策相反的代码，没抓到，符合 v0.1 的已知局限。</li>
-      <li lang="en">The parser and ledger were fixed after the round. An offline replay of the recorded plans (no new Codex calls) still gives 2 vs 1 rounds.</li>
-      <li lang="zh-CN">这一轮之后修了解析器和账本。用新代码离线重放记录下来的计划（没有新的 Codex 调用），轮数仍是 2 对 1。</li>
-      <li lang="en">Next: several tasks with at least 3 runs per arm, as in the measurement plan.</li>
-      <li lang="zh-CN">下一步：按实测计划，多个任务、每组至少跑 3 次。</li>
+      <li lang="en">Scope drift check, planted after implementation in the 3 plan-ledger runs: no false positive on the clean tree (3/3), unplanned new file caught (3/3), reverted planned files caught (3/3), contradicting code inside a planned file caught 0/3, as expected for v0.1.</li>
+      <li lang="zh-CN">范围偏离检查（3 次 plan-ledger 运行，实现后埋入）：干净时无误报（3/3），计划外新文件抓到（3/3），把计划内文件改回原样抓到（3/3），在计划内文件里写与决策相反的代码抓到 0/3，符合 v0.1 的已知局限。</li>
+      <li lang="en">What holds up today: the decision ledger and the scope drift check. Next: make the page work with Codex's own questions instead of competing with them, then several tasks with at least 3 runs per arm.</li>
+      <li lang="zh-CN">目前站得住的是决策账本和范围偏离检查。下一步：让页面配合 Codex 自带的提问而不是替代它，再按多个任务、每组至少 3 次来测。</li>
     </ul>
-    <p style="margin-top:16px"><a href="https://github.com/miniLV/codex-plan-ledger/blob/main/bench/results/2026-10-09-round1/summary.md"><span lang="en">Raw data and summary</span><span lang="zh-CN">原始数据和小结</span></a> · <a href="https://github.com/miniLV/codex-plan-ledger/blob/main/docs/measurement-plan.md"><span lang="en">Measurement plan</span><span lang="zh-CN">实测计划</span></a></p>
+    <p style="margin-top:16px"><a href="https://github.com/miniLV/codex-plan-ledger/blob/main/bench/results/2026-10-09-round1/summary.md"><span lang="en">Round 1 data</span><span lang="zh-CN">第 1 轮数据</span></a> · <a href="https://github.com/miniLV/codex-plan-ledger/blob/main/bench/results/2026-10-09-round2/summary.md"><span lang="en">Round 2 data</span><span lang="zh-CN">第 2 轮数据</span></a> · <a href="https://github.com/miniLV/codex-plan-ledger/blob/main/docs/measurement-plan.md"><span lang="en">Measurement plan</span><span lang="zh-CN">实测计划</span></a></p>
   </div>
 </section>
 </main>

@@ -1,0 +1,132 @@
+diff --git a/index.js b/index.js
+index ea734fb..fe0ae58 100644
+--- a/index.js
++++ b/index.js
+@@ -15,10 +15,12 @@ var y = d * 365.25;
+  * Options:
+  *
+  *  - `long` verbose formatting [false]
++ *  - `strict` throw on unparseable strings [false]
+  *
+  * @param {String|Number} val
+  * @param {Object} [options]
+  * @throws {Error} throw an error if val is not a non-empty string or a number
++ * @throws {Error} throw an error if strict is enabled and val cannot be parsed
+  * @return {String|Number}
+  * @api public
+  */
+@@ -27,7 +29,11 @@ module.exports = function (val, options) {
+   options = options || {};
+   var type = typeof val;
+   if (type === 'string' && val.length > 0) {
+-    return parse(val);
++    var result = parse(val);
++    if (result === undefined && options.strict) {
++      throw new Error('Cannot parse time string: ' + JSON.stringify(val));
++    }
++    return result;
+   } else if (type === 'number' && isFinite(val)) {
+     return options.long ? fmtLong(val) : fmtShort(val);
+   }
+diff --git a/readme.md b/readme.md
+index 0fc1abb..5f1a793 100644
+--- a/readme.md
++++ b/readme.md
+@@ -39,6 +39,22 @@ ms(-3 * 60000, { long: true })        // "-3 minutes"
+ ms(ms('10 hours'), { long: true })    // "10 hours"
+ ```
+ 
++### Strict Parsing
++
++Pass `{ strict: true }` to throw an error when a string cannot be parsed. By
++default, unparseable strings return `undefined`.
++
++```js
++ms('invalid')                   // undefined
++ms('invalid', { strict: false }) // undefined
++ms('invalid', { strict: true })  // throws Error: Cannot parse time string: "invalid"
++ms('2 days', { strict: true })   // 172800000
++```
++
++Strict parsing uses the same formats and 100-character limit as default parsing.
++The `strict` option does not affect numeric formatting and can be combined with
++`long`. Empty strings and invalid input types throw errors regardless of `strict`.
++
+ ## Features
+ 
+ - Works both in [Node.js](https://nodejs.org) and in the browser
+diff --git a/tests.js b/tests.js
+index 1d0d663..a3df9ed 100644
+--- a/tests.js
++++ b/tests.js
+@@ -80,6 +80,70 @@ describe('ms(string)', function() {
+   });
+ });
+ 
++describe('ms(string, { strict: true })', function() {
++  var invalidStrings = ['☃', '10-.5', '1 fortnight', '   '];
++
++  invalidStrings.forEach(function(value) {
++    it('should return undefined by default for ' + JSON.stringify(value), function() {
++      expect(ms(value)).to.be(undefined);
++      expect(ms(value, { strict: false })).to.be(undefined);
++    });
++
++    it('should throw for ' + JSON.stringify(value), function() {
++      expect(function() {
++        ms(value, { strict: true });
++      }).to.throwError(function(error) {
++        expect(error).to.be.an(Error);
++        expect(error.message).to.be(
++          'Cannot parse time string: ' + JSON.stringify(value)
++        );
++      });
++    });
++  });
++
++  it('should preserve valid parsing results', function() {
++    expect(ms('0', { strict: true })).to.be(0);
++    expect(ms('0ms', { strict: true })).to.be(0);
++    expect(ms('-1h', { strict: true })).to.be(-3600000);
++    expect(ms('1.5H', { strict: true })).to.be(5400000);
++    expect(ms('-.5 hr', { strict: true })).to.be(-1800000);
++    expect(ms('2 days', { strict: true })).to.be(172800000);
++  });
++
++  it('should enforce the existing string length limit', function() {
++    var atLimit = '1' + new Array(98).join(' ') + 'ms';
++    var overLimit = '1' + new Array(99).join(' ') + 'ms';
++
++    expect(atLimit.length).to.be(100);
++    expect(overLimit.length).to.be(101);
++    expect(ms(atLimit, { strict: true })).to.be(1);
++    expect(ms(overLimit)).to.be(undefined);
++    expect(ms(overLimit, { strict: false })).to.be(undefined);
++    expect(function() {
++      ms(overLimit, { strict: true });
++    }).to.throwError();
++  });
++
++  it('should enable strict parsing for truthy option values', function() {
++    expect(function() {
++      ms('invalid', { strict: 1 });
++    }).to.throwError();
++  });
++
++  it('should preserve numeric formatting', function() {
++    expect(ms(60000, { strict: true })).to.be('1m');
++    expect(ms(60000, { strict: true, long: true })).to.be('1 minute');
++  });
++
++  it('should preserve errors for invalid inputs', function() {
++    ['', undefined, null, [], {}, NaN, Infinity, -Infinity].forEach(function(value) {
++      expect(function() {
++        ms(value, { strict: true });
++      }).to.throwError();
++    });
++  });
++});
++
+ // long strings
+ 
+ describe('ms(long string)', function() {

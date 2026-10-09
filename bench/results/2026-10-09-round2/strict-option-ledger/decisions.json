@@ -1,0 +1,70 @@
+{
+  "$schema": "https://raw.githubusercontent.com/miniLV/codex-plan-ledger/main/schema/decisions.schema.json",
+  "schema_version": 1,
+  "plan_id": "2026-10-09-strict-parsing-for-ms",
+  "title": "Strict parsing for `ms`",
+  "source": "codex-plan-mode",
+  "created_at": "2026-10-09T13:03:21.434Z",
+  "updated_at": "2026-10-09T13:03:34.353Z",
+  "revision": 2,
+  "plan_sha256": "9f9425c478693a1c8eb6fc42218e2074f1275659af63a337ecf6bac969138c91",
+  "summary": "Add `ms(value, { strict: true })` so unparseable strings throw a plain `Error` whose message contains the offending input string. Calls without strict mode retain their current behavior.",
+  "scope": {
+    "files": [
+      "index.js",
+      "options.strict",
+      "tests.js",
+      "readme.md"
+    ],
+    "modules": []
+  },
+  "decisions": [],
+  "earlier_answers": [
+    {
+      "id": "d-use-the-options-flag-selected-during",
+      "title": "Use the options flag selected during planning",
+      "chosen": "keep",
+      "chosen_label": "Use the options flag selected during planning: `ms(value, { strict: true })`.",
+      "other": null,
+      "rationale": null,
+      "affected": {
+        "files": [],
+        "modules": []
+      },
+      "from_revision": 1,
+      "reason": "decision not in this revision"
+    },
+    {
+      "id": "d-use-a-standard-error-introduce-no",
+      "title": "Use a standard `Error`; introduce no custom error class or separate export.",
+      "chosen": "other",
+      "chosen_label": null,
+      "other": "Throw a plain `Error` whose message contains the offending input string.",
+      "rationale": null,
+      "affected": {
+        "files": [],
+        "modules": []
+      },
+      "from_revision": 1,
+      "reason": "decision not in this revision"
+    },
+    {
+      "id": "d-change-only-index-js-tests-js-and",
+      "title": "Change only `index.js`, `tests.js`, and `readme.md`.",
+      "chosen": "keep",
+      "chosen_label": "Change only `index.js`, `tests.js`, and `readme.md`.",
+      "other": null,
+      "rationale": null,
+      "affected": {
+        "files": [
+          "index.js",
+          "tests.js",
+          "readme.md"
+        ],
+        "modules": []
+      },
+      "from_revision": 1,
+      "reason": "decision not in this revision"
+    }
+  ]
+}

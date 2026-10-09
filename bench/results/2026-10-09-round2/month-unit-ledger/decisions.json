@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/miniLV/codex-plan-ledger/main/schema/decisions.schema.json",
+  "schema_version": 1,
+  "plan_id": "2026-10-09-add-month-parsing-to-ms",
+  "title": "Add month parsing to `ms`",
+  "source": "codex-plan-mode",
+  "created_at": "2026-10-09T13:08:50.312Z",
+  "updated_at": "2026-10-09T13:08:50.312Z",
+  "revision": 1,
+  "plan_sha256": "1835b9b1ca5d463645580d678e998612137c548fddc0af5d7e617467a189a39f",
+  "summary": "Support `month`, `months`, and `mo` in duration strings. Define a month as one twelfth of the existing 365.25-day year: 30.4375 days, or 2,629,800,000 milliseconds.",
+  "scope": {
+    "files": [
+      "index.js",
+      "readme.md",
+      "tests.js"
+    ],
+    "modules": []
+  },
+  "decisions": []
+}

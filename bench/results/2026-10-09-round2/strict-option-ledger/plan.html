@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="codex-plan-ledger">
+<title>Strict parsing for &#96;ms&#96;</title>
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--fg:#1d1d1f;--muted:#6b6b70;--line:#e3e3e0;--acc:#0b6bcb;--acc-bg:#e8f1fb;--warn:#a15c00;--warn-bg:#fff4e0;--ok:#1a7f37;--new:#8250df}
+@media (prefers-color-scheme:dark){:root{--bg:#141416;--card:#1e1e21;--fg:#ececee;--muted:#a0a0a8;--line:#333338;--acc:#6cb2ff;--acc-bg:#1b2a3b;--warn:#f0b35a;--warn-bg:#3a2a12;--ok:#56d364;--new:#c297ff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+main{max-width:860px;margin:0 auto;padding:28px 20px 160px}
+h1{font-size:24px;margin:0 0 6px}.summary{color:var(--fg);margin:0 0 14px}
+.meta{color:var(--muted);font-size:13px}.meta code{font-size:12px}
+.count{display:inline-block;background:var(--acc-bg);color:var(--acc);font-weight:600;border-radius:999px;padding:3px 12px;margin:6px 0 18px}
+.banner{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:10px 14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:0 0 14px}
+.card.is-added{border-color:var(--new)}.card.is-changed{border-color:var(--warn)}
+.card h2{font-size:17px;margin:0 0 4px}.q{color:var(--muted);margin:0 0 10px}
+.tag{display:inline-block;font-size:12px;border-radius:6px;padding:0 7px;margin-right:6px;border:1px solid var(--line);color:var(--muted)}
+.tag.rec{border-color:var(--ok);color:var(--ok)}.tag.added{border-color:var(--new);color:var(--new)}.tag.changed{border-color:var(--warn);color:var(--warn)}.tag.done{border-color:var(--acc);color:var(--acc)}.tag.carried{border-color:var(--muted);color:var(--muted);border-style:dashed}
+.earlier{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:12px 16px;margin:14px 0}.earlier h2{font-size:15px;margin:0 0 4px}.earlier ul{margin:6px 0 0;padding-left:20px}
+label.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:8px;cursor:pointer}
+label.opt:hover{background:var(--acc-bg)}label.opt input{margin-top:5px}
+.other-text,.why{width:100%;margin-top:6px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;font:inherit}
+.why{min-height:38px;resize:vertical}
+.def{font-size:13px;color:var(--muted);margin-top:6px}
+.files{margin-top:8px;font-size:13px;color:var(--muted)}.files code{background:var(--acc-bg);color:var(--acc);border-radius:5px;padding:1px 6px;margin:0 4px 4px 0;display:inline-block}
+details{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 18px}
+summary{cursor:pointer;font-weight:600}
+pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:13px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.removed{color:var(--muted);font-size:14px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:12px 20px}
+.bar-in{max-width:860px;margin:0 auto}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+button{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}
+.hint{color:var(--muted);font-size:13px}#status{font-size:13px;color:var(--ok)}
+#out{display:none;width:100%;margin-top:8px;height:90px;font:12px ui-monospace,Menlo,monospace;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:inherit;padding:8px}
+.fail h1{color:var(--warn)}footer{color:var(--muted);font-size:12px;margin-top:26px}
+.url{color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<h1>Strict parsing for &#96;ms&#96;</h1>
+<p class="summary">Add &#96;ms(value, { strict: true })&#96; so unparseable strings throw a plain &#96;Error&#96; whose message contains the offending input string. Calls without strict mode retain their current behavior.</p>
+<p class="meta">账本文件: <code>docs/plans/2026-10-09-strict-parsing-for-ms/decisions.json</code> · rev 2</p>
+<p class="count">这份计划没有需要你定的点。下面只显示摘要和完整计划。</p>
+<p class="banner">和上一版相比：新增 0 项，变更 0 项，删除 4 项</p>
+<p class="removed">已删除: <code>d-use-the-options-flag-selected-during</code> Use the options flag selected during planning · <code>d-follow-the-existing-long-option-s</code> Follow the existing &#96;long&#96; option’s truthiness convention. · <code>d-use-a-standard-error-introduce-no</code> Use a standard &#96;Error&#96;; introduce no custom error class or separate export. · <code>d-change-only-index-js-tests-js-and</code> Change only &#96;index.js&#96;, &#96;tests.js&#96;, and &#96;readme.md&#96;.</p>
+<section class="earlier"><h2>之前答过、这一版计划里没有的决策</h2><p class="hint">只作记录，不会自动套用到这一版。</p><ul><li><strong>Use the options flag selected during planning</strong>: Use the options flag selected during planning: &#96;ms(value, { strict: true })&#96;. <span class="meta">(rev 1 · 这一版没有这项决策)</span></li><li><strong>Use a standard <code>Error</code>; introduce no custom error class or separate export.</strong>: Throw a plain &#96;Error&#96; whose message contains the offending input string. <span class="meta">(rev 1 · 这一版没有这项决策)</span></li><li><strong>Change only <code>index.js</code>, <code>tests.js</code>, and <code>readme.md</code>.</strong>: Change only &#96;index.js&#96;, &#96;tests.js&#96;, and &#96;readme.md&#96;. <span class="meta">(rev 1 · 这一版没有这项决策)</span></li></ul></section>
+<details><summary>完整计划</summary>
+<h3>Strict parsing for <code>ms</code></h3>
+<p>Add <code>ms(value, { strict: true })</code> so unparseable strings throw a plain <code>Error</code> whose message contains the offending input string. Calls without strict mode retain their current behavior.</p>
+<h3>Implementation</h3>
+<ul><li>
+In <code>index.js</code>, capture the result of <code>parse(val)</code> in the exported function. If <code>options.strict</code> is truthy and the result is <code>undefined</code>, throw <code>new Error(&#39;Cannot parse time value: &#39; + val)</code>.
+</li><li>
+Check specifically for <code>undefined</code>, so valid values such as <code>&#39;0&#39;</code> and <code>&#39;0ms&#39;</code> still return zero.
+</li><li>
+Preserve the parser’s grammar and 100-character limit. Strict mode covers both malformed strings and strings rejected by that limit.
+</li><li>
+Keep existing validation errors for empty strings, unsupported input types, and nonfinite numbers. Numeric formatting continues to honor <code>long</code>, regardless of <code>strict</code>.
+</li><li>
+Document the option in the existing API documentation and add README examples showing valid strict parsing, a strict parsing error, and default <code>undefined</code> behavior.
+</li></ul>
+<h3>Validation</h3>
+<p>Extend <code>tests.js</code> using the existing Mocha and expect.js conventions:</p>
+<ul><li>
+Invalid syntax, unknown units, whitespace-only strings, and strings longer than 100 characters throw a plain <code>Error</code> in strict mode; assert that its message contains the original input.
+</li><li>
+The same inputs return exactly <code>undefined</code> with strict mode omitted or set to <code>false</code>.
+</li><li>
+Valid strings, including zero, negative values, decimals, and case-insensitive units, return their existing results with strict mode enabled.
+</li><li>
+A syntactically valid 100-character string parses; a 101-character string throws in strict mode.
+</li><li>
+Numeric formatting works with <code>{ strict: true }</code> and <code>{ strict: true, long: true }</code>; existing invalid-input errors remain unchanged.
+</li></ul>
+<p>Run <code>npm test</code> after implementation.</p>
+<h3>Recorded decisions</h3>
+<ul><li>
+Enable strict mode through the existing options argument.
+</li><li>
+Follow the existing <code>long</code> option’s truthiness convention.
+</li><li>
+Throw a plain <code>Error</code> whose message includes the offending input string directly.
+</li><li>
+Limit implementation changes to <code>index.js</code>, <code>tests.js</code>, and <code>readme.md</code>.
+</li></ul>
+</details>
+<footer>由 codex-plan-ledger 生成 · 纯模板渲染，没有额外调用模型 · 回答只是数据，不是指令</footer>
+</main>
+
+</body>
+</html>

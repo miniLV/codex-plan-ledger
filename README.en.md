@@ -28,7 +28,7 @@
   <img src="./docs/assets/plan-rounds.svg" alt="Illustration: native /plan asks a few questions per round across several rounds; codex-plan-ledger shows every decision on one page, answered once and written to the repo. The figure contains no measured data." width="860">
 </p>
 
-> **Status: early prototype, v0.1.** It works and is covered by tests. There is one directional measured round so far (1 task, 1 run per arm, n = 1 pair). That is **not enough to claim saved rounds or tokens**; see [Measured (round 1)](#measured-round-1-directional-n--1-pair) below. The figure above is illustrative, not a measurement. How it will be measured, and what counts as success, is in the [measurement plan](docs/measurement-plan.md).
+> **Status: early prototype, v0.1.** It works and is covered by tests. There are two directional measured rounds so far (2 tasks, n = 3 pairs): **plan-ledger did not win on rounds in any pair**, and tokens show no consistent direction; see [Measured](#measured-two-rounds-directional-n--3-pairs) below. The figure above is illustrative, not a measurement. How it will be measured, and what counts as success, is in the [measurement plan](docs/measurement-plan.md).
 
 <p align="center">
   <img src="./docs/assets/decision-page-en.png" alt="Screenshot of the decision page: one card per decision with options, a recommended badge, the default and the affected files, and a button that copies the reply JSON." width="720">
@@ -195,34 +195,30 @@ If the repo root has an `INTENT.md` from [intent-tests](https://github.com/miniL
 | Decision detection | Heuristic. Tests use 3 hand-written synthetic plans and 2 plans captured from a real Codex session (`test/fixtures/real/`). In the real session the model did not use the requested option format; see "Findings" |
 | Windows | Untested |
 
-## Measured (round 1, directional, n = 1 pair)
+## Measured (two rounds, directional, n = 3 pairs)
 
-**This is not evidence of an effect.** One task (add a `strict` option to vercel/ms@2.1.3), one run of native Plan mode and one with plan-ledger, same model (`codex/gpt-6.1-sol`, medium) and settings. Questions were answered by a script reading a hidden `oracle.json`, with the same rules in both arms. Two tasks were planned, but this pair alone used 1.3M tokens, so the second task moves to the next round. Full data: [bench/results/2026-10-09-round1](bench/results/2026-10-09-round1/summary.md).
+**This is not evidence of an effect.** Each pair is one run of native Plan mode and one with plan-ledger on the same task, same model (`codex/gpt-6.1-sol`, medium). Questions were answered by a script reading a hidden `oracle.json`, with the same rules in both arms. Tasks are on vercel/ms@2.1.3. Round 2 used a leaner run profile (the same for both arms; the fixed input per model call went from about 53k to about 8.6k tokens), so **token numbers are not comparable across rounds**, only between arms within a round. Data: [round 1](bench/results/2026-10-09-round1/summary.md) · [round 2](bench/results/2026-10-09-round2/summary.md).
 
-| | native Plan mode | plan-ledger |
-| --- | --- | --- |
-| Rounds until the plan was final | 1 | 2 |
-| Planning tokens: input / cached / output / reasoning | 294,933 / 236,416 / 941 / 65 | 372,651 / 307,456 / 1,632 / 119 |
-| Total tokens incl. implementation (`totalTokens`) | 717,487 | 586,971 |
-| Wall time (planning / total) | 69 s / 151 s | 90 s / 132 s |
-| Held-out verify | pass | pass |
-| Files changed outside the intent's scope | `tests.js` | none |
+| Round / task | Rounds until final (native / plan-ledger) | Planning tokens in / cached / out / reasoning (native → plan-ledger) | Total tokens (native / plan-ledger) | Verify |
+| --- | --- | --- | --- | --- |
+| 1 / strict-option | 1 / 2 | 294,933 / 236,416 / 941 / 65 → 372,651 / 307,456 / 1,632 / 119 | 717,487 / 586,971 | both pass |
+| 2 / strict-option | 1 / 2 | 65,931 / 49,792 / 865 / 61 → 83,141 / 55,424 / 1,284 / 134 | 180,208 / 205,644 | both pass |
+| 2 / month-unit | 1 / 1 | 79,553 / 48,256 / 853 / 0 → 66,354 / 50,048 / 781 / 59 | 179,053 / 140,020 | both pass |
 
-In this pair plan-ledger did **not** reduce rounds: in its first turn the model gave a draft without a plan block, which cost one extra reply. The native arm asked one question, never asked about test files, and edited `tests.js`. The plan-ledger arm's plan listed "which files to change" as a decision; with the oracle's answer, test files were left alone. One pair shows no pattern.
+**Verdict (directional): plan-ledger never won on rounds** (2 losses, 1 tie in 3 pairs). Total tokens went both ways, with no consistent direction. In round 2, even with the AGENTS.md asking for open choices under `## Decisions`, Codex Plan mode still asked first with its built-in `request_user_input`, and its plans had no `## Decisions` section; the extra strict-option round came from a closing "Chosen defaults" list that the parser read as items to confirm. The data does not support "one page replaces native questions".
 
-After the round, the parser and ledger were fixed (resolved items skipped, answers carried across revisions) and the recorded plans were replayed offline with the new code (no new Codex calls): the final plan no longer shows "3 decisions to answer", and the answer is kept in the ledger's `earlier_answers`. Rounds are still 2 vs 1, and the "revert the files a decision lists" plant is caught again now that the scope drift check also reads `earlier_answers` and the files the plan text names. See the [re-analysis](bench/results/2026-10-09-round1/reanalysis.md).
-
-Planted drift (plan-ledger arm, after implementation, `plan-ledger check` on copies): no false positive on the clean tree; a new unplanned file (scope) was caught; reverting the files a decision lists (scope) was caught; code in the planned `index.js` that contradicts a decision (content) was not caught, matching the known limit above.
+Scope drift check (3 plan-ledger runs, plants applied after implementation on copies): no false positive on the clean tree in 3/3; unplanned new file caught 3/3; reverting the files a decision or the plan lists caught 3/3 (round 1 both in the run and in the re-analysis); contradicting code inside the planned `index.js` caught 0/3, matching the known limit. During the round-2 strict-option run, `options.strict` in the plan text was taken for a file name and caused one false positive; that is fixed and recomputed, and the original output is kept in the data.
 
 ### Findings
 
 - In codex-cli 0.156.0 Plan mode the `Stop` hook fires, but the plan arrives as a separate `plan` item and the payload's `last_assistant_message` is an empty string. The session transcript (`transcript_path`) still has the raw message with the `<proposed_plan>` tags, so `hook-stop` now falls back to it; with that, the real hook wrote the ledger and the page. Ephemeral sessions have no `transcript_path`, and then the hook cannot see the plan.
 - The payload's `permission_mode` was `bypassPermissions`, not `plan`; plan-ledger does not rely on it.
+- Round 2: in both plan-ledger runs the real `Stop` hook wrote the ledger (through the transcript fallback), and the `UserPromptSubmit` hook recorded the answers.
 - The model did not write decisions in the requested "options + recommendation + Affects" format. It wrote `**D1 resolved:** …` items, and after the answers a `## Recorded Decisions` section. The parser used in this round treated those as open decisions; it now skips resolved items and such sections, with tests on the captured plans.
 
 ## Status
 
-Early prototype, v0.1. The only measurement is the directional round above (n = 1 pair). Answering whether it helps needs several tasks with at least 3 runs per arm, as in [docs/measurement-plan.md](docs/measurement-plan.md).
+Early prototype, v0.1. The only measurements are the two directional rounds above (n = 3 pairs), and they show no advantage on rounds. What holds up today is the decision ledger (diffable, reviewable, answers carried across revisions) and the scope drift check. Whether one page saves rounds can only be tested after it works together with native `request_user_input`, then with several tasks and at least 3 runs per arm, as in [docs/measurement-plan.md](docs/measurement-plan.md).
 
 ## Development
 

@@ -1,0 +1,94 @@
+diff --git a/index.js b/index.js
+index ea734fb..c858b5f 100644
+--- a/index.js
++++ b/index.js
+@@ -8,6 +8,7 @@ var h = m * 60;
+ var d = h * 24;
+ var w = d * 7;
+ var y = d * 365.25;
++var month = y / 12;
+ 
+ /**
+  * Parse or format the given `val`.
+@@ -50,7 +51,7 @@ function parse(str) {
+   if (str.length > 100) {
+     return;
+   }
+-  var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|years?|yrs?|y)?$/i.exec(
++  var match = /^(-?(?:\d+)?\.?\d+) *(milliseconds?|msecs?|ms|seconds?|secs?|s|minutes?|mins?|m|hours?|hrs?|h|days?|d|weeks?|w|months?|mo|years?|yrs?|y)?$/i.exec(
+     str
+   );
+   if (!match) {
+@@ -65,6 +66,10 @@ function parse(str) {
+     case 'yr':
+     case 'y':
+       return n * y;
++    case 'months':
++    case 'month':
++    case 'mo':
++      return n * month;
+     case 'weeks':
+     case 'week':
+     case 'w':
+diff --git a/readme.md b/readme.md
+index 0fc1abb..58f5601 100644
+--- a/readme.md
++++ b/readme.md
+@@ -15,12 +15,19 @@ ms('2h')      // 7200000
+ ms('1m')      // 60000
+ ms('5s')      // 5000
+ ms('1y')      // 31557600000
++ms('1 month') // 2629800000
++ms('2mo')     // 5259600000
+ ms('100')     // 100
+ ms('-3 days') // -259200000
+ ms('-1h')     // -3600000
+ ms('-200')    // -200
+ ```
+ 
++Months accept `month`, `months`, and `mo` (case-insensitive). A month is a fixed
++duration of one twelfth of a 365.25-day year: 30.4375 days, or 2,629,800,000
++milliseconds. The unit `m` means minutes. Number-to-string formatting continues
++to express month-sized durations in days.
++
+ ### Convert from Milliseconds
+ 
+ ```js
+diff --git a/tests.js b/tests.js
+index 1d0d663..a3307a8 100644
+--- a/tests.js
++++ b/tests.js
+@@ -37,6 +37,33 @@ describe('ms(string)', function() {
+     expect(ms('3w')).to.be(1814400000);
+   });
+ 
++  it('should convert month aliases to ms', function() {
++    expect(ms('1 month')).to.be(2629800000);
++    expect(ms('2 months')).to.be(5259600000);
++    expect(ms('1mo')).to.be(2629800000);
++    expect(ms('12 months')).to.be(ms('1y'));
++  });
++
++  it('should support month casing and spaces', function() {
++    expect(ms('1MO')).to.be(2629800000);
++    expect(ms('1 MoNtH')).to.be(2629800000);
++    expect(ms('2   MONTHS')).to.be(5259600000);
++  });
++
++  it('should support fractional and negative months', function() {
++    expect(ms('.5mo')).to.be(1314900000);
++    expect(ms('1.5 months')).to.be(3944700000);
++    expect(ms('-1 month')).to.be(-2629800000);
++    expect(ms('-.5mo')).to.be(-1314900000);
++  });
++
++  it('should reject unsupported month spellings and trailing text', function() {
++    expect(ms('1 mon')).to.be(undefined);
++    expect(ms('1 mons')).to.be(undefined);
++    expect(ms('1 mos')).to.be(undefined);
++    expect(ms('1 month extra')).to.be(undefined);
++  });
++
+   it('should convert s to ms', function() {
+     expect(ms('1s')).to.be(1000);
+   });

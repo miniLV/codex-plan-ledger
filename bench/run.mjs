@@ -40,6 +40,7 @@ git(wt, 'add', '-A');
 git(wt, 'commit', '-q', '-m', `bench setup (${arm})`);
 const base = git(wt, 'rev-parse', 'HEAD');
 
+
 // --- app-server -----------------------------------------------------------
 const hooks = arm === 'ledger' ? {
   Stop: [{ hooks: [{ type: 'command', command: `"${node}" "${BIN}" hook-stop`, timeout: 30 }] }],
@@ -57,7 +58,7 @@ for (const m of ['item/commandExecution/requestApproval', 'item/fileChange/reque
   s.onRequest(m, async () => ({ decision: 'decline' }));
 }
 
-const row = { task, arm, started_at: new Date().toISOString(), base_commit: MS_COMMIT };
+const row = { task, arm, started_at: new Date().toISOString(), base_commit: MS_COMMIT, setup_commit: base };
 const t0 = Date.now();
 const findLedger = () => {
   const dir = join(wt, 'docs', 'plans');

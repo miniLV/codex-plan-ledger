@@ -28,7 +28,7 @@
   <img src="./docs/assets/plan-rounds.svg" alt="示意图：原生 /plan 每轮问几个问题、要来回好几轮；codex-plan-ledger 一页列出所有决策、一次答完并写进仓库。图本身不含测量数据。" width="860">
 </p>
 
-> **状态：早期原型 v0.1。** 功能能用、有测试覆盖。目前只有一轮方向性的实测（1 个任务、每组 1 次，n = 1 对），**不足以说明省了轮次或 token**，见下面的 [实测（第 1 轮）](#实测第-1-轮方向性n--1-对)。上面的图只是示意，不是测量结果。怎么测、什么结果算成立，见 [实测计划](docs/measurement-plan.md)。
+> **状态：早期原型 v0.1。** 功能能用、有测试覆盖。目前有两轮方向性实测（2 个任务，共 n = 3 对）：**轮数上 plan-ledger 没有赢过**，token 没有一致方向，见下面的 [实测](#实测两轮方向性共-n--3-对)。上面的图只是示意，不是测量结果。怎么测、什么结果算成立，见 [实测计划](docs/measurement-plan.md)。
 
 <p align="center">
   <img src="./docs/assets/decision-page-zh.png" alt="决策页截图：顶部“需要你定 6 项”，每项一张卡片，有选项、推荐标记、默认值和影响的文件，底部是“生成回传 JSON 并复制”按钮。" width="720">
@@ -195,34 +195,30 @@ Codex 改版计划时，之前的回答会沿用到 id 相同（或者标题相�
 | 决策点识别 | 启发式。测试里有 3 份手写的合成计划和 2 份真实 Codex 会话里抓到的计划（`test/fixtures/real/`）。真实会话里模型没按要求的选项格式写决策，见“实测发现” |
 | Windows | 没测过 |
 
-## 实测（第 1 轮，方向性，n = 1 对）
+## 实测（两轮，方向性，共 n = 3 对）
 
-**这不是效果证据。** 只有 1 个任务（vercel/ms@2.1.3 上加 `strict` 选项），原生 Plan 模式和 plan-ledger 各跑 1 次，同一模型（`codex/gpt-6.1-sol`，medium）、同一套设置。回答问题的是读隐藏 `oracle.json` 的脚本，两组规则相同。原计划 2 个任务，但这一对就用了 130 万 token，第二个任务留到下一轮。完整数据：[bench/results/2026-10-09-round1](bench/results/2026-10-09-round1/summary.md)。
+**这不是效果证据。** 每对是同一任务上原生 Plan 模式和 plan-ledger 各跑 1 次，同一模型（`codex/gpt-6.1-sol`，medium），回答问题的是读隐藏 `oracle.json` 的脚本，两组规则相同。任务在 vercel/ms@2.1.3 上。第 2 轮换了更省的运行配置（两组相同，单次调用的固定输入从约 5.3 万降到约 8.6 千 token），所以**两轮的 token 不能互相比较**，只能在同一轮里比两组。数据：[第 1 轮](bench/results/2026-10-09-round1/summary.md) · [第 2 轮](bench/results/2026-10-09-round2/summary.md)。
 
-| | 原生 Plan 模式 | plan-ledger |
-| --- | --- | --- |
-| 计划定稿前的来回轮数 | 1 | 2 |
-| 计划阶段 token：input / cached / output / reasoning | 294,933 / 236,416 / 941 / 65 | 372,651 / 307,456 / 1,632 / 119 |
-| 含实现的总 token（`totalTokens`） | 717,487 | 586,971 |
-| 耗时（计划 / 总计） | 69 s / 151 s | 90 s / 132 s |
-| 隐藏验收脚本 | 通过 | 通过 |
-| 改到意图范围外的文件 | `tests.js` | 无 |
+| 轮 / 任务 | 定稿前轮数（原生 / plan-ledger） | 计划阶段 token input / cached / output / reasoning（原生 → plan-ledger） | 总 token（原生 / plan-ledger） | 验收 |
+| --- | --- | --- | --- | --- |
+| 1 / strict-option | 1 / 2 | 294,933 / 236,416 / 941 / 65 → 372,651 / 307,456 / 1,632 / 119 | 717,487 / 586,971 | 都通过 |
+| 2 / strict-option | 1 / 2 | 65,931 / 49,792 / 865 / 61 → 83,141 / 55,424 / 1,284 / 134 | 180,208 / 205,644 | 都通过 |
+| 2 / month-unit | 1 / 1 | 79,553 / 48,256 / 853 / 0 → 66,354 / 50,048 / 781 / 59 | 179,053 / 140,020 | 都通过 |
 
-这一对里，plan-ledger **没有**减少轮数：第一轮模型只给了草稿、没给计划块，多了一次回复。原生组问了 1 个问题，没问到要不要改测试文件，结果改了 `tests.js`；plan-ledger 组的计划把“改哪些文件”列成了一项决策，按 oracle 的回答没有改测试文件。一对数据说明不了规律。
+**结论（方向性）：在轮数上，plan-ledger 一次都没有赢**（3 对里输 2 次、平 1 次）。总 token 有高有低，没有一致方向。第 2 轮里，即使 AGENTS.md 要求把待定选择写进 `## Decisions`，Codex Plan 模式仍然先用自带的 `request_user_input` 提问，计划里也没有 `## Decisions` 段；strict-option 多出的一轮来自计划末尾的“Chosen defaults”被解析成了待确认项。一页答完替代原生提问这个设想，目前数据不支持。
 
-之后修了解析器和账本（跳过“已决”条目、跨版本沿用回答），用新代码离线重放了这一轮记录下来的计划（没有新的 Codex 调用）：最终计划不再误报“3 项待答”，回答保留在账本的 `earlier_answers` 里；但轮数仍是 2 对 1，“把决策影响的文件改回原样”这一项埋入偏离，在范围偏离检查也读 `earlier_answers` 和计划正文里的文件之后，又能抓到了。见 [重放分析](bench/results/2026-10-09-round1/reanalysis.md)。
-
-埋入偏离（plan-ledger 组，实现之后，在副本上跑 `plan-ledger check`）：不埋时无误报；计划外新文件（范围）抓到；把决策影响的文件改回原样（范围）抓到；在计划内的 `index.js` 里写与决策相反的代码（内容）没抓到，和上面写的已知局限一致。
+范围偏离检查（3 次 plan-ledger 运行，实现之后在副本上埋入）：不埋时 3 次都无误报；计划外新文件 3/3 抓到；把决策或计划列出的文件改回原样 3/3 抓到（第 1 轮在原始运行和重放分析里都抓到）；在计划内的 `index.js` 里写与决策相反的代码 0/3 抓到，和已知局限一致。第 2 轮 strict-option 运行时，计划里的 `options.strict` 被误当成文件名，造成过一次误报，已修复并重算，原始输出保留在数据里。
 
 ### 实测发现
 
 - 在 codex-cli 0.156.0 的 Plan 模式里，`Stop` hook 会触发，但计划以单独的 `plan` 条目给出，payload 里的 `last_assistant_message` 是空字符串。会话记录（`transcript_path`）里还保留带 `<proposed_plan>` 标签的原文，所以 `hook-stop` 现在会退回去读它；这样真实 hook 写出了账本和页面。临时（ephemeral）会话没有 `transcript_path`，这时 hook 拿不到计划。
 - payload 里的 `permission_mode` 是 `bypassPermissions` 而不是 `plan`，plan-ledger 不依赖这个字段。
+- 第 2 轮：两次 plan-ledger 运行都由真实 `Stop` hook 写出账本（经会话记录回退），`UserPromptSubmit` hook 记下了回答。
 - 模型没按 AGENTS.md 要求的“选项 + 推荐 + Affects”格式写决策，而是写成 `**D1 resolved:** …`，答完后又加了 `## Recorded Decisions`。这一轮用的旧解析器把它们当成待答项；之后已改为跳过“已决”条目和这类段落，并用抓到的真实计划加了测试。
 
 ## 状态
 
-早期原型 v0.1。只有上面这一轮方向性实测（n = 1 对）。要回答“有没有用”，需要按 [docs/measurement-plan.md](docs/measurement-plan.md) 在多个任务上每组至少跑 3 次。
+早期原型 v0.1。只有上面两轮方向性实测（共 n = 3 对），轮数上没有显示出优势。目前站得住的是：决策账本（可 diff、可 review、跨版本沿用回答）和范围偏离检查。要回答“一页答完是否省轮次”，需要先让它和原生 `request_user_input` 配合，再按 [docs/measurement-plan.md](docs/measurement-plan.md) 在多个任务上每组至少跑 3 次。
 
 ## 开发
 

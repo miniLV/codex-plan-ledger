@@ -1,8 +1,8 @@
 # Measurement plan / 实测计划
 
-Status: **round 1 run (directional, n = 1 pair: 1 task × 2 arms × 1 run).** It does not meet the decision lines below. Raw data and summary: [`bench/results/2026-10-09-round1/`](../bench/results/2026-10-09-round1/summary.md). Harness: [`bench/`](../bench/README.md).
+Status: **two directional rounds run (n = 3 pairs: round 1 = 1 task, round 2 = 2 tasks; 1 run per arm).** They do not meet the decision lines below, which need ≥ 3 repeats. So far decision line 1 (rounds) points the wrong way: plan-ledger lost 2 pairs and tied 1. Decision line 2 (planted scope drift caught) held in 3/3. Data: [round 1](../bench/results/2026-10-09-round1/summary.md), [round 2](../bench/results/2026-10-09-round2/summary.md). Harness: [`bench/`](../bench/README.md).
 
-状态：**第 1 轮已跑（方向性，n = 1 对：1 个任务 × 2 组 × 1 次）**，还达不到下面的判定线。原始数据和小结见 [`bench/results/2026-10-09-round1/`](../bench/results/2026-10-09-round1/summary.md)，测试脚手架见 [`bench/`](../bench/README.md)。
+状态：**已跑两轮方向性实测（共 n = 3 对：第 1 轮 1 个任务，第 2 轮 2 个任务，每组 1 次）**，达不到下面要求至少 3 次重复的判定线。目前判定线 1（轮数）方向相反：plan-ledger 输 2 对、平 1 对；判定线 2（抓到埋入的范围偏离）3/3 成立。数据：[第 1 轮](../bench/results/2026-10-09-round1/summary.md)、[第 2 轮](../bench/results/2026-10-09-round2/summary.md)。
 
 Change from the first draft of this plan: runs use `codex app-server` with native Plan mode (`collaborationMode: plan`) instead of `codex exec`, because `codex exec` cannot select Plan mode. So arm A gets the real `request_user_input` questions, and the responder answers them through the same API. Rounds = `request_user_input` calls + plain-text replies + `plan-ledger answers` messages before the final plan.
 
