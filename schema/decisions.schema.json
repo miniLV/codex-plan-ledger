@@ -18,7 +18,12 @@
     "plan_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
     "summary": { "type": "string" },
     "scope": { "$ref": "#/$defs/affected" },
-    "decisions": { "type": "array", "items": { "$ref": "#/$defs/decision" } }
+    "decisions": { "type": "array", "items": { "$ref": "#/$defs/decision" } },
+    "earlier_answers": {
+      "description": "Answers given in an earlier revision whose decision is not in this revision (or whose chosen option is gone). Kept so answers are never silently dropped.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/earlierAnswer" }
+    }
   },
   "$defs": {
     "affected": {
@@ -55,7 +60,33 @@
         "other": { "type": ["string", "null"], "maxLength": 2000 },
         "status": { "enum": ["answered", "default"], "description": "\"default\" means not answered; default kept. It is not agreement." },
         "affected": { "$ref": "#/$defs/affected" },
-        "rationale": { "type": ["string", "null"], "maxLength": 2000 }
+        "rationale": { "type": ["string", "null"], "maxLength": 2000 },
+        "carried": {
+          "description": "Present when this answer was given in an earlier revision and carried forward. Removed when the decision is answered again.",
+          "type": "object",
+          "required": ["from_revision", "match", "previous_id"],
+          "additionalProperties": false,
+          "properties": {
+            "from_revision": { "type": "integer", "minimum": 1 },
+            "match": { "enum": ["id", "title"] },
+            "previous_id": { "type": "string" }
+          }
+        }
+      }
+    },
+    "earlierAnswer": {
+      "type": "object",
+      "required": ["id", "title", "chosen", "from_revision", "reason"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string" },
+        "title": { "type": "string" },
+        "chosen": { "type": ["string", "null"] },
+        "chosen_label": { "type": ["string", "null"] },
+        "other": { "type": ["string", "null"], "maxLength": 2000 },
+        "rationale": { "type": ["string", "null"], "maxLength": 2000 },
+        "from_revision": { "type": "integer", "minimum": 1 },
+        "reason": { "enum": ["decision not in this revision", "option no longer offered"] }
       }
     }
   }

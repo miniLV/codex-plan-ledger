@@ -23,6 +23,11 @@ const STRINGS = {
     changedBanner: (a, c, r) => `和上一版相比：新增 ${a} 项，变更 ${c} 项，删除 ${r} 项`,
     added: '新增', changed: '已变更', removed: '已删除',
     answeredInLedger: '账本里已作答',
+    carried: (r, how) => `沿用第 ${r} 版的回答（按${how === 'title' ? '标题' : 'id'}匹配）`,
+    answeredCount: (k) => `，其中 ${k} 项已有回答`,
+    earlierTitle: '之前答过、这一版计划里没有的决策',
+    earlierNote: '只作记录，不会自动套用到这一版。',
+    reasonText: { 'decision not in this revision': '这一版没有这项决策', 'option no longer offered': '原来选的选项这一版没有了' },
     progress: (k, n) => `已答 ${k} / ${n}，没答的保留默认（不算同意）`,
     button: '生成回传 JSON 并复制',
     hint: '粘到 Codex 下一条消息里',
@@ -51,6 +56,11 @@ const STRINGS = {
     changedBanner: (a, c, r) => `Since the last revision: ${a} added, ${c} changed, ${r} removed`,
     added: 'New', changed: 'Changed', removed: 'Removed',
     answeredInLedger: 'Answered in ledger',
+    carried: (r, how) => `Answer carried from rev ${r} (matched by ${how})`,
+    answeredCount: (k) => `; ${k} already answered`,
+    earlierTitle: 'Answered earlier, not in this revision',
+    earlierNote: 'Kept as a record only; not applied to this revision.',
+    reasonText: { 'decision not in this revision': 'decision not in this revision', 'option no longer offered': 'chosen option no longer offered' },
     progress: (k, n) => `${k} / ${n} answered; unanswered ones keep the default (not counted as agreement)`,
     button: 'Build reply JSON and copy',
     hint: 'Paste it into your next Codex message',
@@ -76,7 +86,8 @@ h1{font-size:24px;margin:0 0 6px}.summary{color:var(--fg);margin:0 0 14px}
 .card.is-added{border-color:var(--new)}.card.is-changed{border-color:var(--warn)}
 .card h2{font-size:17px;margin:0 0 4px}.q{color:var(--muted);margin:0 0 10px}
 .tag{display:inline-block;font-size:12px;border-radius:6px;padding:0 7px;margin-right:6px;border:1px solid var(--line);color:var(--muted)}
-.tag.rec{border-color:var(--ok);color:var(--ok)}.tag.added{border-color:var(--new);color:var(--new)}.tag.changed{border-color:var(--warn);color:var(--warn)}.tag.done{border-color:var(--acc);color:var(--acc)}
+.tag.rec{border-color:var(--ok);color:var(--ok)}.tag.added{border-color:var(--new);color:var(--new)}.tag.changed{border-color:var(--warn);color:var(--warn)}.tag.done{border-color:var(--acc);color:var(--acc)}.tag.carried{border-color:var(--muted);color:var(--muted);border-style:dashed}
+.earlier{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:12px 16px;margin:14px 0}.earlier h2{font-size:15px;margin:0 0 4px}.earlier ul{margin:6px 0 0;padding-left:20px}
 label.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:8px;cursor:pointer}
 label.opt:hover{background:var(--acc-bg)}label.opt input{margin-top:5px}
 .other-text,.why{width:100%;margin-top:6px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;font:inherit}
@@ -221,7 +232,8 @@ export function renderPlanHtml({ ledger, planText, changes = null, ledgerPath = 
   if (decisions.length === 0) {
     parts.push(`<p class="count">${escapeHtml(t.none)}</p>`);
   } else {
-    parts.push(`<p class="count" id="count">${escapeHtml(t.need(decisions.length))}${assumptions ? escapeHtml(t.needAssume(assumptions)) : ''}</p>`);
+    const answered = decisions.filter((d) => d.status === 'answered').length;
+    parts.push(`<p class="count" id="count">${escapeHtml(t.need(decisions.length))}${assumptions ? escapeHtml(t.needAssume(assumptions)) : ''}${answered ? escapeHtml(t.answeredCount(answered)) : ''}</p>`);
   }
   if (changes && (added.size || changed.size || removed.length)) {
     parts.push(`<p class="banner">${escapeHtml(t.changedBanner(added.size, changed.size, removed.length))}</p>`);
@@ -233,6 +245,7 @@ export function renderPlanHtml({ ledger, planText, changes = null, ledgerPath = 
     if (added.has(d.id)) tags.push(`<span class="tag added">${escapeHtml(t.added)}</span>`);
     if (changed.has(d.id)) tags.push(`<span class="tag changed">${escapeHtml(t.changed)}: ${escapeHtml(changed.get(d.id).join(', '))}</span>`);
     if (d.status === 'answered') tags.push(`<span class="tag done">${escapeHtml(t.answeredInLedger)}</span>`);
+    if (d.status === 'answered' && d.carried) tags.push(`<span class="tag carried">${escapeHtml(t.carried(d.carried.from_revision, d.carried.match))}</span>`);
     const name = `c-${d.id}`;
     const opts = d.options.map((o) => {
       const checked = d.status === 'answered' && d.chosen === o.id ? ' checked' : '';
@@ -256,6 +269,10 @@ ${files.length ? `<div class="files">${escapeHtml(t.affected)}: ${files.map((f) 
   }
   if (removed.length) {
     parts.push(`<p class="removed">${escapeHtml(t.removed)}: ${removed.map((r) => `<code>${escapeHtml(r.id)}</code> ${escapeHtml(r.title)}`).join(' · ')}</p>`);
+  }
+  const earlier = ledger.earlier_answers || [];
+  if (earlier.length) {
+    parts.push(`<section class="earlier"><h2>${escapeHtml(t.earlierTitle)}</h2><p class="hint">${escapeHtml(t.earlierNote)}</p><ul>${earlier.map((e) => `<li><strong>${inline(e.title)}</strong>: ${escapeHtml(e.chosen === 'other' ? e.other || '' : e.chosen_label || e.chosen || '')} <span class="meta">(rev ${escapeHtml(e.from_revision)} · ${escapeHtml(t.reasonText[e.reason] || e.reason)})</span></li>`).join('')}</ul></section>`);
   }
   parts.push(`<details><summary>${escapeHtml(t.fullPlan)}</summary>\n${markdownToHtml(planText || '')}\n</details>`);
   parts.push(`<footer>${escapeHtml(t.footer)}</footer>`);

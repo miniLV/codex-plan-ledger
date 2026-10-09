@@ -122,10 +122,12 @@ export function handleStop(stdin, opts = {}) {
     const html = join(written.dir, 'plan.html');
     writeFileSync(html, renderPlanHtml({ ledger, planText: ex.body, changes: prev ? changes : null, ledgerPath: written.rel, lang }));
     if (opts.open) openInBrowser(html);
-    const n = ledger.decisions.length;
-    const msg = n
-      ? `plan-ledger: ${n} decision(s) to answer → ${pathToFileURL(html).href} (ledger: ${written.rel})`
-      : `plan-ledger: no open decisions; ledger at ${written.rel}`;
+    const open = ledger.decisions.filter((d) => d.status !== 'answered').length;
+    const carried = ledger.decisions.filter((d) => d.carried).length;
+    const extra = carried ? `; ${carried} answer(s) carried from earlier revisions` : '';
+    const msg = open
+      ? `plan-ledger: ${open} decision(s) to answer${extra} → ${pathToFileURL(html).href} (ledger: ${written.rel})`
+      : `plan-ledger: no open decisions${extra}; ledger at ${written.rel}`;
     return { stdout: out({ systemMessage: msg }), html, ledgerFile: written.file, ledger, changes, from };
   } catch (err) {
     return { stdout: out({ systemMessage: `plan-ledger: skipped (${String(err?.message || err).slice(0, 200)}); plan passed through unchanged` }) };

@@ -135,3 +135,19 @@ test('hook-stop: falls back to the transcript when last_assistant_message is emp
   const r3 = run(['hook-stop'], { cwd: dir2, input: stopPayload('', dir2, { transcript_path: join(dir2, 'nope.jsonl') }) });
   assert.equal(r3.stdout, '');
 });
+
+test('hook-stop on a revised plan: carried answers are counted and marked on the page', () => {
+  const { dir } = tempRepo();
+  const plan = (extra) => `<proposed_plan>\n# Carry hook test\n\n## Decisions\n\n- D1: Storage?\n  - column (Recommended)\n  - table\n- D2: Limit?\n  - 30 days\n  - 1 year\n${extra}</proposed_plan>`;
+  assert.equal(run(['hook-stop'], { cwd: dir, input: stopPayload(plan(''), dir) }).code, 0);
+  const payload = { plan_ledger: { plan: '2026-10-09-carry-hook-test', rev: 1 }, answers: { d1: { choice: 'b' } } };
+  const p = run(['hook-prompt'], { cwd: dir, input: JSON.stringify({ hook_event_name: 'UserPromptSubmit', cwd: dir, prompt: `${ANSWER_PREFIX}\n${JSON.stringify(payload)}` }) });
+  assert.match(p.stdout, /recorded 1 answer/);
+  const r = run(['hook-stop'], { cwd: dir, input: stopPayload(plan('- D3: Region?\n  - EU\n  - US\n'), dir, { lang: 'en' }) });
+  assert.match(JSON.parse(r.stdout).systemMessage, /2 decision\(s\) to answer; 1 answer\(s\) carried from earlier revisions/);
+  const html = readFileSync(join(dir, 'docs/plans/2026-10-09-carry-hook-test/plan.html'), 'utf8');
+  assert.match(html, /沿用第 1 版的回答（按id匹配）|Answer carried from rev 1 \(matched by id\)/);
+  const led = JSON.parse(readFileSync(join(dir, 'docs/plans/2026-10-09-carry-hook-test/decisions.json'), 'utf8'));
+  assert.equal(led.revision, 2);
+  assert.deepEqual(led.decisions.find((d) => d.id === 'd1').carried, { from_revision: 1, match: 'id', previous_id: 'd1' });
+});

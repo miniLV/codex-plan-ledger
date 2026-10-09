@@ -98,41 +98,128 @@ function sameJson(a, b) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
+/** Title key for matching a decision across revisions (ignores case, spacing and Markdown marks). */
+function decisionKey(title) {
+  return normalizeSpace(String(title || '').replace(/[*_`~]/g, '')).toLowerCase().replace(/[\s.:：。,，;；!?？！]+$/, '');
+}
+
+function labelKey(label) {
+  return decisionKey(label).replace(/\s*\((?:recommended|推荐)\)\s*/gi, ' ').trim();
+}
+
+function chosenLabelOf(d) {
+  if (d.chosen === 'other') return null;
+  if (typeof d.chosen_label === 'string') return d.chosen_label;
+  return d.options?.find((o) => o.id === d.chosen)?.label ?? null;
+}
+
+/** Map an earlier answer onto the new decision's options. Returns null when the chosen option is gone. */
+function mapAnswer(old, rec) {
+  if (old.chosen === 'other') return old.other ? { chosen: 'other', other: old.other } : null;
+  if (rec.options.some((o) => o.id === old.chosen)) {
+    const oldLabel = chosenLabelOf(old);
+    const now = rec.options.find((o) => o.id === old.chosen);
+    // Same option id but a different label means a different option: do not carry it silently.
+    if (oldLabel == null || labelKey(oldLabel) === labelKey(now.label)) return { chosen: old.chosen, other: null };
+  }
+  const label = chosenLabelOf(old);
+  if (label != null) {
+    const byLabel = rec.options.find((o) => labelKey(o.label) === labelKey(label));
+    if (byLabel) return { chosen: byLabel.id, other: null };
+  }
+  return null;
+}
+
+function earlierAnswer(old, fromRevision, reason) {
+  return {
+    id: old.id,
+    title: old.title,
+    chosen: old.chosen,
+    chosen_label: chosenLabelOf(old),
+    other: old.other ?? null,
+    rationale: old.rationale ?? null,
+    from_revision: fromRevision,
+    reason,
+  };
+}
+
 /**
- * Build a new ledger from a parsed plan, merging answers from `prev` when the
- * same decision id still exists. Returns { ledger, changes, unchanged }.
+ * Build a new ledger from a parsed plan. Answers from earlier revisions are
+ * carried forward when a decision with the same id, or else the same title,
+ * is still in the plan and the chosen option still exists (by id with the
+ * same label, or by label). Carried answers are marked with `carried`.
+ * Answers whose decision is gone are kept in `earlier_answers`, not dropped.
+ * Returns { ledger, changes, unchanged }.
  */
 export function buildLedger({ planId, planText, parsed, prev = null, source = 'codex-plan-mode' }) {
   const now = nowIso();
   const hash = sha256(planText);
   if (prev && prev.plan_sha256 === hash) {
-    return { ledger: prev, changes: { added: [], changed: [], removed: [] }, unchanged: true };
+    return { ledger: prev, changes: { added: [], changed: [], removed: [], carried: [] }, unchanged: true };
   }
-  const prevById = new Map((prev?.decisions || []).map((d) => [d.id, d]));
-  const changes = { added: [], changed: [], removed: [] };
+  const prevRev = prev?.revision || 0;
+  // Candidates: decisions of the previous revision, then answers kept from older ones.
+  const candidates = [
+    ...(prev?.decisions || []).map((d) => ({ d, earlier: false })),
+    ...(prev?.earlier_answers || []).map((d) => ({ d: { ...d, status: 'answered' }, earlier: true })),
+  ];
+  const newIds = new Set(parsed.decisions.map((d) => d.id));
+  const used = new Set();
+  const take = (pred) => {
+    const i = candidates.findIndex((c, k) => !used.has(k) && pred(c));
+    if (i < 0) return null;
+    used.add(i);
+    return candidates[i];
+  };
+  const changes = { added: [], changed: [], removed: [], carried: [] };
+  const earlier = [];
   const decisions = parsed.decisions.map((d) => {
     const rec = decisionRecord(d);
-    const old = prevById.get(d.id);
-    if (!old) {
+    let match = 'id';
+    let c = take((x) => x.d.id === d.id);
+    if (!c) {
+      const key = decisionKey(d.title);
+      // Match by title only to a decision whose id is not also in the new plan.
+      c = key ? take((x) => decisionKey(x.d.title) === key && !newIds.has(x.d.id)) : null;
+      match = 'title';
+    }
+    if (!c) {
       if (prev) changes.added.push(d.id);
       return rec;
     }
-    const fields = [];
-    if (old.title !== rec.title) fields.push('title');
-    if (!sameJson(old.options?.map((o) => [o.id, o.label]), rec.options.map((o) => [o.id, o.label]))) fields.push('options');
-    if ((old.default ?? null) !== rec.default) fields.push('default');
-    if (!sameJson(old.affected, rec.affected)) fields.push('affected');
-    if (fields.length) changes.changed.push({ id: d.id, fields });
-    if (old.status === 'answered' && (old.chosen === 'other' || rec.options.some((o) => o.id === old.chosen))) {
-      rec.status = 'answered';
-      rec.chosen = old.chosen;
-      rec.other = old.other ?? null;
-      rec.rationale = old.rationale ?? null;
+    const old = c.d;
+    if (!c.earlier) {
+      const fields = [];
+      if (old.id !== rec.id) fields.push('id');
+      if (old.title !== rec.title) fields.push('title');
+      if (!sameJson(old.options?.map((o) => [o.id, o.label]), rec.options.map((o) => [o.id, o.label]))) fields.push('options');
+      if ((old.default ?? null) !== rec.default) fields.push('default');
+      if (!sameJson(old.affected, rec.affected)) fields.push('affected');
+      if (fields.length) changes.changed.push(old.id !== rec.id ? { id: d.id, fields, previous_id: old.id } : { id: d.id, fields });
+    }
+    if (old.status === 'answered') {
+      const from = old.carried?.from_revision ?? old.from_revision ?? prevRev;
+      const mapped = mapAnswer(old, rec);
+      if (mapped) {
+        rec.status = 'answered';
+        rec.chosen = mapped.chosen;
+        rec.other = mapped.other;
+        rec.rationale = old.rationale ?? null;
+        rec.carried = { from_revision: from, match, previous_id: old.id };
+        changes.carried.push({ id: rec.id, from_revision: from, match, previous_id: old.id });
+      } else {
+        earlier.push(earlierAnswer(old, from, 'option no longer offered'));
+      }
     }
     return rec;
   });
-  const newIds = new Set(decisions.map((d) => d.id));
-  for (const old of prev?.decisions || []) if (!newIds.has(old.id)) changes.removed.push({ id: old.id, title: old.title });
+  candidates.forEach((c, k) => {
+    if (used.has(k)) return;
+    if (!c.earlier) changes.removed.push({ id: c.d.id, title: c.d.title });
+    if (c.d.status === 'answered') {
+      earlier.push(c.earlier ? stripStatus(c.d) : earlierAnswer(c.d, c.d.carried?.from_revision ?? prevRev, 'decision not in this revision'));
+    }
+  });
 
   const ledger = {
     $schema: SCHEMA_URL,
@@ -142,13 +229,19 @@ export function buildLedger({ planId, planText, parsed, prev = null, source = 'c
     source,
     created_at: prev?.created_at || now,
     updated_at: now,
-    revision: (prev?.revision || 0) + 1,
+    revision: prevRev + 1,
     plan_sha256: hash,
     summary: parsed.summary || '',
     scope: { files: [...(parsed.scope?.files || [])], modules: [...(parsed.scope?.modules || [])] },
     decisions,
   };
+  if (earlier.length) ledger.earlier_answers = earlier;
   return { ledger, changes, unchanged: false };
+}
+
+function stripStatus(d) {
+  const { status, ...rest } = d;
+  return rest;
 }
 
 export function writeLedger(root, ledger, planText) {
@@ -185,6 +278,7 @@ export function applyAnswers(ledger, payload) {
     d.other = choice === 'other' ? clip(a.other ?? '') : null;
     d.rationale = a.why ? clip(a.why) : d.rationale ?? null;
     d.status = 'answered';
+    delete d.carried;
     applied.push(id);
   }
   if (applied.length) next.updated_at = nowIso();
@@ -204,8 +298,12 @@ export function compactLedger(ledger, rel) {
     decisions: ledger.decisions.map((d) => {
       const out = { id: d.id, title: d.title, status: d.status, chosen: chosenLabel(d) };
       if (d.rationale) out.why = d.rationale;
+      if (d.carried) out.carried_from_revision = d.carried.from_revision;
       return out;
     }),
+    ...(ledger.earlier_answers?.length
+      ? { earlier_answers: ledger.earlier_answers.map((e) => ({ title: e.title, chosen: e.chosen === 'other' ? e.other : e.chosen_label, from_revision: e.from_revision, note: e.reason })) }
+      : {}),
   };
 }
 

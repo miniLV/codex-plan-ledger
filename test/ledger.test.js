@@ -109,3 +109,88 @@ test('findAnswersInPrompt pulls the JSON out of a pasted message', () => {
   assert.equal(findAnswersInPrompt('no json here'), null);
   assert.equal(findAnswersInPrompt('{"plan_ledger": broken'), null);
 });
+
+const planMd = (decisions) => `# Carry test\n\nShort summary.\n\n## Decisions\n\n${decisions}\n`;
+const rev = (md, prev) => buildLedger({ planId: 'carry', planText: md, parsed: parsePlan(md), prev });
+
+test('carry forward: answers survive revisions by id or title, and are marked', () => {
+  const v1 = planMd([
+    '- D1: Where is the schedule stored?',
+    '  - drafts column (Recommended)',
+    '  - separate table',
+    '- D2: Retry policy?',
+    '  - retry 3 times (Recommended)',
+    '  - no retry',
+    '- Should the UI show a countdown?',
+    '  - yes',
+    '  - no',
+  ].join('\n'));
+  const r1 = rev(v1, null).ledger;
+  const ids = r1.decisions.map((d) => d.id);
+  const ui = ids.find((id) => id.startsWith('d-'));
+  const a1 = applyAnswers(r1, { answers: { d1: { choice: 'b', why: 'easier to query' }, d2: { choice: 'other', other: 'retry once' }, [ui]: { choice: 'b' } } }).ledger;
+
+  // rev 2: D1 unchanged; D2 renumbered to D5 (title match); UI options reordered (label match).
+  const v2 = planMd([
+    '- D1: Where is the schedule stored?',
+    '  - drafts column (Recommended)',
+    '  - separate table',
+    '- D5: Retry policy?',
+    '  - retry 3 times (Recommended)',
+    '  - no retry',
+    '- Should the UI show a countdown?',
+    '  - no',
+    '  - yes',
+  ].join('\n'));
+  const { ledger: r2, changes } = rev(v2, a1);
+  const byId = Object.fromEntries(r2.decisions.map((d) => [d.id, d]));
+  assert.equal(r2.revision, 2);
+  assert.deepEqual([byId.d1.status, byId.d1.chosen, byId.d1.rationale], ['answered', 'b', 'easier to query']);
+  assert.deepEqual(byId.d1.carried, { from_revision: 1, match: 'id', previous_id: 'd1' });
+  assert.deepEqual([byId.d5.chosen, byId.d5.other], ['other', 'retry once']);
+  assert.deepEqual(byId.d5.carried, { from_revision: 1, match: 'title', previous_id: 'd2' });
+  assert.equal(byId[ui].chosen, 'a', 'mapped to the option with the same label ("no")');
+  assert.equal(byId[ui].carried.match, 'id');
+  assert.deepEqual(changes.changed.find((c) => c.id === 'd5'), { id: 'd5', fields: ['id'], previous_id: 'd2' });
+  assert.deepEqual(changes.removed, []);
+  assert.equal(changes.carried.length, 3);
+  assert.equal(r2.earlier_answers, undefined);
+  assert.deepEqual(validateLedger(r2), []);
+
+  // Answering again clears the mark.
+  const a2 = applyAnswers(r2, { answers: { d1: { choice: 'a' } } }).ledger;
+  assert.equal(a2.decisions.find((d) => d.id === 'd1').carried, undefined);
+  assert.equal(compactLedger(r2, 'x').decisions.find((d) => d.id === 'd5').carried_from_revision, 1);
+});
+
+test('carry forward: answers whose decision or option is gone go to earlier_answers, and come back by title', () => {
+  const v1 = planMd(['- D1: Storage?', '  - column', '  - table', '- D2: Limit?', '  - 30 days', '  - 1 year'].join('\n'));
+  const a1 = applyAnswers(rev(v1, null).ledger, { answers: { d1: { choice: 'b' }, d2: { choice: 'a' } } }).ledger;
+  // rev 2: D1 has different options (old choice "table" gone); D2 is gone.
+  const v2 = planMd(['- D1: Storage?', '  - column', '  - key-value store'].join('\n'));
+  const { ledger: r2, changes } = rev(v2, a1);
+  assert.equal(r2.decisions[0].status, 'default');
+  assert.equal(r2.decisions[0].carried, undefined);
+  assert.deepEqual(changes.removed, [{ id: 'd2', title: 'Limit?' }]);
+  assert.deepEqual(r2.earlier_answers.map((e) => [e.id, e.chosen_label, e.from_revision, e.reason]), [
+    ['d1', 'table', 1, 'option no longer offered'],
+    ['d2', '30 days', 1, 'decision not in this revision'],
+  ]);
+  assert.deepEqual(validateLedger(r2), []);
+  // rev 3: the limit decision returns under another number; the earlier answer is carried by title.
+  const v3 = planMd(['- D1: Storage?', '  - column', '  - key-value store', '- D7: Limit?', '  - 1 year', '  - 30 days'].join('\n'));
+  const r3 = rev(v3, r2).ledger;
+  const d7 = r3.decisions.find((d) => d.id === 'd7');
+  assert.deepEqual([d7.status, d7.chosen, d7.carried], ['answered', 'b', { from_revision: 1, match: 'title', previous_id: 'd2' }]);
+  assert.deepEqual(r3.earlier_answers.map((e) => e.id), ['d1']);
+  assert.deepEqual(validateLedger(r3), []);
+});
+
+test('carry forward: same option id with a different label is not carried silently', () => {
+  const v1 = planMd(['- D1: Retry?', '  - retry 3 times', '  - no retry'].join('\n'));
+  const a1 = applyAnswers(rev(v1, null).ledger, { answers: { d1: { choice: 'a' } } }).ledger;
+  const v2 = planMd(['- D1: Retry?', '  - no retry', '  - retry 5 times'].join('\n'));
+  const r2 = rev(v2, a1).ledger;
+  assert.equal(r2.decisions[0].status, 'default');
+  assert.equal(r2.earlier_answers[0].chosen_label, 'retry 3 times');
+});
