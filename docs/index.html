@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>codex-plan-ledger: answer every decision in a Codex plan on one page</title>
+<meta name="description" content="Codex Plan mode, plus one offline HTML page to answer every decision at once, a decisions.json ledger in your repo, and a scope drift check. Early prototype.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b6bcb'/%3E%3Cpath d='M9 10h14M9 16h14M9 22h9' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
+<style>
+:root{--bg:#fbfbfa;--bg2:#f2f3f1;--card:#fff;--fg:#17181a;--muted:#5b5e66;--line:#e2e3e0;--acc:#0b6bcb;--acc-fg:#fff;--acc-bg:#e7f0fb;--warn-bg:#fff5e1;--warn:#8a4b00;--ok:#1a7f37;--code:#f1f2f4;--shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px rgba(0,0,0,.06)}
+@media (prefers-color-scheme:dark){:root{--bg:#121315;--bg2:#17191c;--card:#1c1e22;--fg:#ececee;--muted:#a3a6ae;--line:#2e3036;--acc:#6cb2ff;--acc-fg:#0b1220;--acc-bg:#16263a;--warn-bg:#33260f;--warn:#f2b866;--ok:#5ad27a;--code:#24262b;--shadow:0 1px 2px rgba(0,0,0,.4)}}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;-webkit-text-size-adjust:100%}
+html[data-lang="en"] [lang="zh-CN"]:not(html),html[data-lang="zh"] [lang="en"]:not(html){display:none!important}
+a{color:var(--acc)}a:hover{text-decoration-thickness:2px}
+:focus-visible{outline:3px solid var(--acc);outline-offset:2px;border-radius:4px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--card);padding:8px 12px;border-radius:8px;z-index:10}.skip:focus{left:8px}
+.wrap{max-width:1040px;margin:0 auto;padding:0 20px}
+header.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+header.top .wrap{display:flex;align-items:center;gap:16px;height:56px}
+.brand{font-weight:700;text-decoration:none;color:var(--fg);display:flex;align-items:center;gap:8px}
+.brand i{display:inline-block;width:22px;height:22px;border-radius:6px;background:var(--acc)}
+nav.links{display:flex;gap:16px;margin-left:auto;align-items:center;flex-wrap:wrap}
+nav.links a{color:var(--muted);text-decoration:none;font-size:14px}nav.links a:hover{color:var(--fg)}
+.toggle{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
+.toggle button{font:inherit;font-size:13px;border:0;background:transparent;color:var(--muted);padding:4px 10px;cursor:pointer;min-height:32px}
+.toggle button[aria-pressed="true"]{background:var(--acc);color:var(--acc-fg)}
+.hero{padding:72px 0 40px;text-align:center}
+.badge{display:inline-block;font-size:13px;padding:3px 10px;border-radius:999px;background:var(--warn-bg);color:var(--warn);margin-bottom:18px}
+h1{font-size:clamp(30px,5vw,50px);line-height:1.15;margin:0 auto 18px;max-width:880px;letter-spacing:-.02em}
+.lede{font-size:clamp(16px,2.2vw,19px);color:var(--muted);max-width:760px;margin:0 auto 28px}
+.install{display:flex;align-items:center;gap:8px;max-width:720px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 8px 8px 16px;box-shadow:var(--shadow)}
+.install code{flex:1;text-align:left;font:14px/1.5 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-x:auto;white-space:nowrap}
+.btn{font:inherit;font-size:14px;border:1px solid var(--acc);background:var(--acc);color:var(--acc-fg);border-radius:8px;padding:8px 14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;min-height:40px}
+.btn.ghost{background:transparent;color:var(--acc)}
+.cta{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+section{padding:56px 0;border-top:1px solid var(--line)}
+section.alt{background:var(--bg2)}
+h2{font-size:clamp(22px,3vw,30px);margin:0 0 10px;letter-spacing:-.01em}
+.sub{color:var(--muted);margin:0 0 28px;max-width:760px}
+figure{margin:0}figcaption{color:var(--muted);font-size:14px;margin-top:10px;text-align:center}
+.shot{display:block;width:100%;height:auto;border-radius:12px;border:1px solid var(--line);box-shadow:var(--shadow);background:#fff}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start}
+.figs{display:grid;gap:28px}
+.figs img{width:100%;height:auto;border-radius:12px;border:1px solid var(--line);background:#fff}
+.demo{border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);background:var(--card)}
+.demo-bar{display:flex;gap:8px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.demo-bar span.dot{width:10px;height:10px;border-radius:50%;background:var(--line);display:inline-block}
+.demo iframe{display:block;width:100%;height:720px;border:0;background:#fff}
+.steps{list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;counter-reset:s}
+.steps li{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;counter-increment:s;position:relative}
+.steps li::before{content:counter(s);display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--acc-bg);color:var(--acc);font-weight:700;margin-bottom:8px}
+.steps h3{margin:0 0 6px;font-size:16px}.steps p{margin:0;color:var(--muted);font-size:14px}
+.steps code,p code,td code,li code{font:13px ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;background:var(--code);padding:1px 5px;border-radius:5px}
+.note{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--warn);border-radius:10px;padding:14px 18px;margin:0 0 22px}
+.table{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:14px;min-width:560px}
+caption{text-align:left;padding:12px 14px;color:var(--muted);font-size:13px}
+th,td{padding:10px 14px;border-top:1px solid var(--line);text-align:left;vertical-align:top}
+thead th{background:var(--bg2);font-weight:600}
+td.num{font-variant-numeric:tabular-nums}
+ul.plain{padding-left:20px}ul.plain li{margin:4px 0}
+footer{padding:40px 0;color:var(--muted);font-size:14px;border-top:1px solid var(--line)}
+footer .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
+@media (max-width:860px){.grid2{grid-template-columns:1fr}.steps{grid-template-columns:1fr 1fr}.demo iframe{height:640px}}
+@media (max-width:560px){.steps{grid-template-columns:1fr}nav.links a.hide-s{display:none}.hero{padding:48px 0 28px}.install{flex-direction:column;align-items:stretch;padding:12px}.install code{white-space:pre-wrap;word-break:break-all}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main"><span lang="en">Skip to content</span><span lang="zh-CN">跳到正文</span></a>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#top"><i aria-hidden="true"></i>codex-plan-ledger</a>
+    <nav class="links" aria-label="Sections">
+      <a class="hide-s" href="#demo"><span lang="en">Demo</span><span lang="zh-CN">演示</span></a>
+      <a class="hide-s" href="#how"><span lang="en">How it works</span><span lang="zh-CN">工作流程</span></a>
+      <a class="hide-s" href="#status"><span lang="en">Status</span><span lang="zh-CN">现状</span></a>
+      <a href="https://github.com/miniLV/codex-plan-ledger">GitHub</a>
+      <div class="toggle" role="group" aria-label="Language / 语言">
+        <button type="button" data-set-lang="zh" aria-pressed="false">中文</button>
+        <button type="button" data-set-lang="en" aria-pressed="true">EN</button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+<div class="hero" id="top">
+  <div class="wrap">
+    <p class="badge"><span lang="en">Early prototype · v0.1</span><span lang="zh-CN">早期原型 · v0.1</span></p>
+    <h1><span lang="en">Answer every decision in a Codex <code>/plan</code> on one page, and keep them in your repo.</span><span lang="zh-CN">把 Codex <code>/plan</code> 里的决策一页答完，写进仓库。</span></h1>
+    <p class="lede"><span lang="en">Keep using Codex's native Plan mode. When the plan arrives, a Stop hook renders one offline HTML page with every open decision. Your answers land in <code>docs/plans/&lt;id&gt;/decisions.json</code>, reviewable in PRs, and a scope drift check compares the code change with the plan.</span><span lang="zh-CN">Codex 原生 Plan 模式照常用。计划一出来，Stop hook 生成一页离线 HTML，列出所有待定决策；答案落进 <code>docs/plans/&lt;id&gt;/decisions.json</code>，能在 PR 里 review；代码写完再跑一次范围偏离检查。</span></p>
+    <div class="install">
+      <code id="cmd">npm i -g github:miniLV/codex-plan-ledger &amp;&amp; plan-ledger init --write</code>
+      <button class="btn" type="button" id="copy" aria-describedby="copied"><span lang="en">Copy</span><span lang="zh-CN">复制</span></button>
+    </div>
+    <p id="copied" role="status" aria-live="polite" style="min-height:1.6em;color:var(--muted);font-size:14px;margin:8px 0 0"></p>
+    <div class="cta">
+      <a class="btn" href="#demo"><span lang="en">Try the live demo</span><span lang="zh-CN">试一下在线演示</span></a>
+      <a class="btn ghost" href="https://github.com/miniLV/codex-plan-ledger"><span lang="en">View on GitHub</span><span lang="zh-CN">在 GitHub 上查看</span></a>
+    </div>
+  </div>
+</div>
+
+<section id="page" aria-labelledby="page-h">
+  <div class="wrap grid2">
+    <div>
+      <h2 id="page-h"><span lang="en">One page instead of many rounds</span><span lang="zh-CN">一页答完，不用一轮轮来回</span></h2>
+      <p class="sub"><span lang="en">Every open decision is one card: the options, the plan's recommendation, the default and the files it affects. Anything you leave empty is recorded as "not answered; default kept", not as agreement. One button builds the reply JSON to paste into your next Codex message.</span><span lang="zh-CN">每项待定决策一张卡片：选项、计划里的推荐、默认值、影响的文件。不选的项记为“未作答，保留默认”，不算同意。一个按钮生成回传 JSON，粘到 Codex 的下一条消息里。</span></p>
+      <ul class="plain">
+        <li lang="en">Rendered from plain templates. No extra model calls, no network, one file.</li>
+        <li lang="zh-CN">纯模板渲染，不额外调用模型，不联网，单个文件。</li>
+        <li lang="en">The hook never blocks the turn and never waits for you.</li>
+        <li lang="zh-CN">hook 从不阻塞、从不等你。</li>
+        <li lang="en">Answers are carried across plan revisions and marked as carried.</li>
+        <li lang="zh-CN">计划改版时沿用之前的回答，并标明是沿用的。</li>
+      </ul>
+    </div>
+    <figure>
+      <img class="shot" lang="en" src="assets/decision-page-en.png" width="1200" height="1500" loading="lazy" alt="Screenshot of the decision page: one card per decision with options, a Recommended badge, the default and the affected files, and a button that builds the reply JSON.">
+      <img class="shot" lang="zh-CN" src="assets/decision-page-zh.png" width="1200" height="1500" loading="lazy" alt="决策页截图：每项决策一张卡片，有选项、推荐标记、默认值和影响的文件，底部是生成回传 JSON 的按钮。">
+      <figcaption><span lang="en">Headless Chrome screenshot. Content: the synthetic example plan bundled with the repo.</span><span lang="zh-CN">无头 Chrome 截图。内容来自仓库自带的合成示例计划。</span></figcaption>
+    </figure>
+  </div>
+</section>
+
+<section id="demo" class="alt" aria-labelledby="demo-h">
+  <div class="wrap">
+    <h2 id="demo-h"><span lang="en">Live demo</span><span lang="zh-CN">在线演示</span></h2>
+    <p class="sub"><span lang="en">This is the real page the hook writes, rendered from the bundled example plan (<code>test/fixtures/send-later.message.md</code>, synthetic). Pick some options, then press the button at the bottom to see the answers JSON. Nothing leaves your browser.</span><span lang="zh-CN">这就是 hook 写出来的页面，内容来自仓库自带的示例计划（<code>test/fixtures/send-later.message.md</code>，合成样例）。选几个选项，再点底部按钮，就能看到回传 JSON。所有操作都只在你的浏览器里。</span></p>
+    <div class="demo">
+      <div class="demo-bar" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>docs/plans/demo-send-later-for-drafts/plan.html</span></div>
+      <iframe id="demo-frame" src="demo/plan-en.html" title="Decision page demo" loading="lazy" allow="clipboard-write"></iframe>
+    </div>
+    <p style="margin-top:10px;font-size:14px"><a id="demo-open" href="demo/plan-en.html"><span lang="en">Open the demo in a full tab</span><span lang="zh-CN">在新标签页里打开演示</span></a></p>
+  </div>
+</section>
+
+<section id="how" aria-labelledby="how-h">
+  <div class="wrap">
+    <h2 id="how-h"><span lang="en">How it works</span><span lang="zh-CN">工作流程</span></h2>
+    <p class="sub"><span lang="en">Hook → HTML → <code>decisions.json</code> → scope drift check.</span><span lang="zh-CN">hook → HTML → <code>decisions.json</code> → 范围偏离检查。</span></p>
+    <ol class="steps">
+      <li><h3><span lang="en">Stop hook</span><span lang="zh-CN">Stop hook</span></h3><p><span lang="en">When Codex outputs a <code>&lt;proposed_plan&gt;</code>, <code>plan-ledger hook-stop</code> parses it (from the message, or the session transcript when the message is empty) and lets the turn end normally.</span><span lang="zh-CN">Codex 给出 <code>&lt;proposed_plan&gt;</code> 时，<code>plan-ledger hook-stop</code> 解析计划（从消息里取；消息为空时读会话记录），然后让这一轮正常结束。</span></p></li>
+      <li><h3><span lang="en">One HTML page</span><span lang="zh-CN">一页 HTML</span></h3><p><span lang="en">All open decisions on one offline page. Answer them in one go and copy the reply JSON into your next message.</span><span lang="zh-CN">所有待定决策放在一页离线 HTML 里，一次答完，把回传 JSON 粘到下一条消息。</span></p></li>
+      <li><h3><code>decisions.json</code></h3><p><span lang="en">A versioned ledger next to the code, with a JSON Schema. It shows up in the PR diff: what was chosen, and why.</span><span lang="zh-CN">带版本的账本，和代码放在一起，有 JSON Schema。PR diff 里能看到选了什么、为什么。</span></p></li>
+      <li><h3><span lang="en">Scope drift check</span><span lang="zh-CN">范围偏离检查</span></h3><p><span lang="en"><code>plan-ledger check --base main</code> reports changed files outside the plan, and decisions whose files were never touched. It does not read code inside planned files.</span><span lang="zh-CN"><code>plan-ledger check --base main</code> 报出计划外被改的文件，以及该改却没碰的决策。它不读计划内文件里的代码。</span></p></li>
+    </ol>
+    <div class="figs" style="margin-top:32px">
+      <figure>
+        <img src="assets/plan-rounds.svg" width="860" loading="lazy" alt="Illustration (not measured): native /plan asks a few questions per round across several rounds; codex-plan-ledger puts every decision on one page. 示意图，不含测量数据。">
+        <figcaption><span lang="en">Illustration only. It contains no measured data.</span><span lang="zh-CN">只是示意图，不含测量数据。</span></figcaption>
+      </figure>
+      <figure>
+        <img src="assets/ledger-pr-diff.svg" width="860" loading="lazy" alt="Example: the diff of decisions.json in a PR, where decision d2 changes from the default to an answered option with a reason. 示例：PR 里 decisions.json 的 diff。">
+        <figcaption><span lang="en">Example of a <code>decisions.json</code> diff in a PR.</span><span lang="zh-CN">示例：PR 里 <code>decisions.json</code> 的 diff。</span></figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<section id="status" class="alt" aria-labelledby="status-h">
+  <div class="wrap">
+    <h2 id="status-h"><span lang="en">Status: early prototype</span><span lang="zh-CN">现状：早期原型</span></h2>
+    <div class="note">
+      <p lang="en" style="margin:0"><strong>Directional only, n = 1 pair.</strong> One task (add a <code>strict</code> option to vercel/ms@2.1.3), one run of native Plan mode and one with plan-ledger, same model and settings, questions answered by a script from a hidden oracle. This is not evidence of an effect. <strong>In this pair plan-ledger did not win on rounds</strong> (2 vs 1).</p>
+      <p lang="zh-CN" style="margin:0"><strong>只有方向性数据，n = 1 对。</strong>1 个任务（给 vercel/ms@2.1.3 加 <code>strict</code> 选项），原生 Plan 模式和 plan-ledger 各跑 1 次，同一模型和设置，问题由脚本按隐藏的 oracle 回答。这不是效果证据。<strong>这一对里 plan-ledger 在轮数上没有赢</strong>（2 对 1）。</p>
+    </div>
+    <div class="table">
+      <table>
+        <caption><span lang="en">Round 1, 2026-10-09. codex-cli 0.156.0, native Plan mode via app-server, medium effort.</span><span lang="zh-CN">第 1 轮，2026-10-09。codex-cli 0.156.0，经 app-server 使用原生 Plan 模式，medium。</span></caption>
+        <thead><tr><th scope="col"></th><th scope="col"><span lang="en">native Plan mode</span><span lang="zh-CN">原生 Plan 模式</span></th><th scope="col">plan-ledger</th></tr></thead>
+        <tbody>
+          <tr><th scope="row"><span lang="en">Rounds until the plan was final</span><span lang="zh-CN">计划定稿前的来回轮数</span></th><td class="num">1</td><td class="num">2</td></tr>
+          <tr><th scope="row"><span lang="en">Planning tokens: input / cached / output / reasoning</span><span lang="zh-CN">计划阶段 token：input / cached / output / reasoning</span></th><td class="num">294,933 / 236,416 / 941 / 65</td><td class="num">372,651 / 307,456 / 1,632 / 119</td></tr>
+          <tr><th scope="row"><span lang="en">Total tokens incl. implementation</span><span lang="zh-CN">含实现的总 token</span></th><td class="num">717,487</td><td class="num">586,971</td></tr>
+          <tr><th scope="row"><span lang="en">Wall time (planning / total)</span><span lang="zh-CN">耗时（计划 / 总计）</span></th><td class="num">69 s / 151 s</td><td class="num">90 s / 132 s</td></tr>
+          <tr><th scope="row"><span lang="en">Held-out verify</span><span lang="zh-CN">隐藏验收脚本</span></th><td><span lang="en">pass</span><span lang="zh-CN">通过</span></td><td><span lang="en">pass</span><span lang="zh-CN">通过</span></td></tr>
+          <tr><th scope="row"><span lang="en">Files changed outside the intent's scope</span><span lang="zh-CN">改到意图范围外的文件</span></th><td><code>tests.js</code></td><td><span lang="en">none</span><span lang="zh-CN">无</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <ul class="plain" style="margin-top:20px">
+      <li lang="en">Planted drift in the plan-ledger run: an unplanned new file and reverted decision files were caught; code in a planned file that contradicts a decision was not caught, as expected for v0.1.</li>
+      <li lang="zh-CN">plan-ledger 那次的埋入偏离：计划外新文件、把决策涉及的文件改回原样，都抓到了；在计划内文件里写与决策相反的代码，没抓到，符合 v0.1 的已知局限。</li>
+      <li lang="en">The parser and ledger were fixed after the round. An offline replay of the recorded plans (no new Codex calls) still gives 2 vs 1 rounds.</li>
+      <li lang="zh-CN">这一轮之后修了解析器和账本。用新代码离线重放记录下来的计划（没有新的 Codex 调用），轮数仍是 2 对 1。</li>
+      <li lang="en">Next: several tasks with at least 3 runs per arm, as in the measurement plan.</li>
+      <li lang="zh-CN">下一步：按实测计划，多个任务、每组至少跑 3 次。</li>
+    </ul>
+    <p style="margin-top:16px"><a href="https://github.com/miniLV/codex-plan-ledger/blob/main/bench/results/2026-10-09-round1/summary.md"><span lang="en">Raw data and summary</span><span lang="zh-CN">原始数据和小结</span></a> · <a href="https://github.com/miniLV/codex-plan-ledger/blob/main/docs/measurement-plan.md"><span lang="en">Measurement plan</span><span lang="zh-CN">实测计划</span></a></p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span><a href="https://github.com/miniLV/codex-plan-ledger">github.com/miniLV/codex-plan-ledger</a> · MIT</span>
+    <span lang="en">Works with Codex CLI · Node.js 20+ · zero dependencies</span><span lang="zh-CN">适用于 Codex CLI · Node.js 20+ · 零依赖</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var frame = document.getElementById('demo-frame');
+  var open = document.getElementById('demo-open');
+  function setLang(l) {
+    root.setAttribute('data-lang', l);
+    root.setAttribute('lang', l === 'zh' ? 'zh-CN' : 'en');
+    document.querySelectorAll('[data-set-lang]').forEach(function (b) { b.setAttribute('aria-pressed', String(b.getAttribute('data-set-lang') === l)); });
+    var src = 'demo/plan-' + l + '.html';
+    if (frame && frame.getAttribute('src') !== src) frame.setAttribute('src', src);
+    if (open) open.setAttribute('href', src);
+    frame && frame.setAttribute('title', l === 'zh' ? '决策页演示' : 'Decision page demo');
+    try { localStorage.setItem('cpl-lang', l); } catch (e) {}
+  }
+  var saved = null;
+  try { saved = localStorage.getItem('cpl-lang'); } catch (e) {}
+  var q = /[?&]lang=(zh|en)/.exec(location.search);
+  setLang(q ? q[1] : saved || (/^zh/i.test(navigator.language || '') ? 'zh' : 'en'));
+  document.querySelectorAll('[data-set-lang]').forEach(function (b) { b.addEventListener('click', function () { setLang(b.getAttribute('data-set-lang')); }); });
+  var copy = document.getElementById('copy');
+  var status = document.getElementById('copied');
+  copy.addEventListener('click', function () {
+    var text = document.getElementById('cmd').textContent;
+    var zh = root.getAttribute('data-lang') === 'zh';
+    function done(ok) { status.textContent = ok ? (zh ? '已复制' : 'Copied') : (zh ? '请手动选中复制' : 'Select and copy it by hand'); }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(function () { done(true); }, function () { done(false); });
+    else done(false);
+  });
+})();
+</script>
+</body>
+</html>

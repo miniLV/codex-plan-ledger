@@ -9,6 +9,7 @@
 </p>
 
 <p align="center">
+  <a href="https://minilv.github.io/codex-plan-ledger/?lang=zh"><strong>主页 + 在线演示</strong></a> ·
   <a href="./skills/plan-ledger/SKILL.md">Skill</a> ·
   <a href="./schema/decisions.schema.json">Schema</a> ·
   <a href="./docs/measurement-plan.md">实测计划</a> ·
@@ -103,7 +104,7 @@ plan-ledger init --write    # 写入 <repo>/.codex/hooks.json 和 .agents/skills
 - 项目级 `.codex/` 只有在项目被信任时才加载。hooks 默认开启，可用 `[features] hooks = false` 关闭。
 - 仓库级 skill 放在 `.agents/skills/`，用户级放在 `~/.agents/skills/`。
 
-可选：把 [`examples/codex/AGENTS.md.snippet`](examples/codex/AGENTS.md.snippet) 加进你的 `AGENTS.md`，让计划多一个 `## Decisions` 段，每项带选项、`(Recommended)` 和 `Affects:`。解析会更准，范围偏离检查也有据可查。
+可选：把 [`examples/codex/AGENTS.md.snippet`](examples/codex/AGENTS.md.snippet) 加进你的 `AGENTS.md`，让 Codex 在第一轮就给出完整的 `<proposed_plan>`（不停在草稿或一串问题上），并把还没定的选择写进 `## Decisions` 段，每项带选项、`(Recommended)` 和 `Affects:`。解析会更准，范围偏离检查也有据可查。
 
 ## 用法
 
@@ -166,6 +167,8 @@ plan-ledger validate                        # 校验 docs/plans/ 下所有账本
 
 决策点是启发式识别的：`## Decisions` / `## 待决` 这类段落、以问号结尾的条目、`Option A/B`、`方案 A/B`、`TBD`、`choose`、`待定` 等，`## Assumptions` 里的默认假设也会列出来让你确认。决策 id 由标题生成，计划改版时保持稳定；写成 `D1:` 时直接用 `d1`。答案只当数据存，不会被执行。
 
+Codex 改版计划时，之前的回答会沿用到 id 相同（或者标题相同）的决策上，前提是原来选的选项还在（id 相同且文字相同，或按文字匹配）。沿用的回答带 `carried` 字段（`from_revision`、`match: id|title`、`previous_id`），页面上显示“沿用第 N 版的回答”；重新作答后这个标记会去掉。决策或选项在新版里没了的回答，放进 `earlier_answers` 保留，不会丢。
+
 ## 范围偏离检查
 
 `plan-ledger check --base <ref>` 拿 `<ref>` 到工作区的改动（含未跟踪文件，不含 `docs/plans/` 本身）去对照：
@@ -205,6 +208,8 @@ plan-ledger validate                        # 校验 docs/plans/ 下所有账本
 | 改到意图范围外的文件 | `tests.js` | 无 |
 
 这一对里，plan-ledger **没有**减少轮数：第一轮模型只给了草稿、没给计划块，多了一次回复。原生组问了 1 个问题，没问到要不要改测试文件，结果改了 `tests.js`；plan-ledger 组的计划把“改哪些文件”列成了一项决策，按 oracle 的回答没有改测试文件。一对数据说明不了规律。
+
+之后修了解析器和账本（跳过“已决”条目、跨版本沿用回答），用新代码离线重放了这一轮记录下来的计划（没有新的 Codex 调用）：最终计划不再误报“3 项待答”，回答保留在账本的 `earlier_answers` 里；但轮数仍是 2 对 1，而“把决策影响的文件改回原样”这一项埋入偏离在新账本下没法测（最终计划里已没有挂文件的待答决策）。见 [重放分析](bench/results/2026-10-09-round1/reanalysis.md)。
 
 埋入偏离（plan-ledger 组，实现之后，在副本上跑 `plan-ledger check`）：不埋时无误报；计划外新文件（范围）抓到；把决策影响的文件改回原样（范围）抓到；在计划内的 `index.js` 里写与决策相反的代码（内容）没抓到，和上面写的已知局限一致。
 

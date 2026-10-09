@@ -9,6 +9,7 @@
 </p>
 
 <p align="center">
+  <a href="https://minilv.github.io/codex-plan-ledger/?lang=en"><strong>Homepage + live demo</strong></a> ·
   <a href="./skills/plan-ledger/SKILL.md">Skill</a> ·
   <a href="./schema/decisions.schema.json">Schema</a> ·
   <a href="./docs/measurement-plan.md">Measurement plan</a> ·
@@ -103,7 +104,7 @@ The same config as inline `config.toml` is in [`examples/codex/config.toml`](exa
 - A project's `.codex/` layer loads only when the project is trusted. Hooks are on by default; turn them off with `[features] hooks = false`.
 - Repo skills live in `.agents/skills/`, user skills in `~/.agents/skills/`.
 
-Optional: add [`examples/codex/AGENTS.md.snippet`](examples/codex/AGENTS.md.snippet) to your `AGENTS.md` so plans include a `## Decisions` section with options, `(Recommended)` and `Affects:`. Parsing gets more precise and the scope drift check has more to work with.
+Optional: add [`examples/codex/AGENTS.md.snippet`](examples/codex/AGENTS.md.snippet) to your `AGENTS.md` so Codex gives a complete `<proposed_plan>` on the first turn (not a draft or a list of questions) and lists open choices in a `## Decisions` section with options, `(Recommended)` and `Affects:`. Parsing gets more precise and the scope drift check has more to work with.
 
 ## Usage
 
@@ -166,6 +167,8 @@ plan-ledger validate                        # validate every ledger under docs/p
 
 Decision points are found heuristically: `## Decisions` / `## 待决`-style sections, items ending in a question mark, `Option A/B`, `方案 A/B`, `TBD`, `choose`, `待定` and similar. Defaults listed under `## Assumptions` are shown too, so you can confirm them. Decision ids come from the title and stay stable across plan revisions; `D1:` becomes `d1`. Answers are stored as data and never executed.
 
+When Codex revises the plan, earlier answers are carried forward to decisions with the same id, or else the same title, as long as the chosen option is still offered (matched by id with the same label, or by label). Carried answers get a `carried` field (`from_revision`, `match: id|title`, `previous_id`) and a "carried from rev N" tag on the page; answering again removes it. Answers whose decision or option is gone are kept in `earlier_answers` instead of being dropped.
+
 ## Scope drift check
 
 `plan-ledger check --base <ref>` takes the changes from `<ref>` to the working tree (untracked files included, `docs/plans/` excluded) and compares them with the ledger:
@@ -205,6 +208,8 @@ If the repo root has an `INTENT.md` from [intent-tests](https://github.com/miniL
 | Files changed outside the intent's scope | `tests.js` | none |
 
 In this pair plan-ledger did **not** reduce rounds: in its first turn the model gave a draft without a plan block, which cost one extra reply. The native arm asked one question, never asked about test files, and edited `tests.js`. The plan-ledger arm's plan listed "which files to change" as a decision; with the oracle's answer, test files were left alone. One pair shows no pattern.
+
+After the round, the parser and ledger were fixed (resolved items skipped, answers carried across revisions) and the recorded plans were replayed offline with the new code (no new Codex calls): the final plan no longer shows "3 decisions to answer", and the answer is kept in the ledger's `earlier_answers`. Rounds are still 2 vs 1, and the "revert the files a decision lists" plant can no longer be tested, because the final plan has no open decision with files. See the [re-analysis](bench/results/2026-10-09-round1/reanalysis.md).
 
 Planted drift (plan-ledger arm, after implementation, `plan-ledger check` on copies): no false positive on the clean tree; a new unplanned file (scope) was caught; reverting the files a decision lists (scope) was caught; code in the planned `index.js` that contradicts a decision (content) was not caught, matching the known limit above.
 

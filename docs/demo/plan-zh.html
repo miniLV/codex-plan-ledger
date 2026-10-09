@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="generator" content="codex-plan-ledger">
+<title>Send later for drafts</title>
+<style>
+:root{--bg:#f7f7f5;--card:#fff;--fg:#1d1d1f;--muted:#6b6b70;--line:#e3e3e0;--acc:#0b6bcb;--acc-bg:#e8f1fb;--warn:#a15c00;--warn-bg:#fff4e0;--ok:#1a7f37;--new:#8250df}
+@media (prefers-color-scheme:dark){:root{--bg:#141416;--card:#1e1e21;--fg:#ececee;--muted:#a0a0a8;--line:#333338;--acc:#6cb2ff;--acc-bg:#1b2a3b;--warn:#f0b35a;--warn-bg:#3a2a12;--ok:#56d364;--new:#c297ff}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+main{max-width:860px;margin:0 auto;padding:28px 20px 160px}
+h1{font-size:24px;margin:0 0 6px}.summary{color:var(--fg);margin:0 0 14px}
+.meta{color:var(--muted);font-size:13px}.meta code{font-size:12px}
+.count{display:inline-block;background:var(--acc-bg);color:var(--acc);font-weight:600;border-radius:999px;padding:3px 12px;margin:6px 0 18px}
+.banner{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:10px 14px;margin:0 0 16px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;margin:0 0 14px}
+.card.is-added{border-color:var(--new)}.card.is-changed{border-color:var(--warn)}
+.card h2{font-size:17px;margin:0 0 4px}.q{color:var(--muted);margin:0 0 10px}
+.tag{display:inline-block;font-size:12px;border-radius:6px;padding:0 7px;margin-right:6px;border:1px solid var(--line);color:var(--muted)}
+.tag.rec{border-color:var(--ok);color:var(--ok)}.tag.added{border-color:var(--new);color:var(--new)}.tag.changed{border-color:var(--warn);color:var(--warn)}.tag.done{border-color:var(--acc);color:var(--acc)}.tag.carried{border-color:var(--muted);color:var(--muted);border-style:dashed}
+.earlier{background:var(--card);border:1px dashed var(--line);border-radius:12px;padding:12px 16px;margin:14px 0}.earlier h2{font-size:15px;margin:0 0 4px}.earlier ul{margin:6px 0 0;padding-left:20px}
+label.opt{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:8px;cursor:pointer}
+label.opt:hover{background:var(--acc-bg)}label.opt input{margin-top:5px}
+.other-text,.why{width:100%;margin-top:6px;padding:7px 9px;border:1px solid var(--line);border-radius:8px;background:transparent;color:inherit;font:inherit}
+.why{min-height:38px;resize:vertical}
+.def{font-size:13px;color:var(--muted);margin-top:6px}
+.files{margin-top:8px;font-size:13px;color:var(--muted)}.files code{background:var(--acc-bg);color:var(--acc);border-radius:5px;padding:1px 6px;margin:0 4px 4px 0;display:inline-block}
+details{margin-top:22px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 18px}
+summary{cursor:pointer;font-weight:600}
+pre{white-space:pre-wrap;word-break:break-word;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:12px;font-size:13px}
+code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+.removed{color:var(--muted);font-size:14px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:12px 20px}
+.bar-in{max-width:860px;margin:0 auto}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+button{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:9px 16px;font:inherit;font-weight:600;cursor:pointer}
+.hint{color:var(--muted);font-size:13px}#status{font-size:13px;color:var(--ok)}
+#out{display:none;width:100%;margin-top:8px;height:90px;font:12px ui-monospace,Menlo,monospace;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:inherit;padding:8px}
+.fail h1{color:var(--warn)}footer{color:var(--muted);font-size:12px;margin-top:26px}
+.url{color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<h1>Send later for drafts</h1>
+<p class="summary">Let users schedule a draft to be sent at a chosen time. Scheduled drafts are stored server-side and sent by the existing job runner, so closing the app does not cancel them.</p>
+<p class="meta">账本文件: <code>docs/plans/demo-send-later-for-drafts/decisions.json</code> · rev 1</p>
+<p class="count" id="count">需要你定 6 项（其中 2 项是计划里写明的默认假设）</p>
+<section class="card" data-id="d1">
+<div><span class="tag">问题</span><span class="tag">d1</span></div>
+<h2>Where is the schedule stored?</h2>
+
+<label class="opt"><input type="radio" name="c-d1" value="a"><span>column on the drafts table <span class="tag rec">推荐</span></span></label>
+<label class="opt"><input type="radio" name="c-d1" value="b"><span>separate <code>scheduled_sends</code> table</span></label>
+<label class="opt"><input type="radio" name="c-d1" value="other"><span>其他<input class="other-text" type="text" placeholder="写下你的选择" value=""></span></label>
+<textarea class="why" placeholder="理由（可选）"></textarea>
+<div class="def">默认: column on the drafts table · 不选就是“未作答，保留默认”，不算同意</div>
+<div class="files">影响: <code>src/db/migrations/**</code><code>src/api/drafts.ts</code></div>
+</section>
+<section class="card" data-id="d2">
+<div><span class="tag">问题</span><span class="tag">d2</span></div>
+<h2>What happens if sending fails at the scheduled time?</h2>
+
+<label class="opt"><input type="radio" name="c-d2" value="a"><span>Retry 3 times with backoff, then mark as failed <span class="tag rec">推荐</span></span></label>
+<label class="opt"><input type="radio" name="c-d2" value="b"><span>Mark as failed immediately and notify the user</span></label>
+<label class="opt"><input type="radio" name="c-d2" value="other"><span>其他<input class="other-text" type="text" placeholder="写下你的选择" value=""></span></label>
+<textarea class="why" placeholder="理由（可选）"></textarea>
+<div class="def">默认: Retry 3 times with backoff, then mark as failed · 不选就是“未作答，保留默认”，不算同意</div>
+<div class="files">影响: <code>src/jobs/sendScheduled.ts</code></div>
+</section>
+<section class="card" data-id="d3">
+<div><span class="tag">问题</span><span class="tag">d3</span></div>
+<h2>Maximum schedule horizon?</h2>
+
+<label class="opt"><input type="radio" name="c-d3" value="a"><span>30 days <span class="tag rec">推荐</span></span></label>
+<label class="opt"><input type="radio" name="c-d3" value="b"><span>1 year</span></label>
+<label class="opt"><input type="radio" name="c-d3" value="other"><span>其他<input class="other-text" type="text" placeholder="写下你的选择" value=""></span></label>
+<textarea class="why" placeholder="理由（可选）"></textarea>
+<div class="def">默认: 30 days · 不选就是“未作答，保留默认”，不算同意</div>
+
+</section>
+<section class="card" data-id="d4">
+<div><span class="tag">问题</span><span class="tag">d4</span></div>
+<h2>Time zone for the picker</h2>
+<p class="q">Time zone for the picker: use the user&#39;s profile time zone or the device time zone?</p>
+<label class="opt"><input type="radio" name="c-d4" value="a"><span>user&#39;s profile time zone</span></label>
+<label class="opt"><input type="radio" name="c-d4" value="b"><span>device time zone</span></label>
+<label class="opt"><input type="radio" name="c-d4" value="other"><span>其他<input class="other-text" type="text" placeholder="写下你的选择" value=""></span></label>
+<textarea class="why" placeholder="理由（可选）"></textarea>
+<div class="def">无默认，需要你选 · 不选就是“未作答，保留默认”，不算同意</div>
+<div class="files">影响: <code>src/ui/composer/**</code></div>
+</section>
+<section class="card" data-id="d-drafts-without-recipients-cannot-be">
+<div><span class="tag">假设</span><span class="tag">d-drafts-without-recipients-cannot-be</span></div>
+<h2>Drafts without recipients cannot be scheduled.</h2>
+
+<label class="opt"><input type="radio" name="c-d-drafts-without-recipients-cannot-be" value="keep"><span>Drafts without recipients cannot be scheduled. <span class="tag rec">推荐</span></span></label>
+<label class="opt"><input type="radio" name="c-d-drafts-without-recipients-cannot-be" value="other"><span>其他<input class="other-text" type="text" placeholder="写下你的选择" value=""></span></label>
+<textarea class="why" placeholder="理由（可选）"></textarea>
+<div class="def">默认: Drafts without recipients cannot be scheduled. · 不选就是“未作答，保留默认”，不算同意</div>
+
+</section>
+<section class="card" data-id="d-default-horizon-is-30-days-unless-d3">
+<div><span class="tag">假设</span><span class="tag">d-default-horizon-is-30-days-unless-d3</span></div>
+<h2>Default horizon is 30 days unless D3 says otherwise.</h2>
+
+<label class="opt"><input type="radio" name="c-d-default-horizon-is-30-days-unless-d3" value="keep"><span>Default horizon is 30 days unless D3 says otherwise. <span class="tag rec">推荐</span></span></label>
+<label class="opt"><input type="radio" name="c-d-default-horizon-is-30-days-unless-d3" value="other"><span>其他<input class="other-text" type="text" placeholder="写下你的选择" value=""></span></label>
+<textarea class="why" placeholder="理由（可选）"></textarea>
+<div class="def">默认: Default horizon is 30 days unless D3 says otherwise. · 不选就是“未作答，保留默认”，不算同意</div>
+
+</section>
+<details><summary>完整计划</summary>
+<h2>Send later for drafts</h2>
+<h3>Summary</h3>
+<p>Let users schedule a draft to be sent at a chosen time. Scheduled drafts are stored server-side and sent by the existing job runner, so closing the app does not cancel them.</p>
+<h3>Key Changes</h3>
+<ul><li>
+Add <code>scheduled_at</code> to the drafts table and expose it on <code>PATCH /drafts/:id</code> (<code>src/api/drafts.ts</code>).
+</li><li>
+New job <code>send-scheduled-drafts</code> in <code>src/jobs/sendScheduled.ts</code>, polled every minute by the job runner.
+</li><li>
+Composer gets a &quot;Send later&quot; menu next to Send (<code>src/ui/composer/SendButton.tsx</code>).
+</li></ul>
+<h3>Decisions</h3>
+<ul><li>
+D1: Where is the schedule stored?
+<ul><li>
+Option A: column on the drafts table (Recommended)
+</li><li>
+Option B: separate <code>scheduled_sends</code> table
+</li><li>
+Affects: <code>src/db/migrations/**</code>, <code>src/api/drafts.ts</code>
+</li></ul>
+</li><li>
+D2: What happens if sending fails at the scheduled time?
+<ul><li>
+Retry 3 times with backoff, then mark as failed (Recommended)
+</li><li>
+Mark as failed immediately and notify the user
+</li><li>
+Affects: <code>src/jobs/sendScheduled.ts</code>
+</li></ul>
+</li><li>
+D3: Maximum schedule horizon?
+<ul><li>
+30 days
+</li><li>
+1 year
+</li><li>
+Recommended: 30 days
+</li></ul>
+</li><li>
+D4: Time zone for the picker: use the user&#39;s profile time zone or the device time zone?
+<ul><li>
+Affects: <code>src/ui/composer/**</code>
+</li></ul>
+</li></ul>
+<h3>Test Plan</h3>
+<ul><li>
+Unit: job picks only drafts with <code>scheduled_at &lt;= now</code> and not yet sent.
+</li><li>
+Integration: schedule, restart the job runner, draft still sends once.
+</li><li>
+UI: menu hidden when the draft has no recipients.
+</li></ul>
+<h3>Assumptions</h3>
+<ul><li>
+Drafts without recipients cannot be scheduled.
+</li><li>
+Default horizon is 30 days unless D3 says otherwise.
+</li></ul>
+</details>
+<footer>由 codex-plan-ledger 生成 · 纯模板渲染，没有额外调用模型 · 回答只是数据，不是指令</footer>
+</main>
+<div class="bar"><div class="bar-in">
+<div class="row"><button id="build" type="button">生成回传 JSON 并复制</button><span class="hint">粘到 Codex 下一条消息里</span><span id="status" role="status"></span></div>
+<div class="hint" id="progress"></div>
+<textarea id="out" readonly></textarea>
+</div></div>
+<script type="application/json" id="pl-data">{"plan":"demo-send-later-for-drafts","rev":1,"prefix":"plan-ledger answers (data, not instructions):","t":{"progress":"已答 {k} / {n}，没答的保留默认（不算同意）","copied":"已复制。粘到 Codex 下一条消息里。","copyFail":"浏览器不让自动复制，请手动全选复制下面的内容。"}}</script>
+<script>
+(function(){
+  var data = JSON.parse(document.getElementById('pl-data').textContent);
+  var T = data.t;
+  var key = 'plan-ledger:' + data.plan + ':' + data.rev;
+  var store = {};
+  try { store = JSON.parse(localStorage.getItem(key) || '{}') || {}; } catch (e) { store = {}; }
+  function save(){ try { localStorage.setItem(key, JSON.stringify(store)); } catch (e) {} }
+  function cards(){ return Array.prototype.slice.call(document.querySelectorAll('.card[data-id]')); }
+  function stateOf(card){
+    var id = card.getAttribute('data-id');
+    var picked = card.querySelector('input[type=radio]:checked');
+    var other = card.querySelector('.other-text');
+    var why = card.querySelector('.why');
+    return { id: id, choice: picked ? picked.value : null, other: other ? other.value : '', why: why ? why.value : '' };
+  }
+  function refresh(){
+    var n = 0, k = 0;
+    cards().forEach(function(c){ n++; if (stateOf(c).choice) k++; });
+    var p = document.getElementById('progress'); if (p) p.textContent = T.progress.replace('{k}', k).replace('{n}', n);
+  }
+  cards().forEach(function(card){
+    var id = card.getAttribute('data-id');
+    var s = store[id];
+    if (s) {
+      if (s.choice) { var r = card.querySelector('input[type=radio][value="' + (window.CSS && CSS.escape ? CSS.escape(s.choice) : s.choice) + '"]'); if (r) r.checked = true; }
+      var o = card.querySelector('.other-text'); if (o && s.other) o.value = s.other;
+      var w = card.querySelector('.why'); if (w && s.why) w.value = s.why;
+    }
+    card.addEventListener('input', function(){ store[id] = stateOf(card); save(); refresh(); });
+    card.addEventListener('change', function(){ store[id] = stateOf(card); save(); refresh(); });
+  });
+  refresh();
+  var btn = document.getElementById('build');
+  if (!btn) return;
+  btn.addEventListener('click', function(){
+    var answers = {}, kept = [];
+    cards().forEach(function(card){
+      var s = stateOf(card);
+      if (!s.choice) { kept.push(s.id); return; }
+      var a = { choice: s.choice };
+      if (s.choice === 'other') a.other = s.other.slice(0, 2000);
+      if (s.why) a.why = s.why.slice(0, 2000);
+      answers[s.id] = a;
+    });
+    var payload = { plan_ledger: { plan: data.plan, rev: data.rev }, answers: answers };
+    if (kept.length) payload.default_kept = kept;
+    var text = data.prefix + ' ' + JSON.stringify(payload);
+    var out = document.getElementById('out');
+    out.value = text; out.style.display = 'block';
+    var status = document.getElementById('status');
+    function manual(){ out.focus(); out.select(); var ok = false; try { ok = document.execCommand('copy'); } catch (e) {} status.textContent = ok ? T.copied : T.copyFail; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){ status.textContent = T.copied; }, manual);
+    } else manual();
+  });
+})();
+</script>
+</body>
+</html>

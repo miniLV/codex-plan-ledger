@@ -20,3 +20,10 @@ test('comparison figure is labelled illustrative and has no numbers or percentag
   const visible = [...svg.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]).join(' ');
   assert.ok(!/[0-9%]/.test(visible), visible);
 });
+
+test('landing-page demo pages are current (run npm run demo)', async () => {
+  const { demoPages } = await import('../scripts/gen-demo.mjs');
+  for (const [name, html] of Object.entries(demoPages())) {
+    assert.equal(readFileSync(join(ROOT, 'docs/demo', name), 'utf8'), html, name);
+  }
+});

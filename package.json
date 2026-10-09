@@ -10,10 +10,12 @@
   "bugs": { "url": "https://github.com/miniLV/codex-plan-ledger/issues" },
   "bin": { "plan-ledger": "bin/plan-ledger.js" },
   "files": ["bin", "src", "schema", "skills", "examples", "docs", "README.md", "README.en.md", "LICENSE"],
+  "homepage": "https://minilv.github.io/codex-plan-ledger/",
   "engines": { "node": ">=20" },
   "keywords": ["codex", "openai-codex", "codex-cli", "plan-mode", "coding-agents", "ai-agents", "developer-tools", "html"],
   "scripts": {
     "test": "node --test test/*.test.js",
-    "figures": "node scripts/gen-figures.mjs"
+    "figures": "node scripts/gen-figures.mjs",
+    "demo": "node scripts/gen-demo.mjs"
   }
 }
