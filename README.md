@@ -1,12 +1,24 @@
 **中文** · [English](./README.en.md)
 
-# codex-plan-ledger
+# <img src="./docs/assets/icon-128.png" alt="" width="40" height="40"> codex-plan-ledger
 
 **Codex `/plan` 的决策账本。** Codex 和你定好了计划；代码写完，一条命令就能看出改动有没有超出计划，每项决策都以 diff 的形式留在 PR 里。
+
+**为什么需要它**
+
+1. 让 Codex 先计划再写代码时，它可能顺手改了你没同意过的文件。
+2. plan-ledger 在定计划时把你们商定的内容记下来（仓库里的 `decisions.json`）。
+3. 代码写完后，它拿改动文件对照这份记录，告诉你哪些超出了计划。它只比对文件列表，不读代码。
 
 [![10 秒介绍：Codex /plan 提问并作答 → 回答写进 decisions.json → 写代码时多改了一个计划外文件 → plan-ledger check 报出这个文件](./docs/assets/intro-zh.gif)](./docs/assets/intro-zh.mp4)
 
 <sub>10 秒介绍（[MP4](./docs/assets/intro-zh.mp4)）。hook 和 check 的输出是在仓库样例上真实运行所得；Codex 窗口按样例会话记录重绘，代码改动由脚本写入。</sub>
+
+## 工作原理
+
+[![UML 时序图：开发者 → Codex /plan 提问、你回答 → 本轮结束时 Stop hook 把问答、待定项、默认值和范围写入仓库里的 decisions.json → Codex 写代码，可能改到计划没提过的文件 → plan-ledger check 读取 decisions.json 和 git diff，报出 DRIFT: src/utils/analytics.ts → 提 PR，评审看到每个选择和原因。](./docs/assets/how-it-works-zh.png)](./docs/assets/how-it-works-zh.png)
+
+<sub>按时间从上往下读：实线是调用或写入，虚线是返回，橙色是 plan-ledger 做的事。图的源文件：[`diagrams/how-it-works-zh.html`](./diagrams/how-it-works-zh.html)（`npm run diagrams` 生成，画法参考 [sketchboard-diagram](https://github.com/miniLV/sketchboard-diagram)）。</sub>
 
 - **查范围偏离。** `plan-ledger check` 列出计划没提到却被改的文件，以及计划要改却没碰的文件。3 次埋点测试里：计划外文件 3/3 抓到，该改未改 3/3 抓到，干净时 3/3 无误报。
 - **决策进 PR。** Codex 问过你的问题、计划里的待定项和默认做法写进 `decisions.json`，评审能看到选了什么、为什么。
@@ -41,9 +53,7 @@ Codex 原生 Plan 模式照常用，提问仍在 Codex 里答。计划出来后�
 | `plan-ledger hook-prompt` | 可选的 `UserPromptSubmit` hook（实验性）。发 `ledger:apply` 就把最新决策注入上下文；粘贴的回传 JSON 会自动记进账本。 |
 | `skills/plan-ledger` | hook 没装或不被信任时的手动兜底：把计划贴给 skill，它调用同一个渲染器。 |
 
-## 工作流程
-
-<img src="./docs/assets/flow-zh.svg" alt="示意：Codex /plan 提问并作答 → decisions.json → Pull request → plan-ledger check 报出计划外改动的文件。" width="760">
+## 使用步骤
 
 1. 在 Codex 里照常 `/plan` 并回答原生问题。出现 `<proposed_plan>` 时，Stop hook 只做解析、渲染、写账本，然后正常结束；从不阻塞、从不等待。Codex 问过的问题记为 `source: "codex-native"`、已作答，不会再问一遍。
 2. 打开 `plan.html` 复核。待定项一次答完；计划写明的默认标为可复核，不算待答。未选的项记为「未作答，保留默认」，不算同意。
@@ -228,6 +238,8 @@ npm run demo          # 重新生成落地页的在线演示页
 npm run screens       # 重新生成 docs/assets/decision-page-*.png（需要无头 Chrome）
 npm run intro:video   # 重新生成 docs/assets/intro-*.{mp4,gif}（10 秒介绍；需要无头 Chrome 和 ffmpeg）
 npm run demo:video    # 重新生成 docs/assets/demo-flow-*.{gif,mp4}（需要无头 Chrome 和 ffmpeg）
+npm run diagrams      # 重新生成 diagrams/how-it-works-*.html 和 docs/assets/how-it-works-*.png（时序图；需要无头 Chrome）
+npm run icon          # 重新生成图标、favicon 和 docs/assets/social-preview.png（需要无头 Chrome 和 ffmpeg）
 ```
 
 ## 致谢

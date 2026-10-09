@@ -24,7 +24,8 @@ a:hover{text-decoration-thickness:2px}
 
 header.top{background:var(--bg);border-bottom:1px solid var(--line)}
 header.top .col{display:flex;align-items:center;gap:20px;min-height:60px;flex-wrap:wrap}
-.brand{font-weight:600;color:var(--fg);text-decoration:none;font-family:var(--mono);font-size:15px}
+.brand{font-weight:600;color:var(--fg);text-decoration:none;font-family:var(--mono);font-size:15px;display:inline-flex;align-items:center;gap:9px}
+.brand img{display:block;width:24px;height:24px}
 nav.links{display:flex;gap:20px;margin-left:auto;align-items:center;flex-wrap:wrap;font-size:15px}
 nav.links a{color:var(--muted);text-decoration:none}
 nav.links a:hover{color:var(--fg)}
@@ -117,3 +118,11 @@ ul.points strong{font-weight:600;margin-right:4px}
 .status-line{margin:28px 0 0;font-size:15px;color:var(--muted)}
 .status-line .status{margin:0 8px 0 0;font-size:13px}
 figure img[src$=".svg"]{border:0;background:none;border-radius:0}
+
+/* round 5: why block, UML figure */
+ol.why{margin:8px 0 0;padding:0;list-style:none;counter-reset:why;max-width:60ch}
+ol.why li{counter-increment:why;position:relative;padding:0 0 0 40px;margin:0 0 14px;font-size:17px;line-height:1.6}
+ol.why li::before{content:counter(why);position:absolute;left:0;top:1px;width:26px;height:26px;border-radius:50%;background:var(--acc-bg);color:var(--acc-ink);font:600 14px/26px var(--mono);text-align:center}
+figure.uml{margin:8px 0 28px}
+figure.uml img{border-radius:12px}
+#how .steps{margin-top:0}

@@ -9,7 +9,12 @@
 <meta name="theme-color" content="#FAF6F1">
 <link rel="alternate" hreflang="en" href="https://minilv.github.io/codex-plan-ledger/">
 <link rel="alternate" hreflang="zh-CN" href="https://minilv.github.io/codex-plan-ledger/zh/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23D97757'/%3E%3Cpath d='M9 11h14M9 16h14M9 21h9' stroke='%23FFFCF8' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="assets/icon-512.png">
+<meta property="og:title" content="codex-plan-ledger: a decision ledger for Codex /plan">
+<meta property="og:image" content="https://minilv.github.io/codex-plan-ledger/assets/social-preview.png">
+<meta name="twitter:card" content="summary_large_image">
 <script>if (/[?&]lang=zh/.test(location.search)) location.replace('zh/' + location.hash);</script>
 <link rel="stylesheet" href="site.css">
 </head>
@@ -17,7 +22,7 @@
 <a class="skip" href="#main">Skip to content</a>
 <header class="top">
   <div class="col">
-    <a class="brand" href="./">codex-plan-ledger</a>
+    <a class="brand" href="./"><img src="assets/icon.svg" width="24" height="24" alt="">codex-plan-ledger</a>
     <nav class="links" aria-label="Sections">
       <a class="opt" href="#how">How it works</a>
       <a class="opt" href="#status">Measured</a>
@@ -59,21 +64,35 @@
   </div>
 </div>
 
+<section id="why" aria-labelledby="why-h">
+  <div class="col">
+    <h2 id="why-h">Why you'd want this</h2>
+    <ol class="why">
+      <li>When you let Codex plan and then code, it can quietly edit files you never agreed on.</li>
+      <li>plan-ledger writes down what you agreed (<code>decisions.json</code>, in your repo) when the plan is made.</li>
+      <li>After coding, it checks the changed files against that record and tells you what fell outside it. It compares file lists; it does not read the code.</li>
+    </ol>
+  </div>
+</section>
+
 <section id="how" aria-labelledby="how-h">
   <div class="col">
     <h2 id="how-h">How it works</h2>
-    <p class="intro">Keep using Codex's native Plan mode and answer its questions in Codex. Rendering never calls a model.</p>
+    <p class="intro">Read the diagram top to bottom: solid arrows are calls or writes, dashed arrows are replies, orange is what plan-ledger does. Keep using Codex's native Plan mode and answer its questions in Codex. Rendering never calls a model.</p>
+  </div>
+  <div class="wide">
+    <figure class="uml">
+      <a href="assets/how-it-works-en.png"><img src="assets/how-it-works-en.png" width="1600" height="1350" loading="lazy" alt="UML sequence diagram: Developer runs Codex /plan and answers its question; when the turn ends, the Stop hook writes the Q&amp;A, open items, defaults and scope to decisions.json in the repo; Codex codes and may edit a file the plan never named; plan-ledger check reads decisions.json and the git diff and reports DRIFT: src/utils/analytics.ts; the PR carries the code and decisions.json, so the reviewer sees each choice and why."></a>
+      <figcaption>Source: <a href="https://github.com/miniLV/codex-plan-ledger/blob/main/diagrams/how-it-works-en.html">diagrams/how-it-works-en.html</a>, drawn in the <a href="https://github.com/miniLV/sketchboard-diagram">sketchboard-diagram</a> style.</figcaption>
+    </figure>
+  </div>
+  <div class="col">
     <ol class="steps">
       <li><h3>Stop hook writes the ledger</h3><p>Parse the plan, write <code>decisions.json</code> and an offline HTML page, end the turn. It never blocks and never waits.</p></li>
       <li><h3>Review on one page</h3><p>Open, answered, and default items are shown apart. Copy the reply JSON into your next Codex message when done.</p></li>
       <li><h3>Decisions in the PR</h3><p>The ledger is reviewed next to the code: what was chosen, and why.</p></li>
       <li><h3>Scope drift check</h3><p><code>plan-ledger check --base main</code> compares changed files with the plan's scope.</p></li>
     </ol>
-  </div>
-  <div class="wide">
-    <figure>
-      <img src="assets/flow-en.svg" width="960" height="150" loading="lazy" alt="Schematic: Codex /plan asks and you answer → decisions.json → Pull request → plan-ledger check flags files outside the plan.">
-    </figure>
   </div>
 </section>
 

@@ -5,7 +5,7 @@
 //                 output from scripts/capture-session.mjs (scratch repo, fixtures).
 // shot-diff.svg   the decisions.json that `plan-ledger hook-stop` really wrote in
 //                 that run, as it appears in a PR (excerpt; folded lines marked).
-// flow-{en,zh}.svg  a minimal line diagram. Schematic; no measured data.
+// The "How it works" sequence diagram lives in scripts/gen-diagrams.mjs.
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -141,48 +141,11 @@ export function diffShot(s = captureSession()) {
   return p.join('\n') + '\n';
 }
 
-const FLOW = {
-  en: { label: 'How the pieces connect. Schematic.', nodes: [
-    ['Codex /plan', 'Codex asks; you answer in Codex'],
-    ['decisions.json', 'answers, open items, defaults'],
-    ['Pull request', 'reviewed as a diff with the code'],
-    ['plan-ledger check', 'flags files outside the plan'],
-  ] },
-  zh: { label: '各部分如何衔接。示意图。', nodes: [
-    ['Codex /plan', 'Codex 提问，你在 Codex 里答'],
-    ['decisions.json', '问答、待定项、默认写进仓库'],
-    ['Pull request', '和代码一起 diff、review'],
-    ['plan-ledger check', '报出计划外改动的文件'],
-  ] },
-};
-
-export function flowFigure(lang = 'en') {
-  const t = FLOW[lang];
-  const W = 960, H = 150, x0 = 130, x1 = W - 130, yL = 66;
-  const step = (x1 - x0) / (t.nodes.length - 1);
-  const p = [];
-  p.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(t.nodes.map((n) => `${n[0]}: ${n[1]}`).join(' → '))}">`);
-  p.push(`<rect x="0" y="0" width="${W}" height="${H}" rx="12" fill="${C.cream}"/>`);
-  p.push(`<text x="32" y="32" font-family="${esc(SANS)}" font-size="12" fill="${C.muted}">${esc(t.label)}</text>`);
-  p.push(`<line x1="${x0}" y1="${yL}" x2="${x1}" y2="${yL}" stroke="${C.rule}" stroke-width="1"/>`);
-  t.nodes.forEach(([title, sub], i) => {
-    const x = x0 + i * step, last = i === t.nodes.length - 1;
-    p.push(`<circle cx="${x}" cy="${yL}" r="${last ? 6 : 4.5}" fill="${last ? C.acc : C.cream}" stroke="${last ? C.acc : C.ink}" stroke-width="1.25"/>`);
-    const mono = /\.json|check|\/plan/.test(title);
-    p.push(`<text x="${x}" y="${yL + 36}" text-anchor="middle" font-family="${esc(mono ? MONO : SANS)}" font-size="15" font-weight="600" fill="${last ? C.accInk : C.ink}">${esc(title)}</text>`);
-    p.push(`<text x="${x}" y="${yL + 60}" text-anchor="middle" font-family="${esc(SANS)}" font-size="13" fill="${C.muted}">${esc(sub)}</text>`);
-  });
-  p.push('</svg>');
-  return p.join('\n') + '\n';
-}
-
 export function allFigures() {
   const s = captureSession();
   return {
     'shot-check.svg': checkShot(s),
     'shot-diff.svg': diffShot(s),
-    'flow-en.svg': flowFigure('en'),
-    'flow-zh.svg': flowFigure('zh'),
   };
 }
 

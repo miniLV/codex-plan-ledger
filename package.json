@@ -19,6 +19,8 @@
     "demo:video": "node scripts/gen-demo-video.mjs",
     "intro:video": "node scripts/gen-intro-video.mjs",
     "demo": "node scripts/gen-demo.mjs",
-    "screens": "node scripts/gen-screens.mjs"
+    "screens": "node scripts/gen-screens.mjs",
+    "icon": "node scripts/gen-icon.mjs",
+    "diagrams": "node scripts/gen-diagrams.mjs"
   }
 }

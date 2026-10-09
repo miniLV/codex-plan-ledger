@@ -5,6 +5,7 @@ Drafts only. Nothing here has been posted. Kept at the repo root (not under `doc
 | File | For |
 | --- | --- |
 | [`juejin-zh.md`](juejin-zh.md) | 掘金 / 个人博客，中文长文 |
+| [`promo-plan.md`](promo-plan.md) | Channels ranked by fit, per-channel drafts, rules (nothing posted) |
 | [`show-hn-en.md`](show-hn-en.md) | Show HN style post (title + body) |
 | [`awesome-list.md`](awesome-list.md) | One-line entry for awesome lists |
 

@@ -9,7 +9,12 @@
 <meta name="theme-color" content="#FAF6F1">
 <link rel="alternate" hreflang="en" href="https://minilv.github.io/codex-plan-ledger/">
 <link rel="alternate" hreflang="zh-CN" href="https://minilv.github.io/codex-plan-ledger/zh/">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23D97757'/%3E%3Cpath d='M9 11h14M9 16h14M9 21h9' stroke='%23FFFCF8' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="icon" href="../favicon.svg" type="image/svg+xml">
+<link rel="icon" href="../favicon.ico" sizes="32x32">
+<link rel="apple-touch-icon" href="../assets/icon-512.png">
+<meta property="og:title" content="codex-plan-ledger：Codex /plan 的决策账本">
+<meta property="og:image" content="https://minilv.github.io/codex-plan-ledger/assets/social-preview.png">
+<meta name="twitter:card" content="summary_large_image">
 <script>if (/[?&]lang=en/.test(location.search)) location.replace('../' + location.hash);</script>
 <link rel="stylesheet" href="../site.css">
 </head>
@@ -17,9 +22,9 @@
 <a class="skip" href="#main">跳到正文</a>
 <header class="top">
   <div class="col">
-    <a class="brand" href="./">codex-plan-ledger</a>
+    <a class="brand" href="./"><img src="../assets/icon.svg" width="24" height="24" alt="">codex-plan-ledger</a>
     <nav class="links" aria-label="页面导航">
-      <a class="opt" href="#how">用法</a>
+      <a class="opt" href="#how">工作原理</a>
       <a class="opt" href="#status">实测</a>
       <a href="https://github.com/miniLV/codex-plan-ledger">GitHub</a>
       <span class="lang"><span aria-current="page">中文</span> · <a href="../" hreflang="en" lang="en">English</a></span>
@@ -59,21 +64,35 @@
   </div>
 </div>
 
+<section id="why" aria-labelledby="why-h">
+  <div class="col">
+    <h2 id="why-h">为什么需要它</h2>
+    <ol class="why">
+      <li>让 Codex 先计划再写代码时，它可能顺手改了你没同意过的文件。</li>
+      <li>plan-ledger 在定计划时把你们商定的内容记下来（仓库里的 <code>decisions.json</code>）。</li>
+      <li>代码写完后，它拿改动文件对照这份记录，告诉你哪些超出了计划。它只比对文件列表，不读代码。</li>
+    </ol>
+  </div>
+</section>
+
 <section id="how" aria-labelledby="how-h">
   <div class="col">
-    <h2 id="how-h">怎么用</h2>
-    <p class="intro">Codex 原生 Plan 模式照常用，提问仍在 Codex 里答。渲染不调用模型。</p>
+    <h2 id="how-h">工作原理</h2>
+    <p class="intro">时序图从上往下读：实线是调用或写入，虚线是返回，橙色是 plan-ledger 做的事。Codex 原生 Plan 模式照常用，提问仍在 Codex 里答。渲染不调用模型。</p>
+  </div>
+  <div class="wide">
+    <figure class="uml">
+      <a href="../assets/how-it-works-zh.png"><img src="../assets/how-it-works-zh.png" width="1600" height="1350" loading="lazy" alt="UML 时序图：开发者在 Codex /plan 里回答提问；本轮结束时 Stop hook 把问答、待定项、默认值和范围写入仓库里的 decisions.json；Codex 写代码，可能改到计划没提过的文件；plan-ledger check 读取 decisions.json 和 git diff，报出 DRIFT: src/utils/analytics.ts；PR 里带着代码和 decisions.json，评审看到每个选择和原因。"></a>
+      <figcaption>源文件：<a href="https://github.com/miniLV/codex-plan-ledger/blob/main/diagrams/how-it-works-zh.html">diagrams/how-it-works-zh.html</a>，画法参考 <a href="https://github.com/miniLV/sketchboard-diagram">sketchboard-diagram</a>。</figcaption>
+    </figure>
+  </div>
+  <div class="col">
     <ol class="steps">
       <li><h3>Stop hook 写入账本</h3><p>计划到达时解析并写 <code>decisions.json</code> 与离线 HTML，本轮正常结束。从不阻塞，从不等待。</p></li>
       <li><h3>一页复核</h3><p>待定、已答、默认分开展示；改完后复制回传 JSON，粘到 Codex 下一条消息。</p></li>
       <li><h3>决策进 PR</h3><p>账本与代码在同一个 PR 里 review：选了什么，为什么。</p></li>
       <li><h3>范围偏离检查</h3><p><code>plan-ledger check --base main</code> 对照改动文件与计划范围。</p></li>
     </ol>
-  </div>
-  <div class="wide">
-    <figure>
-      <img src="../assets/flow-zh.svg" width="960" height="150" loading="lazy" alt="示意：Codex /plan 提问并作答 → decisions.json → Pull request → plan-ledger check 报出计划外改动的文件。">
-    </figure>
   </div>
 </section>
 

@@ -2,7 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { allFigures, flowFigure } from '../scripts/gen-figures.mjs';
+import { allFigures } from '../scripts/gen-figures.mjs';
+import { allDiagrams } from '../scripts/gen-diagrams.mjs';
+import { iconSvg } from '../scripts/gen-icon.mjs';
 import { captureSession, EXTRA_FILE } from '../scripts/capture-session.mjs';
 import { ROOT } from './helpers.js';
 
@@ -34,14 +36,22 @@ test('product shots show the real output, not typed-in text', () => {
   assert.match(f['shot-diff.svg'], /&quot;source&quot;: &quot;codex-native&quot;/);
 });
 
-test('flow figures are labelled schematic, have no numbers, and make no rounds claim', () => {
-  for (const lang of ['en', 'zh']) {
-    const svg = flowFigure(lang);
-    assert.match(svg, /Schematic|示意图/);
-    assert.ok(!/round|轮|fewer|更少|save|省/i.test(svg), 'no rounds or savings claim');
-    const visible = [...svg.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]).join(' ');
-    assert.ok(!/[0-9%]/.test(visible), visible);
+test('how-it-works sequence diagrams: committed source is current, all participants, no numbers claims', () => {
+  const d = allDiagrams();
+  for (const [name, html] of Object.entries(d)) {
+    assert.equal(allDiagrams()[name], html, `${name} is deterministic`);
+    assert.equal(readFileSync(join(ROOT, 'diagrams', name), 'utf8'), html, `${name} is up to date (run npm run diagrams)`);
+    for (const p of ['Codex /plan', 'Stop hook', 'decisions.json', 'plan-ledger check']) assert.ok(html.includes(p), `${name}: ${p}`);
+    assert.ok(/Developer|开发者/.test(html) && /Codex coding|Codex 写代码/.test(html) && /PR review|PR 评审/.test(html), name);
+    assert.ok(html.includes('DRIFT: src/utils/analytics.ts'), 'shows the real drifted file');
+    assert.ok(!/fewer|更少|save|省|%/i.test(html.replace(/<style>[\s\S]*?<\/style>/, '')), 'no savings claim');
   }
+});
+
+test('icon SVG and favicon are current (run npm run icon)', () => {
+  const svg = iconSvg();
+  assert.equal(readFileSync(join(ROOT, 'docs/assets/icon.svg'), 'utf8'), svg);
+  assert.equal(readFileSync(join(ROOT, 'docs/favicon.svg'), 'utf8'), svg);
 });
 
 test('landing-page demo pages are current (run npm run demo)', async () => {

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-label="codex-plan-ledger">
+<rect width="64" height="64" rx="14" fill="#B5532F"/>
+<path d="M19 11h18.5L47 20.5V51a2 2 0 0 1-2 2H19a2 2 0 0 1-2-2V13a2 2 0 0 1 2-2z" fill="#FAF6F1"/>
+<path d="M37.5 11v7.5a2 2 0 0 0 2 2H47z" fill="#E3D3C1"/>
+<rect x="22" y="24" width="13" height="3.2" rx="1.6" fill="#1C1917"/>
+<rect x="22" y="31" width="19" height="3.2" rx="1.6" fill="#1C1917" fill-opacity="0.35"/>
+<path d="M23.5 42.5l5 4.5 10-10" fill="none" stroke="#B5532F" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

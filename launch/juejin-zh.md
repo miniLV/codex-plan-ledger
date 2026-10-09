@@ -9,7 +9,11 @@
 1. **决策账本。** 把 Plan 模式里的决策写成仓库里的 `docs/plans/<id>/decisions.json`：Codex 自己问过你的问题和你的回答、计划里还待定的选择、计划写明的默认，全在里面。它和代码在同一个 PR 里，能 diff，能 review。
 2. **范围偏离检查。** 代码写完，`plan-ledger check --base main` 对照改动文件和计划：计划外被改的文件、决策里列了却一个都没碰的文件，都会报出来。
 
-![流程动图](https://raw.githubusercontent.com/miniLV/codex-plan-ledger/main/docs/assets/demo-flow-zh.gif)
+[![10 秒介绍：Codex /plan 提问并作答 → 回答写进 decisions.json → 写代码时多改了一个计划外文件 → plan-ledger check 报出这个文件](https://minilv.github.io/codex-plan-ledger/assets/intro-zh.gif)](https://minilv.github.io/codex-plan-ledger/assets/intro-zh.mp4)
+
+## 工作原理
+
+![UML 时序图：开发者、Codex /plan、Stop hook、decisions.json、Codex 写代码、plan-ledger check、PR 评审，按时间顺序标出每一步写了什么、读了什么。](https://minilv.github.io/codex-plan-ledger/assets/how-it-works-zh.png)
 
 ## 怎么用
 
