@@ -98,3 +98,19 @@ test('findAffected: paths and globs, not URLs or versions', () => {
   const a = findAffected('Edit `src/a.ts:12` and lib/b/c.js, also `docs/**` see https://x.com/a/b.html v1.2.3 `foo.bar()`');
   assert.deepEqual(a.files.sort(), ['docs/**', 'lib/b/c.js', 'src/a.ts']);
 });
+
+test('real Codex plan (captured, not synthetic): resolved items are not asked again', () => {
+  const rev1 = extractProposedPlan(fixture('real/strict-option.rev1.message.md'));
+  assert.equal(rev1.ok, true);
+  assert.equal(rev1.unterminated, false);
+  const p1 = parsePlan(rev1.body);
+  assert.equal(p1.title, 'Add opt-in strict parsing to `ms`');
+  // "**D1 resolved:**" / "**D2 resolved:**" were already decided by the plan.
+  assert.equal(p1.decisions.length, 1);
+  assert.match(p1.decisions[0].title, /^Limit changes to/);
+  assert.deepEqual([...p1.decisions[0].affected.files].sort(), ['index.js', 'readme.md', 'tests.js']);
+  const p2 = parsePlan(extractProposedPlan(fixture('real/strict-option.rev2.message.md')).body);
+  // "## Recorded Decisions" only records answers; nothing new to ask.
+  assert.equal(p2.decisions.length, 0);
+  assert.deepEqual([...p2.scope.files].sort(), ['index.js', 'readme.md']);
+});

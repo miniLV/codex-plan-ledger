@@ -111,3 +111,27 @@ test('help and init dry run', () => {
   const cfg = JSON.parse(readFileSync(join(dir, '.codex/hooks.json'), 'utf8'));
   assert.equal(cfg.hooks.Stop.length, 1, 'idempotent');
 });
+
+test('hook-stop: falls back to the transcript when last_assistant_message is empty (observed live in Plan mode)', async () => {
+  const { writeFileSync } = await import('node:fs');
+  const { dir } = tempRepo();
+  const plan = fixture('rate-limit.message.md').trim();
+  const transcript = join(dir, 'rollout.jsonl');
+  const lines = [
+    // Developer message that quotes the tag (the Plan-mode template does this) must be ignored.
+    { type: 'response_item', payload: { type: 'message', role: 'developer', content: [{ type: 'input_text', text: 'wrap it in a `<proposed_plan>` block' }] } },
+    { type: 'response_item', payload: { type: 'message', role: 'assistant', phase: 'final_answer', content: [{ type: 'output_text', text: plan }], internal_chat_message_metadata_passthrough: { turn_id: 'turn-1' } } },
+    { type: 'event_msg', payload: { type: 'thread_settings_applied' } },
+  ];
+  writeFileSync(transcript, lines.map((l) => JSON.stringify(l)).join('\n') + '\n');
+  const r = run(['hook-stop'], { cwd: dir, input: stopPayload('', dir, { transcript_path: transcript, permission_mode: 'bypassPermissions' }) });
+  assert.equal(r.code, 0, r.stderr);
+  assert.match(JSON.parse(r.stdout).systemMessage, /5 decision\(s\) to answer/);
+  // A plan from an older turn is not re-rendered.
+  const { dir: dir2 } = tempRepo();
+  const r2 = run(['hook-stop'], { cwd: dir2, input: stopPayload('', dir2, { transcript_path: transcript, turn_id: 'turn-2' }) });
+  assert.equal(r2.stdout, '');
+  // Missing transcript: quiet no-op.
+  const r3 = run(['hook-stop'], { cwd: dir2, input: stopPayload('', dir2, { transcript_path: join(dir2, 'nope.jsonl') }) });
+  assert.equal(r3.stdout, '');
+});

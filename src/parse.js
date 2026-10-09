@@ -27,6 +27,10 @@ export function extractProposedPlan(message) {
 const DECISION_HEADING = /\b(decisions?|open questions?|questions?|choices|trade-?offs?|options)\b|待决|决策|待确认|开放问题|问题|取舍|选项/i;
 const ASSUMPTION_HEADING = /\b(assumptions?|defaults?)\b|假设|默认/i;
 const SUMMARY_HEADING = /\b(summary|overview|tl;?dr)\b|概述|摘要|总结|概要/i;
+// Sections that only record decisions already made ("Recorded Decisions", "已确认的决定").
+const RESOLVED_HEADING = /\b(?:recorded|resolved|final|agreed|confirmed|settled)\b[^\n]*\bdecisions?\b|\bdecisions?\s+(?:made|taken|recorded)\b|已(?:确认|决定|定)的?(?:决定|决策)?|已决/i;
+// List items that state a decision the plan already resolved ("**D1 resolved:** …").
+const RESOLVED_ITEM = /^\W*(?:D\d{1,3}\s*)?(?:resolved|decided|已定|已确认)\s*[*_]*\s*[:：]/i;
 const TBD_RE = /\bTBD\b|\bTBC\b|to be decided|\bundecided\b|待定|待确认|二选一|\b(?:choose|decide|pick) (?:between|whether|one|which)\b|\bneeds? (?:a )?decision\b|需要你?(?:决定|拍板|选择)/i;
 const INLINE_OPTION_RE = /(?:^|[\s(（;；,，:：。.])(?:Option|方案|选项)\s*([A-Z1-9])\s*[:：).]\s*/g;
 const RECOMMENDED_MARK = /\s*[(（]\s*(?:recommended|推荐|建议)\s*[)）]\s*|\s*\[\s*(?:recommended|推荐)\s*\]\s*/i;
@@ -349,11 +353,17 @@ export function parsePlan(markdown) {
   const used = new Set();
   for (const sec of secs) {
     if (!sec.heading) continue;
+    if (RESOLVED_HEADING.test(sec.heading)) {
+      for (const n of flattenItems(itemTree(sec.tokens))) used.add(n.text);
+      for (const t of sec.tokens) if (t.type === 'text') used.add(t.text);
+      continue;
+    }
     const isDecision = DECISION_HEADING.test(sec.heading) && !SUMMARY_HEADING.test(sec.heading);
     const isAssumption = !isDecision && ASSUMPTION_HEADING.test(sec.heading);
     if (!isDecision && !isAssumption) continue;
     const roots = itemTree(sec.tokens);
     for (const node of roots) {
+      if (RESOLVED_ITEM.test(node.text) && !(node.children || []).length) { used.add(node.text); continue; }
       decisions.push(decisionFromItem(node, isDecision ? (isQuestionLike(node.text) || 'decision') : 'assumption'));
       for (const n of flattenItems([node])) used.add(n.text);
     }
@@ -367,7 +377,7 @@ export function parsePlan(markdown) {
   // Subheadings under a "Decisions" heading: each subheading is one decision.
   for (let i = 0; i < secs.length; i++) {
     const parent = secs[i];
-    if (!parent.heading || !DECISION_HEADING.test(parent.heading)) continue;
+    if (!parent.heading || !DECISION_HEADING.test(parent.heading) || RESOLVED_HEADING.test(parent.heading)) continue;
     for (let j = i + 1; j < secs.length && secs[j].level > parent.level; j++) {
       const sub = secs[j];
       if (DECISION_HEADING.test(sub.heading) || ASSUMPTION_HEADING.test(sub.heading)) continue;

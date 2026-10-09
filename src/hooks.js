@@ -5,10 +5,16 @@
 // - Stop: stdin has `last_assistant_message`; stdout must be JSON (or empty)
 //   when exiting 0. We only use `systemMessage`; we never return
 //   `decision: "block"`, so the turn ends normally.
+// - Observed live with codex-cli 0.156.0 (2026-10-09): in Plan mode the plan is
+//   emitted as a separate `plan` item and the Stop payload's
+//   `last_assistant_message` was empty. So when the message has no plan block,
+//   we fall back to the session transcript (`transcript_path`), whose format is
+//   not a stable interface: we only look for the newest assistant message of
+//   this turn that contains `<proposed_plan>`, and give up quietly otherwise.
 // - UserPromptSubmit: stdin has `prompt`; JSON stdout may carry
 //   `hookSpecificOutput.additionalContext`, added as developer context.
 
-import { mkdirSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { tmpdir } from 'node:os';
 import { pathToFileURL } from 'node:url';
@@ -47,6 +53,39 @@ export function openInBrowser(file) {
   }
 }
 
+const MAX_TRANSCRIPT_BYTES = 32 * 1024 * 1024;
+
+function messageText(payload) {
+  if (!payload || !Array.isArray(payload.content)) return '';
+  return payload.content.map((c) => (c && typeof c.text === 'string' ? c.text : '')).join('');
+}
+
+/**
+ * Newest assistant message containing `<proposed_plan>` in a Codex rollout
+ * transcript (JSONL). Prefers messages tagged with `turnId`. Returns '' if none.
+ */
+export function planFromTranscript(path, turnId = null) {
+  try {
+    if (!path || !existsSync(path) || statSync(path).size > MAX_TRANSCRIPT_BYTES) return '';
+    const lines = readFileSync(path, 'utf8').split('\n');
+    for (let i = lines.length - 1; i >= 0; i--) {
+      const line = lines[i];
+      if (!line.includes('proposed_plan')) continue;
+      let o;
+      try { o = JSON.parse(line); } catch { continue; }
+      const p = o?.payload;
+      if (!p || p.type !== 'message' || p.role !== 'assistant') continue;
+      const t = p.internal_chat_message_metadata_passthrough?.turn_id;
+      if (turnId && t && t !== turnId) return '';
+      const text = messageText(p);
+      if (/<proposed_plan\s*>/i.test(text)) return text;
+    }
+  } catch {
+    // Unreadable transcript: behave as if there was no plan.
+  }
+  return '';
+}
+
 /**
  * Plan from a Stop payload -> ledger + HTML. Returns { stdout, html, ledgerFile }.
  * Options: { lang, open, now }.
@@ -55,8 +94,13 @@ export function handleStop(stdin, opts = {}) {
   const input = parseInput(stdin);
   if (!input) return { stdout: '' };
   if (input.hook_event_name && input.hook_event_name !== 'Stop') return { stdout: '' };
-  const message = typeof input.last_assistant_message === 'string' ? input.last_assistant_message : '';
-  if (!/<proposed_plan\s*>/i.test(message)) return { stdout: '' };
+  let message = typeof input.last_assistant_message === 'string' ? input.last_assistant_message : '';
+  let from = 'last_assistant_message';
+  if (!/<proposed_plan\s*>/i.test(message)) {
+    message = planFromTranscript(typeof input.transcript_path === 'string' ? input.transcript_path : null, input.turn_id || null);
+    from = 'transcript';
+    if (!message) return { stdout: '' };
+  }
   const cwd = typeof input.cwd === 'string' && input.cwd ? input.cwd : process.cwd();
   const lang = opts.lang || process.env.PLAN_LEDGER_LANG || 'zh';
   try {
@@ -82,7 +126,7 @@ export function handleStop(stdin, opts = {}) {
     const msg = n
       ? `plan-ledger: ${n} decision(s) to answer → ${pathToFileURL(html).href} (ledger: ${written.rel})`
       : `plan-ledger: no open decisions; ledger at ${written.rel}`;
-    return { stdout: out({ systemMessage: msg }), html, ledgerFile: written.file, ledger, changes };
+    return { stdout: out({ systemMessage: msg }), html, ledgerFile: written.file, ledger, changes, from };
   } catch (err) {
     return { stdout: out({ systemMessage: `plan-ledger: skipped (${String(err?.message || err).slice(0, 200)}); plan passed through unchanged` }) };
   }
