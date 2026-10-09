@@ -227,6 +227,7 @@ Early prototype v0.1. Only the directional runs above. It does not aim to save r
 npm test              # node --test, zero dependencies
 npm run figures       # regenerate docs/assets/*.svg (deterministic; tests compare them)
 npm run demo          # regenerate the landing-page demo pages
+npm run screens       # docs/assets/decision-page-*.png (headless Chrome)
 npm run demo:video    # regenerate docs/assets/demo-flow-*.{gif,mp4} (needs headless Chrome and ffmpeg)
 ```
 

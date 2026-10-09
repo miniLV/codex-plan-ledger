@@ -43,9 +43,9 @@ function shot(html, file, { w = W, h = H } = {}) {
 
 function frame(step, caption, inner) {
   return `<!doctype html><meta charset="utf-8"><style>
-html,body{margin:0;width:${W}px;height:${H}px;overflow:hidden;background:#f6f8fa;font-family:${FONT}}
-.cap{height:${CAP}px;display:flex;align-items:center;gap:14px;padding:0 28px;background:#0d1117;color:#fff}
-.step{flex:0 0 auto;font:600 13px ${FONT};background:#1f6feb;border-radius:999px;padding:4px 12px;letter-spacing:.02em}
+html,body{margin:0;width:${W}px;height:${H}px;overflow:hidden;background:#FAF6F1;font-family:${FONT}}
+.cap{height:${CAP}px;display:flex;align-items:center;gap:14px;padding:0 28px;background:#1C1917;color:#fff}
+.step{flex:0 0 auto;font:600 13px ${FONT};background:#B5532F;border-radius:999px;padding:4px 12px;letter-spacing:.02em}
 .txt{font:600 22px/1.25 ${FONT}}
 .body{height:${H - CAP}px;overflow:hidden;position:relative}
 </style><div class="cap"><span class="step">${escapeHtml(step)}</span><span class="txt">${escapeHtml(caption)}</span></div><div class="body">${inner}</div>`;
@@ -53,12 +53,12 @@ html,body{margin:0;width:${W}px;height:${H}px;overflow:hidden;background:#f6f8fa
 
 function painCard() {
   return `<style>
-.card{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:radial-gradient(1200px 600px at 20% 10%,#1f6feb22,transparent),#0d1117;color:#e6edf3}
+.card{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#1C1917;color:#F3EDE4}
 .box{max-width:920px;padding:0 48px;text-align:left}
-.kicker{font:600 15px ${FONT};color:#79c0ff;letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px}
+.kicker{font:600 15px ${FONT};color:#E8C07A;letter-spacing:.08em;text-transform:uppercase;margin-bottom:18px}
 .q{font:700 42px/1.35 ${FONT};margin:0 0 22px;color:#fff}
-.sub{font:500 22px/1.55 ${FONT};color:#8b949e;margin:0}
-.hl{color:#ffa198}
+.sub{font:500 22px/1.55 ${FONT};color:#A8A29E;margin:0}
+.hl{color:#EE9B7E}
 </style><div class="card"><div class="box">
 <div class="kicker">两周后 · Code Review</div>
 <p class="q">「当时为什么这样选？」</p>
@@ -68,16 +68,16 @@ function painCard() {
 
 function closeCard() {
   return `<style>
-.card{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#0d1117;color:#e6edf3}
+.card{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:#1C1917;color:#F3EDE4}
 .box{max-width:980px;padding:0 48px}
-.kicker{font:600 14px ${FONT};color:#7ee787;margin-bottom:14px}
+.kicker{font:600 14px ${FONT};color:#9CC9A5;margin-bottom:14px}
 .h{font:700 30px/1.35 ${FONT};margin:0 0 20px;color:#fff}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 28px;margin:0 0 22px}
-.item{font:500 17px/1.45 ${FONT};color:#c9d1d9;padding:10px 14px;background:#161b22;border:1px solid #30363d;border-radius:8px}
-.item b{color:#ffa198;font-weight:700}
-.item.ok b{color:#7ee787}
-.foot{font:600 18px ${MONO};color:#79c0ff;margin:0}
-.tag{display:inline-block;font:600 12px ${FONT};background:#21262d;color:#8b949e;border-radius:999px;padding:3px 10px;margin-right:8px}
+.item{font:500 17px/1.45 ${FONT};color:#E7E0D6;padding:10px 14px;background:#292524;border:1px solid #44403C;border-radius:8px}
+.item b{color:#EE9B7E;font-weight:700}
+.item.ok b{color:#9CC9A5}
+.foot{font:600 18px ${MONO};color:#E8C07A;margin:0}
+.tag{display:inline-block;font:600 12px ${FONT};background:#292524;color:#A8A29E;border-radius:999px;padding:3px 10px;margin-right:8px}
 </style><div class="card"><div class="box">
 <div class="kicker"><span class="tag">早期原型 v0.1</span>诚实边界 · n = 3 对</div>
 <p class="h">把决策留成可 diff 的记录，并在写完后查范围。</p>
@@ -109,12 +109,12 @@ function diffHtml(before, after, path) {
     return `<div class="l ${cls}"><span class="s">${escapeHtml(mark)}</span>${escapeHtml(text)}</div>`;
   });
   return `<style>
-.pr{margin:22px 36px;background:#fff;border:1px solid #d0d7de;border-radius:10px;overflow:hidden;box-shadow:0 8px 24px #00000014}
-.pr .hd{padding:12px 16px;background:#f6f8fa;border-bottom:1px solid #d0d7de;font:600 15px ${MONO};display:flex;justify-content:space-between}
-.badge{font:600 12px ${FONT};background:#ddf4ff;color:#0969da;border-radius:999px;padding:2px 10px}
+.pr{margin:22px 36px;background:#FFFCF8;border:1px solid #E7E0D6;border-radius:10px;overflow:hidden;box-shadow:0 8px 24px #00000014}
+.pr .hd{padding:12px 16px;background:#F3EDE4;border-bottom:1px solid #E7E0D6;font:600 15px ${MONO};display:flex;justify-content:space-between}
+.badge{font:600 12px ${FONT};background:#F3EDE4;color:#A84F2E;border-radius:999px;padding:2px 10px}
 .l{font:14px/1.55 ${MONO};white-space:pre;padding:0 16px}
-.l .s{display:inline-block;width:18px;color:#656d76}
-.add{background:#dafbe1}.add .s{color:#1a7f37}.del{background:#ffebe9}.del .s{color:#cf222e}.h{background:#ddf4ff;color:#57606a}
+.l .s{display:inline-block;width:18px;color:#6F6863}
+.add{background:#E3ECE2}.add .s{color:#3F6B4A}.del{background:#F6E1D9}.del .s{color:#A8402B}.h{background:#F3EDE4;color:#6F6863}
 </style><div class="pr"><div class="hd"><span>${escapeHtml(path)}</span><span class="badge">PR diff</span></div>${rows.join('')}</div>`;
 }
 
@@ -151,9 +151,9 @@ function termHtml(out) {
     return `<div class="${cls}${hi}">${escapeHtml(l) || '&nbsp;'}</div>`;
   });
   return `<style>
-.term{margin:20px 32px;background:#0d1117;border-radius:10px;padding:16px 20px;color:#e6edf3;font:15px/1.55 ${MONO};white-space:pre-wrap;overflow:hidden;border:1px solid #30363d}
-.p{color:#7ee787}.drift{color:#ff7b72;font-weight:700}.ok{color:#7ee787}.info{color:#79c0ff}.note{color:#8b949e}
-.hi{background:#ff7b7222;border-left:3px solid #ff7b72;padding-left:8px;margin-left:-8px}
+.term{margin:20px 32px;background:#1C1917;border-radius:10px;padding:16px 20px;color:#F3EDE4;font:15px/1.55 ${MONO};white-space:pre-wrap;overflow:hidden;border:1px solid #44403C}
+.p{color:#9CC9A5}.drift{color:#EE9B7E;font-weight:700}.ok{color:#9CC9A5}.info{color:#E8C07A}.note{color:#A8A29E}
+.hi{background:#EE9B7E22;border-left:3px solid #EE9B7E;padding-left:8px;margin-left:-8px}
 </style><div class="term"><div><span class="p">$</span> plan-ledger check --base main</div>${rows.join('')}</div>`;
 }
 

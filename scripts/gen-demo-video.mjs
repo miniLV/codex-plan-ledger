@@ -54,9 +54,9 @@ function shot(html, file, { w = W, h = H } = {}) {
 const FONT = `-apple-system,BlinkMacSystemFont,'Segoe UI','Noto Sans CJK SC','PingFang SC',sans-serif`;
 function frame(step, caption, inner) {
   return `<!doctype html><meta charset="utf-8"><style>
-html,body{margin:0;width:${W}px;height:${H}px;overflow:hidden;background:#f6f8fa;font-family:${FONT}}
-.cap{height:${CAP}px;display:flex;align-items:center;gap:16px;padding:0 32px;background:#0d1117;color:#fff}
-.step{font:600 15px ${FONT};background:#1f6feb;border-radius:999px;padding:4px 12px}
+html,body{margin:0;width:${W}px;height:${H}px;overflow:hidden;background:#FAF6F1;font-family:${FONT}}
+.cap{height:${CAP}px;display:flex;align-items:center;gap:16px;padding:0 32px;background:#1C1917;color:#fff}
+.step{font:600 15px ${FONT};background:#B5532F;border-radius:999px;padding:4px 12px}
 .txt{font:600 24px ${FONT}}
 .body{height:${H - CAP}px;overflow:hidden;position:relative}
 .body img{display:block}
@@ -75,11 +75,11 @@ function diffHtml(before, after, path) {
     return `<div class="l ${cls}"><span class="s">${escapeHtml(l.startsWith('@@') ? '' : l[0])}</span>${escapeHtml(l.startsWith('@@') ? l : l.slice(1))}</div>`;
   });
   return `<style>
-.pr{margin:28px 40px;background:#fff;border:1px solid #d0d7de;border-radius:10px;overflow:hidden}
-.pr .hd{padding:12px 16px;background:#f6f8fa;border-bottom:1px solid #d0d7de;font:600 15px ui-monospace,Menlo,Consolas,monospace}
+.pr{margin:28px 40px;background:#FFFCF8;border:1px solid #E7E0D6;border-radius:10px;overflow:hidden}
+.pr .hd{padding:12px 16px;background:#F3EDE4;border-bottom:1px solid #E7E0D6;font:600 15px ui-monospace,Menlo,Consolas,monospace}
 .l{font:14px/1.6 ui-monospace,Menlo,Consolas,monospace;white-space:pre;padding:0 16px}
-.l .s{display:inline-block;width:18px;color:#656d76}
-.add{background:#dafbe1}.add .s{color:#1a7f37}.del{background:#ffebe9}.del .s{color:#cf222e}.h{background:#ddf4ff;color:#57606a}
+.l .s{display:inline-block;width:18px;color:#6F6863}
+.add{background:#E3ECE2}.add .s{color:#3F6B4A}.del{background:#F6E1D9}.del .s{color:#A8402B}.h{background:#F3EDE4;color:#6F6863}
 </style><div class="pr"><div class="hd">${escapeHtml(path)}</div>${rows.join('')}</div>`;
 }
 
@@ -110,8 +110,8 @@ function termHtml(out) {
     return `<div class="${cls}">${escapeHtml(l) || '&nbsp;'}</div>`;
   });
   return `<style>
-.term{margin:24px 32px;background:#0d1117;border-radius:10px;padding:18px 22px;color:#e6edf3;font:16px/1.6 ui-monospace,Menlo,Consolas,'Noto Sans Mono CJK SC',monospace;white-space:pre-wrap;overflow:hidden}
-.p{color:#7ee787}.drift{color:#ff7b72;font-weight:700}.ok{color:#7ee787}.info{color:#79c0ff}.note{color:#8b949e}
+.term{margin:24px 32px;background:#1C1917;border-radius:10px;padding:18px 22px;color:#F3EDE4;font:16px/1.6 ui-monospace,Menlo,Consolas,'Noto Sans Mono CJK SC',monospace;white-space:pre-wrap;overflow:hidden}
+.p{color:#9CC9A5}.drift{color:#EE9B7E;font-weight:700}.ok{color:#9CC9A5}.info{color:#E8C07A}.note{color:#A8A29E}
 </style><div class="term"><div><span class="p">$</span> plan-ledger check --base main</div>${rows.join('')}</div>`;
 }
 

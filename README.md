@@ -227,6 +227,7 @@ Codex 改版计划时，之前的回答会沿用到 id 相同（或者标题相�
 npm test              # node --test，零依赖
 npm run figures       # 重新生成 docs/assets/*.svg（确定性输出，测试会核对）
 npm run demo          # 重新生成落地页的在线演示页
+npm run screens       # 重新生成 docs/assets/decision-page-*.png（需要无头 Chrome）
 npm run demo:video    # 重新生成 docs/assets/demo-flow-*.{gif,mp4}（需要无头 Chrome 和 ffmpeg）
 npm run story:video   # 重新生成 docs/assets/story-zh.{gif,mp4}（故事向短片）
 ```
