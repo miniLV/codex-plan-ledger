@@ -1,0 +1,18 @@
+# Same hooks as hooks.json, inline in ~/.codex/config.toml or <repo>/.codex/config.toml.
+# Use one representation per config layer.
+
+[[hooks.Stop]]
+
+[[hooks.Stop.hooks]]
+type = "command"
+command = "plan-ledger hook-stop"
+timeout = 30
+statusMessage = "plan-ledger: rendering plan"
+
+# Experimental: "ledger:apply" injects the decisions; pasted answers are recorded.
+[[hooks.UserPromptSubmit]]
+
+[[hooks.UserPromptSubmit.hooks]]
+type = "command"
+command = "plan-ledger hook-prompt"
+timeout = 10

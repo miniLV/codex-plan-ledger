@@ -1,0 +1,19 @@
+{
+  "name": "codex-plan-ledger",
+  "version": "0.1.0",
+  "description": "Answer every decision in a Codex /plan on one offline HTML page, keep the decisions in your repo as decisions.json, and run a scope drift check after the code is written.",
+  "type": "module",
+  "license": "MIT",
+  "author": "miniLV",
+  "repository": { "type": "git", "url": "git+https://github.com/miniLV/codex-plan-ledger.git" },
+  "homepage": "https://github.com/miniLV/codex-plan-ledger#readme",
+  "bugs": { "url": "https://github.com/miniLV/codex-plan-ledger/issues" },
+  "bin": { "plan-ledger": "bin/plan-ledger.js" },
+  "files": ["bin", "src", "schema", "skills", "examples", "docs", "README.md", "README.en.md", "LICENSE"],
+  "engines": { "node": ">=20" },
+  "keywords": ["codex", "openai-codex", "codex-cli", "plan-mode", "coding-agents", "ai-agents", "developer-tools", "html"],
+  "scripts": {
+    "test": "node --test test/",
+    "figures": "node scripts/gen-figures.mjs"
+  }
+}

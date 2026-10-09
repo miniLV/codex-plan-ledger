@@ -1,0 +1,28 @@
+{
+  "description": "codex-plan-ledger: Plan mode -> one HTML page of decisions -> docs/plans/<id>/decisions.json",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "plan-ledger hook-stop",
+            "timeout": 30,
+            "statusMessage": "plan-ledger: rendering plan"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "plan-ledger hook-prompt",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

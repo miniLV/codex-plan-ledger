@@ -1,0 +1,62 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/miniLV/codex-plan-ledger/main/schema/decisions.schema.json",
+  "title": "codex-plan-ledger decisions.json",
+  "description": "Decisions taken from one Codex plan. schema_version 1.",
+  "type": "object",
+  "required": ["schema_version", "plan_id", "title", "source", "created_at", "updated_at", "revision", "plan_sha256", "decisions"],
+  "additionalProperties": false,
+  "properties": {
+    "$schema": { "type": "string" },
+    "schema_version": { "const": 1 },
+    "plan_id": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]{0,99}$" },
+    "title": { "type": "string", "minLength": 1 },
+    "source": { "enum": ["codex-plan-mode", "manual"] },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "revision": { "type": "integer", "minimum": 1 },
+    "plan_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "summary": { "type": "string" },
+    "scope": { "$ref": "#/$defs/affected" },
+    "decisions": { "type": "array", "items": { "$ref": "#/$defs/decision" } }
+  },
+  "$defs": {
+    "affected": {
+      "type": "object",
+      "required": ["files", "modules"],
+      "additionalProperties": false,
+      "properties": {
+        "files": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "modules": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "option": {
+      "type": "object",
+      "required": ["id", "label"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9]{1,12}$" },
+        "label": { "type": "string" },
+        "recommended": { "type": "boolean" }
+      }
+    },
+    "decision": {
+      "type": "object",
+      "required": ["id", "title", "options", "chosen", "status", "affected", "rationale"],
+      "additionalProperties": false,
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]{0,63}$" },
+        "title": { "type": "string", "minLength": 1 },
+        "question": { "type": "string" },
+        "kind": { "enum": ["question", "options", "tbd", "decision", "assumption"] },
+        "options": { "type": "array", "items": { "$ref": "#/$defs/option" } },
+        "default": { "type": ["string", "null"] },
+        "chosen": { "type": ["string", "null"], "description": "Option id, \"other\", or null when there is no default and no answer." },
+        "other": { "type": ["string", "null"], "maxLength": 2000 },
+        "status": { "enum": ["answered", "default"], "description": "\"default\" means not answered; default kept. It is not agreement." },
+        "affected": { "$ref": "#/$defs/affected" },
+        "rationale": { "type": ["string", "null"], "maxLength": 2000 }
+      }
+    }
+  }
+}

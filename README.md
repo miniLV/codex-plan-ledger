@@ -1,0 +1,209 @@
+<h1 align="center">codex-plan-ledger</h1>
+
+<p align="center">
+  <strong>把 Codex <code>/plan</code> 里的决策一页答完，写进仓库，写完代码再查有没有跑偏。</strong>
+</p>
+
+<p align="center">
+  Codex 原生 Plan 模式照常用。计划一出来，自动生成一页离线 HTML，所有决策一次答完；答案落进 <code>docs/plans/&lt;id&gt;/decisions.json</code>，能 diff、能在 PR 里 review；代码写完后跑一次范围偏离检查。
+</p>
+
+<p align="center">
+  <a href="./skills/plan-ledger/SKILL.md">Skill</a> ·
+  <a href="./schema/decisions.schema.json">Schema</a> ·
+  <a href="./docs/measurement-plan.md">实测计划</a> ·
+  <strong>简体中文</strong> · <a href="./README.en.md">English</a>
+</p>
+
+<p align="center">
+  <code>npm i -g github:miniLV/codex-plan-ledger && plan-ledger init --write</code>
+</p>
+
+<p align="center">
+  Codex CLI · Node.js 20+ · 零依赖 · 不额外调用模型 · MIT
+</p>
+
+<p align="center">
+  <img src="./docs/assets/plan-rounds.svg" alt="示意图：原生 /plan 每轮问几个问题、要来回好几轮；codex-plan-ledger 一页列出所有决策、一次答完并写进仓库。早期原型，无实测数据。" width="860">
+</p>
+
+> **状态：早期原型 v0.1。** 功能能用、有测试覆盖，但**还没有任何实测数据**，不宣称能省多少轮次或 token。上面的图只是示意。怎么测、什么结果算成立，见 [实测计划](docs/measurement-plan.md)。
+
+## 它是什么
+
+| 部分 | 作用 |
+| --- | --- |
+| `plan-ledger hook-stop` | Codex `Stop` hook。从 `last_assistant_message` 里取出 `<proposed_plan>`，用纯模板渲染成一页 HTML，写 `decisions.json` 和 `plan.md`，打印 HTML 路径，然后正常结束这一轮。**从不阻塞、从不等你。** |
+| 决策页 `plan.html` | 单文件、离线、没有外部资源。顶部写“需要你定 N 项”，每项一张卡片：选项、计划里的推荐、影响的文件。底部按钮“生成回传 JSON 并复制”，提示“粘到 Codex 下一条消息里”。页面默认中文，英文用 `PLAN_LEDGER_LANG=en` 或 `--lang en`。 |
+| 决策账本 `decisions.json` | 带 `schema_version` 的 JSON，附 [JSON Schema](schema/decisions.schema.json) 和校验命令。和代码放在同一个 PR 里，评审人能看到当初选了什么、为什么。 |
+| `plan-ledger check` | 范围偏离检查：对比 `git diff` 和每项决策的 `affected` 文件，报出计划外被改的文件，以及计划里该改却没碰的决策。 |
+| `plan-ledger hook-prompt` | 可选的 `UserPromptSubmit` hook（实验性）。发 `ledger:apply` 就把最新决策注入上下文；粘贴的回传 JSON 会自动记进账本。 |
+| `skills/plan-ledger` | hook 没装或不被信任时的手动兜底：把计划贴给 skill，它调用同一个渲染器。 |
+
+<p align="center">
+  <img src="./docs/assets/ledger-pr-diff.svg" alt="示例：PR 里 decisions.json 的 diff，d2 从默认值改成了已作答的选项，并附上理由。" width="860">
+</p>
+
+## 工作流程
+
+```mermaid
+flowchart LR
+  A["Codex /plan<br/>输出 proposed_plan"] --> B["Stop hook<br/>plan-ledger hook-stop"]
+  B --> C["docs/plans/id/<br/>decisions.json + plan.md"]
+  B --> D["plan.html<br/>一页答完"]
+  D -->|"复制回传 JSON"| E["你的下一条消息"]
+  E -->|"UserPromptSubmit（可选）<br/>记进账本"| C
+  E --> F["Codex 按决策实现"]
+  F --> G["plan-ledger check<br/>范围偏离检查"]
+  C --> G
+```
+
+1. 在 Codex 里照常 `/plan`。Codex 给出 `<proposed_plan>` 时，`Stop` hook 只做三件事：解析、渲染、写账本。终端会出现一行 `plan-ledger: N decision(s) to answer → file://…/plan.html`。
+2. 打开这页，把所有决策一次答完。不选的项记为“未作答，保留默认”，**不算同意**。
+3. 点“生成回传 JSON 并复制”，粘到 Codex 的下一条消息里。装了 `hook-prompt` 的话，这些答案会同时写进 `decisions.json`；没装就跑 `plan-ledger answer`。
+4. 代码写完，跑 `plan-ledger check --base main`。
+
+渲染全程不调用模型。解析失败时（`<proposed_plan>` 不是公开约定，格式可能变），原文原样放行，Codex 这一轮不受影响，只多一条提示。
+
+## 安装
+
+```sh
+npm i -g github:miniLV/codex-plan-ledger
+plan-ledger init            # 预览：要写哪些文件、写什么
+plan-ledger init --write    # 写入 <repo>/.codex/hooks.json 和 .agents/skills/plan-ledger/
+# 或者 plan-ledger init --user --write  → ~/.codex/hooks.json 和 ~/.agents/skills/
+```
+
+然后启动 Codex，打开 `/hooks`，审核并信任这两个 hook。Codex 会按 hook 定义的 hash 记录信任；没信任之前 hook 不会运行。
+
+手动配置也行。`<repo>/.codex/hooks.json` 或 `~/.codex/hooks.json`：
+
+```json
+{
+  "hooks": {
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "plan-ledger hook-stop", "timeout": 30 }] }
+    ],
+    "UserPromptSubmit": [
+      { "hooks": [{ "type": "command", "command": "plan-ledger hook-prompt", "timeout": 10 }] }
+    ]
+  }
+}
+```
+
+同一套配置写在 `config.toml` 里的版本见 [`examples/codex/config.toml`](examples/codex/config.toml)。这些格式核对自 Codex 官方 [hooks 文档](https://developers.openai.com/codex/hooks) 和 `openai/codex` 仓库里生成的 hook schema（2026-10-09，`rust-v0.162.0`）：
+
+- `Stop` 的输入带 `last_assistant_message`；exit 0 时 stdout 必须是 JSON 或空。我们只返回 `systemMessage`，从不返回 `decision: "block"`，所以不会让 Codex 续跑。
+- `UserPromptSubmit` 的输入带 `prompt`；`hookSpecificOutput.additionalContext` 会作为开发者上下文加进去。
+- 项目级 `.codex/` 只有在项目被信任时才加载。hooks 默认开启，可用 `[features] hooks = false` 关闭。
+- 仓库级 skill 放在 `.agents/skills/`，用户级放在 `~/.agents/skills/`。
+
+可选：把 [`examples/codex/AGENTS.md.snippet`](examples/codex/AGENTS.md.snippet) 加进你的 `AGENTS.md`，让计划多一个 `## Decisions` 段，每项带选项、`(Recommended)` 和 `Affects:`。解析会更准，范围偏离检查也有据可查。
+
+## 用法
+
+```sh
+# hook 自动做的事，也能手动做（skill 兜底用的就是这个）
+plan-ledger render plan.md            # 也接受带 <proposed_plan> 的整段消息，或用 - 读 stdin
+plan-ledger render plan.md --no-ledger --open   # 只出 HTML，不写仓库
+
+# 记录答案（页面复制出来的那段文字或 JSON）
+pbpaste | plan-ledger answer -
+
+# 在 Codex 里：发 ledger:apply（或 ledger:apply <plan-id>）把决策注入上下文
+#  `/ledger apply` 也认，但 Codex TUI 可能把它当成未知斜杠命令拦下，建议用 ledger:apply
+
+# 写完代码
+plan-ledger check --base main               # 可读报告
+plan-ledger check --base main --json        # 机器可读
+plan-ledger check --base main --strict      # 有偏离时 exit 1，适合 CI / pre-commit
+
+plan-ledger validate                        # 校验 docs/plans/ 下所有账本
+```
+
+`plan.html` 是能随时重新生成的视图，可以放进 `.gitignore`（`docs/plans/*/plan.html`）；`decisions.json` 和 `plan.md` 建议提交。
+
+## 账本格式
+
+```jsonc
+{
+  "$schema": "https://raw.githubusercontent.com/miniLV/codex-plan-ledger/main/schema/decisions.schema.json",
+  "schema_version": 1,
+  "plan_id": "2026-10-09-send-later-for-drafts",
+  "title": "Send later for drafts",
+  "source": "codex-plan-mode",          // 或 "manual"
+  "created_at": "2026-10-09T12:00:00.000Z",
+  "updated_at": "2026-10-09T12:05:00.000Z",
+  "revision": 1,                        // 计划每改一版 +1，已作答的决策会保留
+  "plan_sha256": "…",                   // plan.md 原文的 hash
+  "summary": "…",
+  "scope": { "files": ["src/api/drafts.ts"], "modules": [] },   // 计划正文里提到的所有文件
+  "decisions": [
+    {
+      "id": "d2",
+      "title": "What happens if sending fails at the scheduled time?",
+      "question": "What happens if sending fails at the scheduled time?",
+      "kind": "question",               // question | options | tbd | decision | assumption
+      "options": [
+        { "id": "a", "label": "Retry 3 times with backoff, then mark as failed", "recommended": true },
+        { "id": "b", "label": "Mark as failed immediately and notify the user", "recommended": false }
+      ],
+      "default": "a",
+      "chosen": "b",                    // 选项 id、"other" 或 null
+      "other": null,                    // chosen 为 "other" 时的文字
+      "status": "answered",             // answered | default（= 未作答，保留默认，不算同意）
+      "affected": { "files": ["src/jobs/sendScheduled.ts"], "modules": [] },
+      "rationale": "Users must know right away; silent retries hide outages."
+    }
+  ]
+}
+```
+
+决策点是启发式识别的：`## Decisions` / `## 待决` 这类段落、以问号结尾的条目、`Option A/B`、`方案 A/B`、`TBD`、`choose`、`待定` 等，`## Assumptions` 里的默认假设也会列出来让你确认。决策 id 由标题生成，计划改版时保持稳定；写成 `D1:` 时直接用 `d1`。答案只当数据存，不会被执行。
+
+## 范围偏离检查
+
+`plan-ledger check --base <ref>` 拿 `<ref>` 到工作区的改动（含未跟踪文件，不含 `docs/plans/` 本身）去对照：
+
+| 报告项 | 含义 | `--strict` |
+| --- | --- | --- |
+| `files_outside_plan` | 改了，但不在任何决策的 `affected` 里，也不在计划正文提到的文件里 | 算偏离 |
+| `decisions_not_touched` | 决策列了 `affected` 文件，但一个都没被改 | 算偏离 |
+| `files_in_plan_scope_without_decision` | 计划提到了，但没挂在任何决策上 | 仅提示 |
+| `decisions_without_affected` | 决策没写影响哪些文件，无法检查 | 仅提示 |
+
+仓库根目录有 [intent-tests](https://github.com/miniLV/intent-tests) 的 `INTENT.md` 时，它的 `## Scope` 也算计划范围（`--intent <file>` 可指定路径）。
+
+**已知局限：它只检查“改了哪些文件”，不读代码内容。** 计划外文件被改、计划内文件没被碰，它能抓到；但如果改动落在计划内的文件里，代码却和某项决策的选择相反（比如选了“不重试”，代码里还在重试），它**抓不到**。所以它叫“范围偏离检查”。按内容核对决策是下一步要做的事，见 [实测计划](docs/measurement-plan.md)。
+
+## 现在能用的 / 实验性的
+
+| | 状态 |
+| --- | --- |
+| 解析、渲染、写账本、`render` / `answer` / `validate` / `check` | 能用，有测试覆盖（`npm test`，不联网） |
+| `Stop` hook 的输入输出约定 | 按官方文档和生成的 schema 写成，有测试覆盖；还没在真实 Codex 会话里跑过 |
+| `UserPromptSubmit` hook（`ledger:apply`、自动记账） | 实验性 |
+| 决策点识别 | 启发式。测试用的 3 份计划是按 Codex Plan 模式格式手写的合成样例，不是真实会话记录 |
+| Windows | 没测过 |
+
+## 状态
+
+早期原型 v0.1，**暂无实测数据**。它有没有用，要靠配对实测来回答：在同一批任务上对比原生 `/plan` 和 plan-ledger 的定稿轮数、分项 token（input / cached / output / reasoning），以及埋入的偏离能抓到几处。方法和判定线见 [docs/measurement-plan.md](docs/measurement-plan.md)。数据出来之前，这里不写任何数字。
+
+## 开发
+
+```sh
+npm test              # node --test，零依赖
+npm run figures       # 重新生成 docs/assets/*.svg（确定性输出，测试会核对）
+```
+
+## 致谢
+
+- 灵感来自 Thariq Shihipar 的 [html-plan](https://github.com/anthropics/claude-plugins-community/tree/main/html-plan)。
+- 灵感来自 [QingYunA/answer-me-with-html](https://github.com/QingYunA/answer-me-with-html)。
+
+两者都只借鉴了思路，没有复制代码。
+
+## 许可
+
+[MIT](LICENSE)
