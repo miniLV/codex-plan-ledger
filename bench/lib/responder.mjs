@@ -4,9 +4,18 @@ export function matchEntry(oracle, text) {
   return null;
 }
 
-function pickOption(entry, options) {
-  const re = new RegExp(entry.option, 'i');
-  return options.find((o) => re.test(`${o.label} ${o.description || ''}`)) || null;
+// An option fits an oracle entry when it matches `option` and does not match `reject`.
+// `reject` exists because a positive pattern alone accepted options that contradict the
+// intent: round 2's "Change only `index.js`, `tests.js`, and `readme.md`." matched
+// docs-tests via `readme(?!.*test)` although the intent is "do not change test files".
+export function optionFits(entry, option) {
+  const text = `${option.label} ${option.description || ''}`;
+  if (entry.reject && new RegExp(entry.reject, 'i').test(text)) return false;
+  return new RegExp(entry.option, 'i').test(text);
+}
+
+export function pickOption(entry, options) {
+  return options.find((o) => optionFits(entry, o)) || null;
 }
 
 /** Native arm: answer one request_user_input call. */
@@ -51,7 +60,15 @@ export function answerLedger(oracle, ledger, prefix) {
     if (d.status === 'answered') continue;
     const text = `${d.title || ''} ${d.question || ''} ${d.options.map((o) => o.label).join(' ')}`;
     const e = matchEntry(oracle, text);
-    if (!e) { defaultKept.push(d.id); log.push({ id: d.id, title: d.title, matched: null }); continue; }
+    const isDefault = d.kind === 'assumption';
+    if (!e) {
+      if (!isDefault) defaultKept.push(d.id);
+      log.push({ id: d.id, title: d.title, matched: null, ...(isDefault ? { reviewed_default: 'kept' } : {}) });
+      continue;
+    }
+    // A default the plan already assumed is only answered when it contradicts the intent.
+    const kept = isDefault ? d.options.find((o) => o.id === d.default) : null;
+    if (kept && optionFits(e, kept)) { log.push({ id: d.id, title: d.title, matched: e.id, reviewed_default: 'kept' }); continue; }
     const opt = pickOption(e, d.options);
     answers[d.id] = opt ? { choice: opt.id } : { choice: 'other', other: e.answer };
     log.push({ id: d.id, title: d.title, matched: e.id, choice: opt ? opt.label : `other: ${e.answer}` });

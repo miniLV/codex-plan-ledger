@@ -29,3 +29,24 @@ they are not copied here and never shown to the agent.
 Results: [round 1 (directional, n = 1 pair)](results/2026-10-09-round1/summary.md) ·
 [round 2 (directional, n = 2 pairs)](results/2026-10-09-round2/summary.md), run profile in
 [round2/profile.md](results/2026-10-09-round2/profile.md).
+
+## Changes after round 2 (no new runs yet)
+
+Rounds 1 and 2 were run with the rules below as they were *before* these changes; their
+recorded results are unchanged.
+
+- **Responder matching.** An oracle entry can carry a `reject` pattern. An option that
+  matches `reject` never counts as a match. Round 2 showed why: the strict-option plan's
+  default "Change only `index.js`, `tests.js`, and `readme.md`." matched `docs-tests`
+  through `readme(?!.*test)` and was kept, although the intent is "do not change test
+  files". Covered by `test/responder.test.js` on that real plan.
+- **Defaults are not open decisions.** Items under "Chosen defaults" / "Assumptions" are
+  recorded as `status: default`, `kind: assumption`. The runner no longer sends an answer
+  round just for them; the responder reviews them and answers only one that contradicts
+  the oracle. In round 2 all four strict-option defaults were counted as open. Replayed
+  under the new rules, that plan still gets one answer round, for the single default that
+  contradicts the intent (the `tests.js` one); the rest are kept.
+- **Negations in option patterns.** The strict-option `error` entry rejected "introduce no
+  custom error class" because it contained "custom"; a preceding "no" is now respected.
+- **Codex's own questions.** `request_user_input` questions and replies are read from the
+  transcript into `decisions.json` (`source: "codex-native"`, answered) and never re-asked.

@@ -104,9 +104,12 @@ try {
       ev({ kind: 'hook_fallback', stdout: res.stdout, stderr: res.stderr });
       found = findLedger();
     }
-    const open = found ? found.ledger.decisions.filter((d) => d.status !== 'answered') : [];
-    if (!found || !open.length || ledgerRounds >= 1) { finalPlan = plan; row.ledger_decisions = found?.ledger.decisions.length ?? 0; break; }
-    const a = answerLedger(oracle, found.ledger, ANSWER_PREFIX);
+    // Open = needs the user (plan defaults and Codex-native answers are not open). The
+    // responder still reviews defaults and sends a round only if one contradicts its intent.
+    const open = found ? found.ledger.decisions.filter(needsAnswer) : [];
+    const a = found ? answerLedger(oracle, found.ledger, ANSWER_PREFIX) : null;
+    const toSend = open.length + Object.keys(a?.payload.answers || {}).length;
+    if (!found || !toSend || ledgerRounds >= 1) { finalPlan = plan; row.ledger_decisions = found?.ledger.decisions.length ?? 0; break; }
     ledgerRounds++; row.ledger_answer_log = a.log; next = a.text;
     ev({ kind: 'ledger_answer', log: a.log, text: a.text });
   }

@@ -2,12 +2,16 @@
 
 import { escapeHtml, jsonForScript } from './util.js';
 import { inline, markdownToHtml } from './markdown.js';
-import { ANSWER_PREFIX } from './ledger.js';
+import { ANSWER_PREFIX, needsAnswer } from './ledger.js';
 
 const STRINGS = {
   zh: {
     need: (n) => `需要你定 ${n} 项`,
-    needAssume: (m) => `（其中 ${m} 项是计划里写明的默认假设）`,
+    noneOpen: '没有必须由你回答的决策',
+    nativeCount: (k) => `；Codex 里已问过并回答 ${k} 项，已记入账本`,
+    needAssume: (m) => `；${m} 项是计划写明的默认，不改就保留，可以在下面复核`,
+    answeredInCodex: 'Codex 里已回答',
+    defaultReview: '默认，可复核',
     none: '这份计划没有需要你定的点。下面只显示摘要和完整计划。',
     failTitle: '没能识别计划格式',
     failNote: '已原样放行：Codex 这一轮不受影响，下面是原文。',
@@ -24,7 +28,7 @@ const STRINGS = {
     added: '新增', changed: '已变更', removed: '已删除',
     answeredInLedger: '账本里已作答',
     carried: (r, how) => `沿用第 ${r} 版的回答（按${how === 'title' ? '标题' : 'id'}匹配）`,
-    answeredCount: (k) => `，其中 ${k} 项已有回答`,
+    answeredCount: (k) => `；计划里已有回答 ${k} 项`,
     earlierTitle: '之前答过、这一版计划里没有的决策',
     earlierNote: '只作记录，不会自动套用到这一版。',
     reasonText: { 'decision not in this revision': '这一版没有这项决策', 'option no longer offered': '原来选的选项这一版没有了' },
@@ -40,7 +44,11 @@ const STRINGS = {
   },
   en: {
     need: (n) => `${n} decision${n === 1 ? '' : 's'} for you`,
-    needAssume: (m) => ` (${m} of them are defaults the plan assumed)`,
+    noneOpen: 'No decisions need your answer',
+    nativeCount: (k) => `; ${k} asked and answered in Codex, recorded in the ledger`,
+    needAssume: (m) => `; ${m} default${m === 1 ? '' : 's'} the plan assumed, kept unless you change them below`,
+    answeredInCodex: 'Answered in Codex',
+    defaultReview: 'Default, reviewable',
     none: 'This plan has no open decisions. Showing the summary and the full plan only.',
     failTitle: 'Could not read the plan format',
     failNote: 'Passed through unchanged: this Codex turn is not affected. Original text below.',
@@ -57,7 +65,7 @@ const STRINGS = {
     added: 'New', changed: 'Changed', removed: 'Removed',
     answeredInLedger: 'Answered in ledger',
     carried: (r, how) => `Answer carried from rev ${r} (matched by ${how})`,
-    answeredCount: (k) => `; ${k} already answered`,
+    answeredCount: (k) => `; ${k} plan decision${k === 1 ? '' : 's'} already answered`,
     earlierTitle: 'Answered earlier, not in this revision',
     earlierNote: 'Kept as a record only; not applied to this revision.',
     reasonText: { 'decision not in this revision': 'decision not in this revision', 'option no longer offered': 'chosen option no longer offered' },
@@ -221,7 +229,7 @@ export function renderPlanHtml({ ledger, planText, changes = null, ledgerPath = 
   const added = new Set(changes?.added || []);
   const changed = new Map((changes?.changed || []).map((c) => [c.id, c.fields]));
   const removed = changes?.removed || [];
-  const assumptions = decisions.filter((d) => d.kind === 'assumption').length;
+  const assumptions = decisions.filter((d) => d.kind === 'assumption' && d.status !== 'answered').length;
 
   const parts = [];
   parts.push(`<main>`);
@@ -232,8 +240,10 @@ export function renderPlanHtml({ ledger, planText, changes = null, ledgerPath = 
   if (decisions.length === 0) {
     parts.push(`<p class="count">${escapeHtml(t.none)}</p>`);
   } else {
-    const answered = decisions.filter((d) => d.status === 'answered').length;
-    parts.push(`<p class="count" id="count">${escapeHtml(t.need(decisions.length))}${assumptions ? escapeHtml(t.needAssume(assumptions)) : ''}${answered ? escapeHtml(t.answeredCount(answered)) : ''}</p>`);
+    const open = decisions.filter(needsAnswer).length;
+    const native = decisions.filter((d) => d.source === 'codex-native').length;
+    const answered = decisions.filter((d) => d.status === 'answered' && d.source !== 'codex-native').length;
+    parts.push(`<p class="count" id="count">${escapeHtml(open ? t.need(open) : t.noneOpen)}${native ? escapeHtml(t.nativeCount(native)) : ''}${answered ? escapeHtml(t.answeredCount(answered)) : ''}${assumptions ? escapeHtml(t.needAssume(assumptions)) : ''}</p>`);
   }
   if (changes && (added.size || changed.size || removed.length)) {
     parts.push(`<p class="banner">${escapeHtml(t.changedBanner(added.size, changed.size, removed.length))}</p>`);
@@ -244,7 +254,8 @@ export function renderPlanHtml({ ledger, planText, changes = null, ledgerPath = 
     const tags = [`<span class="tag">${escapeHtml(t.kind[d.kind] || d.kind)}</span>`];
     if (added.has(d.id)) tags.push(`<span class="tag added">${escapeHtml(t.added)}</span>`);
     if (changed.has(d.id)) tags.push(`<span class="tag changed">${escapeHtml(t.changed)}: ${escapeHtml(changed.get(d.id).join(', '))}</span>`);
-    if (d.status === 'answered') tags.push(`<span class="tag done">${escapeHtml(t.answeredInLedger)}</span>`);
+    if (d.status === 'answered') tags.push(`<span class="tag done">${escapeHtml(d.source === 'codex-native' ? t.answeredInCodex : t.answeredInLedger)}</span>`);
+    else if (d.kind === 'assumption') tags.push(`<span class="tag carried">${escapeHtml(t.defaultReview)}</span>`);
     if (d.status === 'answered' && d.carried) tags.push(`<span class="tag carried">${escapeHtml(t.carried(d.carried.from_revision, d.carried.match))}</span>`);
     const name = `c-${d.id}`;
     const opts = d.options.map((o) => {

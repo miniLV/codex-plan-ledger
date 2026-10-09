@@ -61,6 +61,13 @@
         "status": { "enum": ["answered", "default"], "description": "\"default\" means not answered; default kept. It is not agreement." },
         "affected": { "$ref": "#/$defs/affected" },
         "rationale": { "type": ["string", "null"], "maxLength": 2000 },
+        "source": { "enum": ["plan", "codex-native"], "description": "\"codex-native\": asked by Codex itself (request_user_input) and answered there; read from the session transcript. Absent means the plan text." },
+        "native": {
+          "type": "object",
+          "required": ["call_id", "question_id"],
+          "additionalProperties": false,
+          "properties": { "call_id": { "type": "string" }, "question_id": { "type": ["string", "null"] } }
+        },
         "carried": {
           "description": "Present when this answer was given in an earlier revision and carried forward. Removed when the decision is answered again.",
           "type": "object",

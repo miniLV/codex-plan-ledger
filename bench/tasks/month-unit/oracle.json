@@ -1,12 +1,12 @@
 {
-  "_note": "Hidden from the agent. The scripted responder answers questions/decisions from this file in both arms. Source of truth: intent-tests examples/tasks/intents/month-unit.md.",
+  "_note": "Hidden from the agent. The scripted responder answers questions/decisions from this file in both arms. Source of truth: intent-tests examples/tasks/intents/month-unit.md. `reject` (optional): an option matching it never counts as a match, even when `option` matches.",
   "intent_scope": ["index.js", "readme.md"],
   "verify": "month-unit.cjs",
   "entries": [
     { "id": "format", "topic": "format|output|stringif|long form|humani[sz]e|display|ms\\(\\s*number|number.*string", "option": "unchanged|pars(e|ing) only|no format|don.?t|do not|keep", "answer": "Parsing only. Formatting numbers stays exactly as it is and never outputs months." },
     { "id": "length", "topic": "length|how long|how many days|days|30|365|calendar|average|fixed|twelfth|definition|value of a month|month (=|equals|is)", "option": "365\\.25|/\\s*12|twelfth|average|2629800000|30\\.4", "answer": "One month = 365.25 / 12 days = 2629800000 ms (one twelfth of the library's year). Not calendar-aware." },
     { "id": "units", "topic": "unit|alias|abbreviat|spelling|token|suffix|accept|\\bmo\\b|mon\\b|minute|ambigu", "option": "^(?=.*\\bmo\\b)(?=.*month)(?!.*\\bmon\\b)", "answer": "Accept `mo`, `month` and `months`, case-insensitive, with or without a space, with decimals and negatives. `m` stays minutes. Do not accept other spellings such as `mon`." },
-    { "id": "docs-tests", "topic": "readme|doc|test", "option": "readme(?!.*test)|docs? only|no (new )?tests?", "answer": "Update readme.md. Do not add or change test files." },
-    { "id": "scope", "topic": "typescript|\\.d\\.ts|types|scope|which files", "option": "index\\.js only|only index", "answer": "Change only index.js and readme.md." }
+    { "id": "docs-tests", "topic": "readme|doc|test", "option": "readme(?!.*test)|docs? only|no (new )?tests?|\\b(not|never|without)\\b.*\\btests?\\b", "answer": "Update readme.md. Do not add or change test files.", "reject": "^(?!.*\\b(no|not|don'?t|never|without)\\b.*\\btests?\\b).*(tests?\\.js|\\b(add|adding|extend|extending|update|updating|change|changing|write|writing)\\b.*\\btests?\\b)" },
+    { "id": "scope", "topic": "typescript|\\.d\\.ts|types|scope|which files", "option": "index\\.js only|only index", "answer": "Change only index.js and readme.md.", "reject": "^(?!.*\\b(no|not|don'?t|never|without)\\b.*\\btests?\\b).*tests?\\.js" }
   ]
 }

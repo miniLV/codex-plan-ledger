@@ -21,9 +21,10 @@ import { pathToFileURL } from 'node:url';
 import { spawn } from 'node:child_process';
 import { extractProposedPlan, parsePlan } from './parse.js';
 import { renderFailure, renderPlanHtml } from './render.js';
+import { nativeDecisions, nativeQuestionsFromTranscript } from './native.js';
 import {
   ANSWER_PREFIX, CONTEXT_PREFIX, applyAnswers, buildLedger, choosePlanId, compactLedger,
-  findAnswersInPrompt, loadLedger, repoRoot, writeLedger,
+  findAnswersInPrompt, loadLedger, needsAnswer, repoRoot, writeLedger,
 } from './ledger.js';
 
 const TRIGGER_RE = /^(?:\/ledger\s+apply|ledger:apply|ledger\s+apply)(?:\s+([A-Za-z0-9][A-Za-z0-9._-]{0,99}))?\s*$/i;
@@ -117,17 +118,24 @@ export function handleStop(stdin, opts = {}) {
     const parsed = parsePlan(ex.body);
     const planId = choosePlanId(root, parsed.title);
     const prev = loadLedger(root, planId);
-    const { ledger, changes, unchanged } = buildLedger({ planId, planText: ex.body, parsed, prev: prev?.ledger || null });
+    const native = nativeDecisions(nativeQuestionsFromTranscript(typeof input.transcript_path === 'string' ? input.transcript_path : null));
+    const { ledger, changes, unchanged } = buildLedger({ planId, planText: ex.body, parsed, prev: prev?.ledger || null, native });
     const written = writeLedger(root, ledger, unchanged ? null : ex.body);
     const html = join(written.dir, 'plan.html');
     writeFileSync(html, renderPlanHtml({ ledger, planText: ex.body, changes: prev ? changes : null, ledgerPath: written.rel, lang }));
     if (opts.open) openInBrowser(html);
-    const open = ledger.decisions.filter((d) => d.status !== 'answered').length;
+    const open = ledger.decisions.filter(needsAnswer).length;
     const carried = ledger.decisions.filter((d) => d.carried).length;
-    const extra = carried ? `; ${carried} answer(s) carried from earlier revisions` : '';
+    const nNative = ledger.decisions.filter((d) => d.source === 'codex-native').length;
+    const nDefault = ledger.decisions.filter((d) => d.kind === 'assumption' && d.status !== 'answered').length;
+    const extra = [
+      nNative ? `${nNative} answered in Codex` : '',
+      carried ? `${carried} answer(s) carried from earlier revisions` : '',
+      nDefault ? `${nDefault} plan default(s) kept, reviewable` : '',
+    ].filter(Boolean).map((s) => `; ${s}`).join('');
     const msg = open
       ? `plan-ledger: ${open} decision(s) to answer${extra} → ${pathToFileURL(html).href} (ledger: ${written.rel})`
-      : `plan-ledger: no open decisions${extra}; ledger at ${written.rel}`;
+      : `plan-ledger: nothing to answer${extra} → ${pathToFileURL(html).href} (ledger: ${written.rel})`;
     return { stdout: out({ systemMessage: msg }), html, ledgerFile: written.file, ledger, changes, from };
   } catch (err) {
     return { stdout: out({ systemMessage: `plan-ledger: skipped (${String(err?.message || err).slice(0, 200)}); plan passed through unchanged` }) };

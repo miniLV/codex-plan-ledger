@@ -44,7 +44,7 @@ test('decision page: count, cards, recommendation, affected files, copy button a
   const body = extractProposedPlan(fixture('send-later.message.md')).body;
   const { ledger } = ledgerFor(body);
   const html = renderPlanHtml({ ledger, planText: body, ledgerPath: 'docs/plans/p1/decisions.json' });
-  assert.match(html, /需要你定 6 项/);
+  assert.match(html, /需要你定 4 项；2 项是计划写明的默认/);
   assert.equal((html.match(/class="card[^"]*" data-id=/g) || []).length, 6);
   assert.match(html, /tag rec">推荐/);
   assert.match(html, /<code>src\/jobs\/sendScheduled\.ts<\/code>/);
@@ -53,7 +53,7 @@ test('decision page: count, cards, recommendation, affected files, copy button a
   assert.match(html, /未作答，保留默认/);
   assert.ok(!/https?:\/\/(?!www\.w3\.org)/.test(html.replace(/>[^<]*</g, '><')), 'no external resources in markup');
   const en = renderPlanHtml({ ledger, planText: body, lang: 'en' });
-  assert.match(en, /6 decisions for you/);
+  assert.match(en, /4 decisions for you; 2 defaults the plan assumed/);
   assert.match(en, /Build reply JSON and copy/);
 });
 

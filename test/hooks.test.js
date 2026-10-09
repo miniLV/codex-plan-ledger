@@ -16,11 +16,11 @@ test('hook-stop: plan -> ledger + html, JSON stdout, never blocks', () => {
   const out = JSON.parse(r.stdout);
   for (const k of Object.keys(out)) assert.ok(STOP_OUTPUT_KEYS.has(k), k);
   assert.equal(out.decision, undefined, 'never returns decision: block');
-  assert.match(out.systemMessage, /6 decision\(s\) to answer → file:\/\/.*plan\.html/);
+  assert.match(out.systemMessage, /4 decision\(s\) to answer; 2 plan default\(s\) kept, reviewable → file:\/\/.*plan\.html/);
   const base = join(dir, 'docs/plans/2026-10-09-send-later-for-drafts');
   assert.ok(existsSync(join(base, 'decisions.json')));
   assert.ok(existsSync(join(base, 'plan.md')));
-  assert.match(readFileSync(join(base, 'plan.html'), 'utf8'), /需要你定 6 项/);
+  assert.match(readFileSync(join(base, 'plan.html'), 'utf8'), /需要你定 4 项；2 项是计划写明的默认/);
   // Second identical Stop: same ledger, revision unchanged.
   run(['hook-stop'], { cwd: dir, input: stopPayload(fixture('send-later.message.md'), dir) });
   assert.equal(JSON.parse(readFileSync(join(base, 'decisions.json'), 'utf8')).revision, 1);
@@ -126,7 +126,7 @@ test('hook-stop: falls back to the transcript when last_assistant_message is emp
   writeFileSync(transcript, lines.map((l) => JSON.stringify(l)).join('\n') + '\n');
   const r = run(['hook-stop'], { cwd: dir, input: stopPayload('', dir, { transcript_path: transcript, permission_mode: 'bypassPermissions' }) });
   assert.equal(r.code, 0, r.stderr);
-  assert.match(JSON.parse(r.stdout).systemMessage, /5 decision\(s\) to answer/);
+  assert.match(JSON.parse(r.stdout).systemMessage, /3 decision\(s\) to answer; 2 plan default\(s\) kept/);
   // A plan from an older turn is not re-rendered.
   const { dir: dir2 } = tempRepo();
   const r2 = run(['hook-stop'], { cwd: dir2, input: stopPayload('', dir2, { transcript_path: transcript, turn_id: 'turn-2' }) });

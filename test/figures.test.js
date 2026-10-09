@@ -13,9 +13,10 @@ test('README figures are deterministic and committed output is current', () => {
   }
 });
 
-test('comparison figure is labelled illustrative and has no numbers or percentages', () => {
-  const svg = FIGURES['plan-rounds.svg']();
-  assert.match(svg, /示意 \/ illustrative/);
+test('flow figure is labelled, has no numbers, and makes no rounds claim', () => {
+  const svg = FIGURES['ledger-flow.svg']();
+  assert.match(svg, /流程示意 \/ flow/);
+  assert.ok(!/round|轮|fewer|更少/i.test(svg), 'no rounds comparison');
   assert.match(svg, /no measured data/);
   const visible = [...svg.matchAll(/<text[^>]*>([^<]*)<\/text>/g)].map((m) => m[1]).join(' ');
   assert.ok(!/[0-9%]/.test(visible), visible);
