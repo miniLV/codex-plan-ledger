@@ -176,7 +176,8 @@ When Codex revises the plan, earlier answers are carried forward to decisions wi
 | Report field | Meaning | `--strict` |
 | --- | --- | --- |
 | `files_outside_plan` | Changed, but not in any decision's `affected` and not mentioned in the plan | drift |
-| `decisions_not_touched` | The decision lists `affected` files, and none of them changed | drift |
+| `decisions_not_touched` | A decision (including answers kept in `earlier_answers`) lists `affected` files, and none of them changed | drift |
+| `planned_files_not_touched` | A concrete file the plan text says it changes (lines like "do not modify X" excluded), not tied to any decision, and not changed | drift |
 | `files_in_plan_scope_without_decision` | Mentioned in the plan, not tied to a decision | info |
 | `decisions_without_affected` | The decision lists no files, so it cannot be checked | info |
 
@@ -209,7 +210,7 @@ If the repo root has an `INTENT.md` from [intent-tests](https://github.com/miniL
 
 In this pair plan-ledger did **not** reduce rounds: in its first turn the model gave a draft without a plan block, which cost one extra reply. The native arm asked one question, never asked about test files, and edited `tests.js`. The plan-ledger arm's plan listed "which files to change" as a decision; with the oracle's answer, test files were left alone. One pair shows no pattern.
 
-After the round, the parser and ledger were fixed (resolved items skipped, answers carried across revisions) and the recorded plans were replayed offline with the new code (no new Codex calls): the final plan no longer shows "3 decisions to answer", and the answer is kept in the ledger's `earlier_answers`. Rounds are still 2 vs 1, and the "revert the files a decision lists" plant can no longer be tested, because the final plan has no open decision with files. See the [re-analysis](bench/results/2026-10-09-round1/reanalysis.md).
+After the round, the parser and ledger were fixed (resolved items skipped, answers carried across revisions) and the recorded plans were replayed offline with the new code (no new Codex calls): the final plan no longer shows "3 decisions to answer", and the answer is kept in the ledger's `earlier_answers`. Rounds are still 2 vs 1, and the "revert the files a decision lists" plant is caught again now that the scope drift check also reads `earlier_answers` and the files the plan text names. See the [re-analysis](bench/results/2026-10-09-round1/reanalysis.md).
 
 Planted drift (plan-ledger arm, after implementation, `plan-ledger check` on copies): no false positive on the clean tree; a new unplanned file (scope) was caught; reverting the files a decision lists (scope) was caught; code in the planned `index.js` that contradicts a decision (content) was not caught, matching the known limit above.
 

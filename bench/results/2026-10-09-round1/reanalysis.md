@@ -22,10 +22,13 @@ Planted drift, re-run on the recorded worktree against the replayed final ledger
 | --- | --- | --- |
 | clean | no drift | no drift |
 | S1 scope: unplanned new file | caught | caught |
-| S2 scope: revert the files a decision lists | caught | **not testable**: the final ledger has no open decision with files, so there is nothing to revert |
+| S2 scope: revert the files a decision lists | caught | **caught** via the kept earlier answer (`decisions_not_touched`, source `earlier_answers`; reverted `index.js`, `tests.js`, `readme.md`) |
 | C1 content: contradicting code in `index.js` | not caught (expected) | not caught (expected) |
 
 Reading: the parser fixes make the page and the final ledger correct for this session, but they
-do not change the round count, and ledger arm still did not win on rounds in this pair. S2 now
-depends on decisions staying in the final plan; a check that also uses `earlier_answers` or the
-plan's file list is a next step.
+do not change the round count, and ledger arm still did not win on rounds in this pair.
+
+Update: the first version of this re-analysis found S2 not testable, because the final ledger had
+no open decision with files. The scope drift check now also checks answers kept in
+`earlier_answers` and the files the plan text names; with that, S2 is caught again (table above,
+`reanalysis.json` regenerated).

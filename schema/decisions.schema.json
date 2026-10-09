@@ -85,6 +85,7 @@
         "chosen_label": { "type": ["string", "null"] },
         "other": { "type": ["string", "null"], "maxLength": 2000 },
         "rationale": { "type": ["string", "null"], "maxLength": 2000 },
+        "affected": { "$ref": "#/$defs/affected" },
         "from_revision": { "type": "integer", "minimum": 1 },
         "reason": { "enum": ["decision not in this revision", "option no longer offered"] }
       }

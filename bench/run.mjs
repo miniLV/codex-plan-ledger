@@ -140,7 +140,7 @@ row.outside_intent_scope = row.changed_files.filter((f) => !(oracle.intent_scope
 // --- planted drift (ledger arm: the check needs a ledger) ------------------
 const check = (dir) => {
   const r = spawnSync(node, [BIN, 'check', '--base', base, '--json'], { cwd: dir, encoding: 'utf8' });
-  try { const j = JSON.parse(r.stdout); return { has_drift: j.has_drift, files_outside_plan: j.drift.files_outside_plan, decisions_not_touched: j.drift.decisions_not_touched.map((d) => d.id) }; } catch { return { error: (r.stderr || r.stdout).slice(0, 300) }; }
+  try { const j = JSON.parse(r.stdout); return { has_drift: j.has_drift, files_outside_plan: j.drift.files_outside_plan, decisions_not_touched: j.drift.decisions_not_touched.map((d) => d.id), planned_files_not_touched: j.drift.planned_files_not_touched }; } catch { return { error: (r.stderr || r.stdout).slice(0, 300) }; }
 };
 if (arm === 'ledger' && findLedger()) {
   const led = findLedger().ledger;
@@ -152,12 +152,15 @@ if (arm === 'ledger' && findLedger()) {
     rmSync(d, { recursive: true, force: true });
     return res;
   };
-  const affected = [...new Set(led.decisions.flatMap((d) => d.affected?.files || []))].filter((f) => !/[*?]/.test(f));
+  // Files a decision or a kept earlier answer lists; if none, the plan's own file list.
+  let affected = [...new Set([...led.decisions, ...(led.earlier_answers || [])].flatMap((d) => d.affected?.files || []))].filter((f) => !/[*?]/.test(f));
+  if (!affected.length) affected = (led.scope?.files || []).filter((f) => !/[*?]/.test(f));
+  row.s2_reverted = affected;
   const content = readFileSync(join(taskDir, 'planted-content.js'), 'utf8');
   row.drift = {
     clean: check(wt),
     scope_S1_unplanned_file: plant('S1', (d) => { mkdirSync(join(d, 'lib'), { recursive: true }); writeFileSync(join(d, 'lib', 'planted.js'), 'module.exports = 1;\n'); }),
-    scope_S2_revert_affected: affected.length ? plant('S2', (d) => { for (const f of affected) { try { git(d, 'checkout', base, '--', f); } catch { /* file new in this run */ rmSync(join(d, f), { force: true }); } } }) : { skipped: 'no decision lists concrete affected files' },
+    scope_S2_revert_affected: affected.length ? plant('S2', (d) => { for (const f of affected) { try { git(d, 'checkout', base, '--', f); } catch { /* file new in this run */ rmSync(join(d, f), { force: true }); } } }) : { skipped: 'no decision, earlier answer or plan text names concrete files' },
     content_C1_contradicting_code_in_index_js: plant('C1', (d) => appendFileSync(join(d, 'index.js'), `\n${content}`)),
   };
 }

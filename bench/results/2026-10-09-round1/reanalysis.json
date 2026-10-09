@@ -92,6 +92,14 @@
               "chosen_label": null,
               "other": "Update readme.md. Do not add or change test files.",
               "rationale": null,
+              "affected": {
+                "files": [
+                  "index.js",
+                  "tests.js",
+                  "readme.md"
+                ],
+                "modules": []
+              },
               "from_revision": 1,
               "reason": "decision not in this revision"
             }
@@ -111,27 +119,40 @@
     "recorded_rounds": 1,
     "final_plan_decisions_if_rendered": []
   },
+  "s2_reverted": [
+    "index.js",
+    "tests.js",
+    "readme.md"
+  ],
   "drift_replay": {
     "base_commit": "7cc5b42e632ecc9b0f783396917ae6078d384afe",
     "clean": {
       "has_drift": false,
       "files_outside_plan": [],
-      "decisions_not_touched": []
+      "decisions_not_touched": [],
+      "planned_files_not_touched": []
     },
     "scope_S1_unplanned_file": {
       "has_drift": true,
       "files_outside_plan": [
         "lib/planted.js"
       ],
-      "decisions_not_touched": []
+      "decisions_not_touched": [],
+      "planned_files_not_touched": []
     },
     "scope_S2_revert_affected": {
-      "skipped": "the final ledger has no decision with concrete affected files, so there is nothing to revert"
+      "has_drift": true,
+      "files_outside_plan": [],
+      "decisions_not_touched": [
+        "d-limit-changes-to-index-js-tests-js-and"
+      ],
+      "planned_files_not_touched": []
     },
     "content_C1_contradicting_code_in_index_js": {
       "has_drift": false,
       "files_outside_plan": [],
-      "decisions_not_touched": []
+      "decisions_not_touched": [],
+      "planned_files_not_touched": []
     }
   }
 }

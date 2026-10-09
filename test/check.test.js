@@ -83,3 +83,54 @@ test('limit is explicit: a change inside a planned file that contradicts a decis
   assert.deepEqual(r.drift.files_outside_plan, []);
   assert.ok(!r.drift.decisions_not_touched.some((d) => d.id === 'd2'));
 });
+
+function repoWith(files) {
+  const repo = tempRepo();
+  for (const f of files) put(repo.dir, f);
+  repo.git('add', '-A');
+  repo.git('commit', '-q', '-m', 'base');
+  return repo;
+}
+
+test('scope drift: earlier_answers and the plan file list are checked (revert case)', async () => {
+  const { applyAnswers } = await import('../src/ledger.js');
+  // Replay of the captured round-1 session: rev 1 has one decision with files, rev 2 has none.
+  const p1 = extractProposedPlan(fixture('real/strict-option.rev1.message.md')).body;
+  const p2 = extractProposedPlan(fixture('real/strict-option.rev2.message.md')).body;
+  const r1 = buildLedger({ planId: 'strict', planText: p1, parsed: parsePlan(p1) }).ledger;
+  const id = r1.decisions[0].id;
+  const a1 = applyAnswers(r1, { answers: { [id]: { choice: 'other', other: 'Do not change test files.' } } }).ledger;
+  const r2 = buildLedger({ planId: 'strict', planText: p2, parsed: parsePlan(p2), prev: a1 }).ledger;
+  assert.equal(r2.decisions.length, 0);
+  assert.deepEqual(r2.earlier_answers[0].affected.files.sort(), ['index.js', 'readme.md', 'tests.js']);
+
+  const { dir } = repoWith(['index.js', 'readme.md', 'tests.js']);
+  // Clean: the planned files changed.
+  put(dir, 'index.js', 'changed\n');
+  put(dir, 'readme.md', 'changed\n');
+  let r = scopeDriftCheck({ root: dir, ledger: r2, base: 'HEAD' });
+  assert.equal(r.has_drift, false, JSON.stringify(r.drift));
+  assert.deepEqual(r.info.earlier_answers_checked, [id]);
+  // Revert everything the earlier answer lists: caught through earlier_answers.
+  put(dir, 'index.js');
+  put(dir, 'readme.md');
+  r = scopeDriftCheck({ root: dir, ledger: r2, base: 'HEAD' });
+  assert.equal(r.has_drift, true);
+  assert.deepEqual(r.drift.decisions_not_touched.map((d) => [d.id, d.source]), [[id, 'earlier_answers']]);
+});
+
+test('scope drift: files the plan names but nobody changed are reported; "do not change" lines are not plan scope', () => {
+  const md = '# T\n\n## Implementation\n\n- Change `index.js` to add the option.\n- Document it in `readme.md`.\n- Do not modify `tests.js`.\n';
+  const parsed = parsePlan(md);
+  assert.deepEqual(parsed.scope.files.sort(), ['index.js', 'readme.md']);
+  const ledger = buildLedger({ planId: 't', planText: md, parsed }).ledger;
+  const { dir } = repoWith(['index.js', 'readme.md', 'tests.js']);
+  put(dir, 'index.js', 'changed\n');
+  let r = scopeDriftCheck({ root: dir, ledger, base: 'HEAD' });
+  assert.deepEqual(r.drift.planned_files_not_touched, ['readme.md']);
+  assert.equal(r.has_drift, true);
+  put(dir, 'readme.md', 'changed\n');
+  r = scopeDriftCheck({ root: dir, ledger, base: 'HEAD' });
+  assert.deepEqual(r.drift.planned_files_not_touched, []);
+  assert.equal(r.has_drift, false);
+});

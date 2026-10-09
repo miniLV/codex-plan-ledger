@@ -99,9 +99,11 @@ if (wtArg && existsSync(wtArg)) {
   const base = git(resolve(wtArg), 'rev-parse', 'HEAD');
   const check = (d) => {
     const r = scopeDriftCheck({ root: d, ledger: final, base });
-    return { has_drift: r.has_drift, files_outside_plan: r.drift.files_outside_plan, decisions_not_touched: r.drift.decisions_not_touched.map((x) => x.id) };
+    return { has_drift: r.has_drift, files_outside_plan: r.drift.files_outside_plan, decisions_not_touched: r.drift.decisions_not_touched.map((x) => x.id), planned_files_not_touched: r.drift.planned_files_not_touched };
   };
-  const affected = [...new Set(final.decisions.flatMap((d) => d.affected?.files || []))].filter((f) => !/[*?]/.test(f));
+  let affected = [...new Set([...final.decisions, ...(final.earlier_answers || [])].flatMap((d) => d.affected?.files || []))].filter((f) => !/[*?]/.test(f));
+  if (!affected.length) affected = (final.scope?.files || []).filter((f) => !/[*?]/.test(f));
+  out.s2_reverted = affected;
   const content = readFileSync(join(here, 'tasks', task, 'planted-content.js'), 'utf8');
   const plant = (name, fn) => { const d = fresh(name); fn(d); return check(d); };
   out.drift_replay = {
@@ -110,7 +112,7 @@ if (wtArg && existsSync(wtArg)) {
     scope_S1_unplanned_file: plant('S1', (d) => { mkdirSync(join(d, 'lib'), { recursive: true }); writeFileSync(join(d, 'lib', 'planted.js'), 'module.exports = 1;\n'); }),
     scope_S2_revert_affected: affected.length
       ? plant('S2', (d) => { for (const f of affected) { try { git(d, 'checkout', base, '--', f); } catch { rmSync(join(d, f), { force: true }); } } })
-      : { skipped: 'the final ledger has no decision with concrete affected files, so there is nothing to revert' },
+      : { skipped: 'no decision, earlier answer or plan text names concrete files' },
     content_C1_contradicting_code_in_index_js: plant('C1', (d) => appendFileSync(join(d, 'index.js'), `\n${content}`)),
   };
   rmSync(work, { recursive: true, force: true });

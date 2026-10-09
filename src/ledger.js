@@ -138,6 +138,7 @@ function earlierAnswer(old, fromRevision, reason) {
     chosen_label: chosenLabelOf(old),
     other: old.other ?? null,
     rationale: old.rationale ?? null,
+    affected: { files: [...(old.affected?.files || [])], modules: [...(old.affected?.modules || [])] },
     from_revision: fromRevision,
     reason,
   };

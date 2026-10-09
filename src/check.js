@@ -59,19 +59,28 @@ export function scopeDriftCheck({ root, ledger, base = 'HEAD', intentFile = null
   const intentScope = readIntentScope(intentPath) || [];
 
   const decisions = ledger.decisions || [];
-  const withScope = decisions.filter((d) => (d.affected?.files?.length || 0) + (d.affected?.modules?.length || 0) > 0);
+  // Answers kept from earlier revisions still constrain the code: check their files too.
+  const earlier = (ledger.earlier_answers || []).map((e) => ({ ...e, source: 'earlier_answers' }));
+  const hasFiles = (d) => (d.affected?.files?.length || 0) + (d.affected?.modules?.length || 0) > 0;
+  const withScope = [...decisions.filter(hasFiles), ...earlier.filter(hasFiles)];
+  const key = (d) => (d.source ? `earlier:${d.id}` : d.id);
   const byFile = [];
   const outside = [];
   for (const f of files) {
-    const ids = withScope.filter((d) => matchAffected(f, d.affected)).map((d) => d.id);
+    const ids = withScope.filter((d) => matchAffected(f, d.affected)).map(key);
     const inPlan = matchAffected(f, ledger.scope);
     const inIntent = intentScope.some((p) => matchPattern(f, p));
     byFile.push({ file: f, decisions: ids, plan_scope: inPlan, intent_scope: inIntent });
     if (!ids.length && !inPlan && !inIntent) outside.push(f);
   }
   const touched = new Set(byFile.flatMap((x) => x.decisions));
-  const untouched = withScope.filter((d) => !touched.has(d.id)).map((d) => ({ id: d.id, title: d.title, affected: d.affected }));
+  const untouched = withScope.filter((d) => !touched.has(key(d))).map((d) => ({ id: d.id, title: d.title, affected: d.affected, ...(d.source ? { source: d.source } : {}) }));
   const planOnly = byFile.filter((x) => !x.decisions.length && (x.plan_scope || x.intent_scope)).map((x) => x.file);
+  // Concrete files the plan itself names (outside "do not change" lines), but that were not changed.
+  const changed = new Set(files);
+  const plannedFiles = (ledger.scope?.files || []).filter((f) => !/[*?[\]{}]/.test(f) && !f.endsWith('/') && !ignorePatterns.some((p) => matchPattern(f, p)));
+  // Files that a decision (or earlier answer) lists are covered by decisions_not_touched instead.
+  const plannedUntouched = plannedFiles.filter((f) => !changed.has(f) && !withScope.some((d) => matchAffected(f, d.affected)));
 
   return {
     check: 'scope-drift',
@@ -83,13 +92,15 @@ export function scopeDriftCheck({ root, ledger, base = 'HEAD', intentFile = null
     drift: {
       files_outside_plan: outside,
       decisions_not_touched: untouched,
+      planned_files_not_touched: plannedUntouched,
     },
     info: {
       files_in_plan_scope_without_decision: planOnly,
-      decisions_without_affected: decisions.filter((d) => !withScope.includes(d)).map((d) => d.id),
+      decisions_without_affected: decisions.filter((d) => !hasFiles(d)).map((d) => d.id),
+      earlier_answers_checked: earlier.filter(hasFiles).map((d) => d.id),
       by_file: byFile,
     },
-    has_drift: outside.length > 0 || untouched.length > 0,
+    has_drift: outside.length > 0 || untouched.length > 0 || plannedUntouched.length > 0,
   };
 }
 
@@ -103,7 +114,10 @@ export function formatReport(r) {
   for (const f of out) lines.push(`         ${f}`);
   const un = r.drift.decisions_not_touched;
   lines.push(un.length ? `DRIFT  ${un.length} decision(s) whose affected files were never touched:` : 'OK     every decision with affected files was touched');
-  for (const d of un) lines.push(`         ${d.id}  ${d.title}  [${[...d.affected.files, ...d.affected.modules].join(', ')}]`);
+  for (const d of un) lines.push(`         ${d.id}${d.source ? ' (earlier answer)' : ''}  ${d.title}  [${[...d.affected.files, ...d.affected.modules].join(', ')}]`);
+  const pu = r.drift.planned_files_not_touched || [];
+  lines.push(pu.length ? `DRIFT  ${pu.length} file(s) the plan says it changes were not changed:` : 'OK     every file the plan names was changed');
+  for (const f of pu) lines.push(`         ${f}`);
   if (r.info.files_in_plan_scope_without_decision.length) {
     lines.push(`info   ${r.info.files_in_plan_scope_without_decision.length} file(s) are in the plan but not tied to a decision:`);
     for (const f of r.info.files_in_plan_scope_without_decision) lines.push(`         ${f}`);

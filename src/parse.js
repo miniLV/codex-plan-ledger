@@ -31,6 +31,8 @@ const SUMMARY_HEADING = /\b(summary|overview|tl;?dr)\b|概述|摘要|总结|概�
 const RESOLVED_HEADING = /\b(?:recorded|resolved|final|agreed|confirmed|settled)\b[^\n]*\bdecisions?\b|\bdecisions?\s+(?:made|taken|recorded)\b|已(?:确认|决定|定)的?(?:决定|决策)?|已决/i;
 // List items that state a decision the plan already resolved ("**D1 resolved:** …").
 const RESOLVED_ITEM = /^\W*(?:D\d{1,3}\s*)?(?:resolved|decided|已定|已确认)\s*[*_]*\s*[:：]/i;
+// Lines that name files only to say they must not change ("Do not modify tests.js").
+const NEGATIVE_LINE = /\b(?:do not|don't|must not|never|no changes? to|not (?:modify|change|touch|edit|update)|leave\b[^.]*\b(?:alone|unchanged|as is)|out of scope)\b|不要|不改|不动|别改|保持不变|不在范围/i;
 const TBD_RE = /\bTBD\b|\bTBC\b|to be decided|\bundecided\b|待定|待确认|二选一|\b(?:choose|decide|pick) (?:between|whether|one|which)\b|\bneeds? (?:a )?decision\b|需要你?(?:决定|拍板|选择)/i;
 const INLINE_OPTION_RE = /(?:^|[\s(（;；,，:：。.])(?:Option|方案|选项)\s*([A-Z1-9])\s*[:：).]\s*/g;
 const RECOMMENDED_MARK = /\s*[(（]\s*(?:recommended|推荐|建议)\s*[)）]\s*|\s*\[\s*(?:recommended|推荐)\s*\]\s*/i;
@@ -417,6 +419,7 @@ export function parsePlan(markdown) {
     return { id, ...rest };
   });
 
-  const scope = findAffected(text);
+  // Plan scope: files the plan mentions, except on lines that say not to change them.
+  const scope = findAffected(text.split(/\r?\n/).filter((l) => !NEGATIVE_LINE.test(l)).join('\n'));
   return { title, summary, decisions: finalDecisions, scope };
 }
