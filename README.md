@@ -1,11 +1,11 @@
 <h1 align="center">codex-plan-ledger</h1>
 
 <p align="center">
-  <strong>把 Codex <code>/plan</code> 里的决策一页答完，写进仓库，写完代码再查有没有跑偏。</strong>
+  <strong>Codex <code>/plan</code> 的决策账本：Codex 问过你的、计划里待定的、计划默认的，都写进仓库里的 <code>decisions.json</code>，能 diff、能 review；代码写完，再查一遍有没有超出计划范围。</strong>
 </p>
 
 <p align="center">
-  Codex 原生 Plan 模式照常用。计划一出来，自动生成一页离线 HTML，所有决策一次答完；答案落进 <code>docs/plans/&lt;id&gt;/decisions.json</code>，能 diff、能在 PR 里 review；代码写完后跑一次范围偏离检查。
+  Codex 原生 Plan 模式照常用，Codex 自己的提问也照常在 Codex 里回答。计划一出来，<code>Stop</code> hook 从会话记录里读出这些问答，连同计划里还待定的决策和写明的默认，一起写进 <code>docs/plans/&lt;id&gt;/decisions.json</code>，再生成一页离线 HTML 供复核和修改。这份账本和代码放在同一个 PR 里 review；代码写完，<code>plan-ledger check</code> 对照改动文件和计划范围。
 </p>
 
 <p align="center">
@@ -25,22 +25,24 @@
 </p>
 
 <p align="center">
-  <img src="./docs/assets/plan-rounds.svg" alt="示意图：原生 /plan 每轮问几个问题、要来回好几轮；codex-plan-ledger 一页列出所有决策、一次答完并写进仓库。图本身不含测量数据。" width="860">
+  <img src="./docs/assets/ledger-flow.svg" alt="流程示意：Codex /plan（Codex 自己的问答和计划）→ 仓库里的 decisions.json → PR 里的 diff → 写完代码后的 plan-ledger check 范围偏离检查。图里没有测量数据。" width="860">
 </p>
 
-> **状态：早期原型 v0.1。** 功能能用、有测试覆盖。目前有两轮方向性实测（2 个任务，共 n = 3 对）：**轮数上 plan-ledger 没有赢过**，token 没有一致方向，见下面的 [实测](#实测两轮方向性共-n--3-对)。上面的图只是示意，不是测量结果。怎么测、什么结果算成立，见 [实测计划](docs/measurement-plan.md)。
+> **实测一句话：** 在 n = 3 对里，轮数没有改善；范围偏离（计划外的文件、该改没改的文件）3/3 抓到，文件内和决策相反的改动 0/3 抓到。详见 [实测](#实测两轮方向性共-n--3-对)。
+>
+> **状态：早期原型 v0.1。** 功能能用、有测试覆盖。它不替代 Codex 的原生提问，也不承诺减少来回轮数；它做的是把决策留成记录，并在写完代码后查范围。上面的图是流程示意，不是测量结果。
 
 <p align="center">
-  <img src="./docs/assets/decision-page-zh.png" alt="决策页截图：顶部“需要你定 6 项”，每项一张卡片，有选项、推荐标记、默认值和影响的文件，底部是“生成回传 JSON 并复制”按钮。" width="720">
-  <br><sub>决策页截图（无头 Chrome 截取）。页面内容来自合成样例 <code>test/fixtures/send-later.message.md</code>。</sub>
+  <img src="./docs/assets/decision-page-zh.png" alt="决策页截图：顶部写着需要你定几项、几项是计划写明的默认，每项一张卡片，有选项、推荐标记、默认值和影响的文件，底部是“生成回传 JSON 并复制”按钮。" width="720">
+  <br><sub>决策页截图（无头 Chrome 截取）。页面内容来自合成样例 <code>test/fixtures/send-later.message.md</code>，外加一个合成的“已在 Codex 里回答”的问题。</sub>
 </p>
 
 ## 它是什么
 
 | 部分 | 作用 |
 | --- | --- |
-| `plan-ledger hook-stop` | Codex `Stop` hook。从 `last_assistant_message` 里取出 `<proposed_plan>`（取不到时读 `transcript_path` 指向的会话记录，见下文“实测发现”），用纯模板渲染成一页 HTML，写 `decisions.json` 和 `plan.md`，打印 HTML 路径，然后正常结束这一轮。**从不阻塞、从不等你。** |
-| 决策页 `plan.html` | 单文件、离线、没有外部资源。顶部写“需要你定 N 项”，每项一张卡片：选项、计划里的推荐、影响的文件。底部按钮“生成回传 JSON 并复制”，提示“粘到 Codex 下一条消息里”。页面默认中文，英文用 `PLAN_LEDGER_LANG=en` 或 `--lang en`。 |
+| `plan-ledger hook-stop` | Codex `Stop` hook。从 `last_assistant_message` 里取出 `<proposed_plan>`（取不到时读 `transcript_path` 指向的会话记录，见下文“实测发现”）；有会话记录时，还会读出 Codex 用 `request_user_input` 问过的问题和你的回答。然后用纯模板渲染成一页 HTML，写 `decisions.json` 和 `plan.md`，打印 HTML 路径，正常结束这一轮。**从不阻塞、从不等你。** |
+| 决策页 `plan.html` | 单文件、离线、没有外部资源。顶部写还需要你定几项、几项已在 Codex 里答过、几项是计划写明的默认；每项一张卡片：选项、计划里的推荐、影响的文件，已答的和默认的也能改。底部按钮“生成回传 JSON 并复制”，提示“粘到 Codex 下一条消息里”。页面默认中文，英文用 `PLAN_LEDGER_LANG=en` 或 `--lang en`。 |
 | 决策账本 `decisions.json` | 带 `schema_version` 的 JSON，附 [JSON Schema](schema/decisions.schema.json) 和校验命令。和代码放在同一个 PR 里，评审人能看到当初选了什么、为什么。 |
 | `plan-ledger check` | 范围偏离检查：对比 `git diff` 和每项决策的 `affected` 文件，报出计划外被改的文件，以及计划里该改却没碰的决策。 |
 | `plan-ledger hook-prompt` | 可选的 `UserPromptSubmit` hook（实验性）。发 `ledger:apply` 就把最新决策注入上下文；粘贴的回传 JSON 会自动记进账本。 |
@@ -54,9 +56,9 @@
 
 ```mermaid
 flowchart LR
-  A["Codex /plan<br/>输出 proposed_plan"] --> B["Stop hook<br/>plan-ledger hook-stop"]
+  A["Codex /plan<br/>原生问答 + proposed_plan"] --> B["Stop hook<br/>plan-ledger hook-stop"]
   B --> C["docs/plans/id/<br/>decisions.json + plan.md"]
-  B --> D["plan.html<br/>一页答完"]
+  B --> D["plan.html<br/>复核 / 修改"]
   D -->|"复制回传 JSON"| E["你的下一条消息"]
   E -->|"UserPromptSubmit（可选）<br/>记进账本"| C
   E --> F["Codex 按决策实现"]
@@ -64,8 +66,8 @@ flowchart LR
   C --> G
 ```
 
-1. 在 Codex 里照常 `/plan`。Codex 给出 `<proposed_plan>` 时，`Stop` hook 只做三件事：解析、渲染、写账本。终端会出现一行 `plan-ledger: N decision(s) to answer → file://…/plan.html`。
-2. 打开这页，把所有决策一次答完。不选的项记为“未作答，保留默认”，**不算同意**。
+1. 在 Codex 里照常 `/plan`，Codex 问问题就照常在 Codex 里答。Codex 给出 `<proposed_plan>` 时，`Stop` hook 只做三件事：解析、渲染、写账本。Codex 问过的问题和你的回答记为 `source: "codex-native"`、已作答，不会再问一遍。终端会出现一行，例如 `plan-ledger: nothing to answer; 1 answered in Codex; 4 plan default(s) kept, reviewable → file://…/plan.html`。
+2. 打开这页复核。还需要你定的项一次答完；计划写明的默认（“Chosen defaults”“Assumptions”）记为 `status: default`，不算待答，想改也能改。不选的项记为“未作答，保留默认”，**不算同意**。
 3. 点“生成回传 JSON 并复制”，粘到 Codex 的下一条消息里。装了 `hook-prompt` 的话，这些答案会同时写进 `decisions.json`；没装就跑 `plan-ledger answer`。
 4. 代码写完，跑 `plan-ledger check --base main`。
 
@@ -150,6 +152,7 @@ plan-ledger validate                        # 校验 docs/plans/ 下所有账本
       "title": "What happens if sending fails at the scheduled time?",
       "question": "What happens if sending fails at the scheduled time?",
       "kind": "question",               // question | options | tbd | decision | assumption
+      // "source": "codex-native"       // Codex 自己问过、你在 Codex 里答过的问题；没有这个字段 = 来自计划正文
       "options": [
         { "id": "a", "label": "Retry 3 times with backoff, then mark as failed", "recommended": true },
         { "id": "b", "label": "Mark as failed immediately and notify the user", "recommended": false }
@@ -165,7 +168,7 @@ plan-ledger validate                        # 校验 docs/plans/ 下所有账本
 }
 ```
 
-决策点是启发式识别的：`## Decisions` / `## 待决` 这类段落、以问号结尾的条目、`Option A/B`、`方案 A/B`、`TBD`、`choose`、`待定` 等，`## Assumptions` 里的默认假设也会列出来让你确认。决策 id 由标题生成，计划改版时保持稳定；写成 `D1:` 时直接用 `d1`。答案只当数据存，不会被执行。
+决策点是启发式识别的：`## Decisions` / `## 待决` 这类段落、以问号结尾的条目、`Option A/B`、`方案 A/B`、`TBD`、`choose`、`待定` 等，`## Assumptions`、`Chosen defaults` 这类段落里的默认记为 `kind: assumption`、`status: default`：列在页面上可以复核和修改，但不算“需要你定”的项。决策 id 由标题生成，计划改版时保持稳定；写成 `D1:` 时直接用 `d1`。答案只当数据存，不会被执行。
 
 Codex 改版计划时，之前的回答会沿用到 id 相同（或者标题相同）的决策上，前提是原来选的选项还在（id 相同且文字相同，或按文字匹配）。沿用的回答带 `carried` 字段（`from_revision`、`match: id|title`、`previous_id`），页面上显示“沿用第 N 版的回答”；重新作答后这个标记会去掉。决策或选项在新版里没了的回答，放进 `earlier_answers` 保留，不会丢。
 
@@ -192,6 +195,7 @@ Codex 改版计划时，之前的回答会沿用到 id 相同（或者标题相�
 | 解析、渲染、写账本、`render` / `answer` / `validate` / `check` | 能用，有测试覆盖（`npm test`，不联网） |
 | `Stop` hook 的输入输出约定 | 在真实 Codex 会话里跑通过（codex-cli 0.156.0，Plan 模式，见“实测发现”）；有测试覆盖 |
 | `UserPromptSubmit` hook（`ledger:apply`、自动记账） | 实验性 |
+| 从会话记录读出 Codex 原生问答（`request_user_input`） | 实验性。会话记录格式不是公开约定；按 codex-cli 0.156.0 实际观察到的格式解析，测试用的是真实会话里截取的片段。读不到时跳过，不影响其他功能 |
 | 决策点识别 | 启发式。测试里有 3 份手写的合成计划和 2 份真实 Codex 会话里抓到的计划（`test/fixtures/real/`）。真实会话里模型没按要求的选项格式写决策，见“实测发现” |
 | Windows | 没测过 |
 
@@ -205,7 +209,9 @@ Codex 改版计划时，之前的回答会沿用到 id 相同（或者标题相�
 | 2 / strict-option | 1 / 2 | 65,931 / 49,792 / 865 / 61 → 83,141 / 55,424 / 1,284 / 134 | 180,208 / 205,644 | 都通过 |
 | 2 / month-unit | 1 / 1 | 79,553 / 48,256 / 853 / 0 → 66,354 / 50,048 / 781 / 59 | 179,053 / 140,020 | 都通过 |
 
-**结论（方向性）：在轮数上，plan-ledger 一次都没有赢**（3 对里输 2 次、平 1 次）。总 token 有高有低，没有一致方向。第 2 轮里，即使 AGENTS.md 要求把待定选择写进 `## Decisions`，Codex Plan 模式仍然先用自带的 `request_user_input` 提问，计划里也没有 `## Decisions` 段；strict-option 多出的一轮来自计划末尾的“Chosen defaults”被解析成了待确认项。一页答完替代原生提问这个设想，目前数据不支持。
+**结论（方向性）：在轮数上，plan-ledger 一次都没有赢**（3 对里输 2 次、平 1 次）。总 token 有高有低，没有一致方向。第 2 轮里，即使 AGENTS.md 要求把待定选择写进 `## Decisions`，Codex Plan 模式仍然先用自带的 `request_user_input` 提问，计划里也没有 `## Decisions` 段；strict-option 多出的一轮来自计划末尾的“Chosen defaults”被解析成了待确认项。一页答完替代原生提问这个设想，数据不支持，所以定位改成了决策账本 + 范围偏离检查。
+
+这两轮之后（没有重新跑）：Codex 自己的问答直接记进账本；计划写明的默认不再算待答项；脚本回答方的匹配规则修了一个缺陷（它曾把“只改 `index.js`、`tests.js`、`readme.md`”当成符合“不改测试文件”的意图），见 [bench/README.md](bench/README.md#changes-after-round-2-no-new-runs-yet)。
 
 范围偏离检查（3 次 plan-ledger 运行，实现之后在副本上埋入）：不埋时 3 次都无误报；计划外新文件 3/3 抓到；把决策或计划列出的文件改回原样 3/3 抓到（第 1 轮在原始运行和重放分析里都抓到）；在计划内的 `index.js` 里写与决策相反的代码 0/3 抓到，和已知局限一致。第 2 轮 strict-option 运行时，计划里的 `options.strict` 被误当成文件名，造成过一次误报，已修复并重算，原始输出保留在数据里。
 
@@ -218,7 +224,7 @@ Codex 改版计划时，之前的回答会沿用到 id 相同（或者标题相�
 
 ## 状态
 
-早期原型 v0.1。只有上面两轮方向性实测（共 n = 3 对），轮数上没有显示出优势。目前站得住的是：决策账本（可 diff、可 review、跨版本沿用回答）和范围偏离检查。要回答“一页答完是否省轮次”，需要先让它和原生 `request_user_input` 配合，再按 [docs/measurement-plan.md](docs/measurement-plan.md) 在多个任务上每组至少跑 3 次。
+早期原型 v0.1。只有上面两轮方向性实测（共 n = 3 对），轮数上没有显示出优势，所以 plan-ledger 不以省轮次为目标。它做两件事：决策账本（Codex 的原生问答、计划里的待定项和默认都在里面；可 diff、可 review、跨版本沿用回答）和范围偏离检查（只看文件，不看内容）。按内容核对决策、以及更多任务上的重复实测，见 [docs/measurement-plan.md](docs/measurement-plan.md)。
 
 ## 开发
 

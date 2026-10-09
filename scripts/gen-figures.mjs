@@ -1,7 +1,7 @@
 // Deterministic SVG figures for the README. No randomness, no dates, no fonts
 // embedded. Run: node scripts/gen-figures.mjs  (writes docs/assets/*.svg)
 //
-// The comparison figure is illustrative only: it contains no measured numbers.
+// The flow figure is illustrative only: it contains no measured numbers.
 
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
@@ -27,63 +27,31 @@ function arrow(x1, y1, x2, y2, color = C.muted) {
   return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="1.6" marker-end="url(#ah)"/>`;
 }
 
-export function roundsFigure() {
-  const W = 960, H = 470;
+export function flowFigure() {
+  const W = 960, H = 330;
   const p = [];
-  p.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Illustrative comparison: native Codex /plan asks a few questions per round across several rounds; codex-plan-ledger shows every decision on one page answered at once. Early prototype, no measured data.">`);
+  p.push(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" role="img" aria-label="Flow: Codex /plan (its own questions and answers, plus the proposed plan) is recorded in decisions.json in the repo, reviewed as a PR diff together with the code, and checked for scope drift after coding with plan-ledger check.">`);
   p.push(`<defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="${C.muted}"/></marker></defs>`);
   p.push(rect(0.5, 0.5, W - 1, H - 1, { fill: C.bg, r: 12 }));
-  p.push(text(W / 2, 34, '示意 / illustrative · early prototype · 无实测数据 / no measured data', { size: 13, fill: C.muted, anchor: 'middle' }));
-
-  // Left: native /plan, several rounds of a few questions.
-  const lx = 30, lw = 430;
-  p.push(rect(lx, 52, lw, 380, { fill: C.panel }));
-  p.push(text(lx + 20, 82, 'Codex 原生 /plan', { size: 17, weight: 600 }));
-  p.push(text(lx + 20, 104, 'native Plan mode: a few questions per round', { size: 13, fill: C.muted }));
-  const rounds = ['第一轮 / round', '下一轮 / round', '再一轮 / round'];
-  rounds.forEach((label, i) => {
-    const y = 124 + i * 82;
-    p.push(rect(lx + 20, y, 250, 56, { fill: C.bg }));
-    p.push(text(lx + 34, y + 22, label, { size: 13, weight: 600 }));
-    for (let k = 0; k < 3; k++) {
-      p.push(`<circle cx="${lx + 42 + k * 26}" cy="${y + 40}" r="8" fill="${C.qBg}" stroke="${C.q}"/>`);
-      p.push(text(lx + 42 + k * 26, y + 44, '?', { size: 11, weight: 700, fill: C.q, anchor: 'middle' }));
-    }
-    p.push(text(lx + 130, y + 44, '等你回答 / wait', { size: 12, fill: C.muted }));
-    p.push(arrow(lx + 270, y + 28, lx + 318, y + 28));
-    p.push(rect(lx + 320, y + 12, 90, 32, { fill: C.bg }));
-    p.push(text(lx + 365, y + 33, '回答 / reply', { size: 12, anchor: 'middle' }));
-    if (i < rounds.length - 1) p.push(arrow(lx + 145, y + 56, lx + 145, y + 80));
+  p.push(text(W / 2, 32, '流程示意 / flow · 不含测量数据 / no measured data', { size: 13, fill: C.muted, anchor: 'middle' }));
+  const boxes = [
+    { title: 'Codex /plan', sub: '原生 Plan 模式照常用', lines: ['Codex 自己的提问和你的回答', 'its own questions + your replies', '计划 / proposed plan'], fill: C.panel, stroke: C.line, color: C.fg },
+    { title: 'decisions.json', mono: true, sub: '写进仓库 / in the repo', lines: ['Codex 里已答 / answered in Codex', '待你定 / open, one page', '计划默认，可复核 / plan defaults'], fill: C.accBg, stroke: C.acc, color: C.acc },
+    { title: 'PR diff', sub: '和代码一起 review', lines: ['选了什么、为什么', 'what was chosen and why', 'reviewed with the code'], fill: C.panel, stroke: C.line, color: C.fg },
+    { title: 'plan-ledger check', mono: true, sub: '写完代码后 / after coding', lines: ['计划外改动的文件', 'files outside the plan', '没碰到的决策 / untouched decisions'], fill: C.okBg, stroke: C.ok, color: C.ok },
+  ];
+  const bw = 218, gap = 20, x0 = (W - (bw * 4 + gap * 3)) / 2, y = 56, bh = 196;
+  boxes.forEach((b, i) => {
+    const x = x0 + i * (bw + gap);
+    p.push(rect(x, y, bw, bh, { fill: b.fill, stroke: b.stroke }));
+    p.push(text(x + bw / 2, y + 34, b.title, { size: 16, weight: 600, anchor: 'middle', fill: b.color, font: b.mono ? MONO : FONT }));
+    p.push(text(x + bw / 2, y + 56, b.sub, { size: 12, anchor: 'middle', fill: C.muted }));
+    p.push(`<line x1="${x + 16}" y1="${y + 72}" x2="${x + bw - 16}" y2="${y + 72}" stroke="${b.stroke}" stroke-opacity="0.5"/>`);
+    b.lines.forEach((l, k) => p.push(text(x + bw / 2, y + 100 + k * 30, l, { size: 12, anchor: 'middle' })));
+    if (i < boxes.length - 1) p.push(arrow(x + bw + 2, y + bh / 2, x + bw + gap - 2, y + bh / 2));
   });
-  p.push(text(lx + 145, 386, '…', { size: 18, fill: C.muted, anchor: 'middle' }));
-  p.push(text(lx + 20, 414, '决策散在对话里 / decisions stay in the chat', { size: 13, fill: C.muted }));
-
-  // Right: one page, all decisions, answered once, written to the repo.
-  const rx = 500, rw = 430;
-  p.push(rect(rx, 52, rw, 380, { fill: C.panel }));
-  p.push(text(rx + 20, 82, 'codex-plan-ledger', { size: 17, weight: 600 }));
-  p.push(text(rx + 20, 104, 'one page, every decision, answered once', { size: 13, fill: C.muted }));
-  p.push(rect(rx + 20, 120, 250, 246, { fill: C.bg }));
-  p.push(rect(rx + 32, 132, 120, 20, { fill: C.accBg, stroke: C.accBg, r: 10 }));
-  p.push(text(rx + 92, 146, '需要你定 N 项', { size: 11, weight: 600, fill: C.acc, anchor: 'middle' }));
-  for (let i = 0; i < 6; i++) {
-    const y = 162 + i * 28;
-    p.push(rect(rx + 32, y, 226, 22, { fill: C.bg, r: 5 }));
-    p.push(`<circle cx="${rx + 46}" cy="${y + 11}" r="5" fill="${C.okBg}" stroke="${C.ok}"/>`);
-    p.push(`<rect x="${rx + 58}" y="${y + 8}" width="${120 - (i % 3) * 18}" height="6" rx="3" fill="${C.line}"/>`);
-  }
-  p.push(rect(rx + 32, 334, 226, 24, { fill: C.acc, stroke: C.acc, r: 6 }));
-  p.push(text(rx + 145, 350, '生成回传 JSON 并复制', { size: 12, weight: 600, fill: '#ffffff', anchor: 'middle' }));
-  p.push(arrow(rx + 270, 346, rx + 300, 346));
-  p.push(rect(rx + 300, 300, 112, 66, { fill: C.okBg, stroke: C.ok }));
-  p.push(text(rx + 356, 324, 'decisions', { size: 12, weight: 600, fill: C.ok, anchor: 'middle', font: MONO }));
-  p.push(text(rx + 356, 340, '.json', { size: 12, weight: 600, fill: C.ok, anchor: 'middle', font: MONO }));
-  p.push(text(rx + 356, 357, '进仓库 / in repo', { size: 11, fill: C.ok, anchor: 'middle' }));
-  p.push(text(rx + 300, 140, '一次答完', { size: 13, weight: 600 }));
-  p.push(text(rx + 300, 158, 'answer once,', { size: 12, fill: C.muted }));
-  p.push(text(rx + 300, 174, 'paste into the', { size: 12, fill: C.muted }));
-  p.push(text(rx + 300, 190, 'next message', { size: 12, fill: C.muted }));
-  p.push(text(rx + 20, 414, '决策可 diff、可 review / diffable, reviewable', { size: 13, fill: C.muted }));
+  p.push(text(W / 2, 290, '只看改了哪些文件，不看改动内容是否和决策一致', { size: 12, fill: C.muted, anchor: 'middle' }));
+  p.push(text(W / 2, 310, 'checks which files changed, not whether the content matches the decisions', { size: 12, fill: C.muted, anchor: 'middle' }));
   p.push('</svg>');
   return p.join('\n') + '\n';
 }
@@ -126,7 +94,7 @@ export function diffFigure() {
   return p.join('\n') + '\n';
 }
 
-export const FIGURES = { 'plan-rounds.svg': roundsFigure, 'ledger-pr-diff.svg': diffFigure };
+export const FIGURES = { 'ledger-flow.svg': flowFigure, 'ledger-pr-diff.svg': diffFigure };
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
   const dir = join(dirname(fileURLToPath(import.meta.url)), '..', 'docs', 'assets');

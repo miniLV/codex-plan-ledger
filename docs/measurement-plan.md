@@ -4,6 +4,8 @@ Status: **two directional rounds run (n = 3 pairs: round 1 = 1 task, round 2 = 2
 
 状态：**已跑两轮方向性实测（共 n = 3 对：第 1 轮 1 个任务，第 2 轮 2 个任务，每组 1 次）**，达不到下面要求至少 3 次重复的判定线。目前判定线 1（轮数）方向相反：plan-ledger 输 2 对、平 1 对；判定线 2（抓到埋入的范围偏离）3/3 成立。数据：[第 1 轮](../bench/results/2026-10-09-round1/summary.md)、[第 2 轮](../bench/results/2026-10-09-round2/summary.md)。
 
+**Positioning after round 2 / 两轮之后的定位：** plan-ledger no longer aims to cut rounds. It records Plan-mode decisions (including Codex's own `request_user_input` Q&A) as `decisions.json` and checks scope drift after coding. The rounds question below is kept for the record. Next measurements: how completely the ledger captures the decisions of a session, and drift detection on more tasks with ≥ 3 runs. / 不再以减少轮数为目标，改为记录 Plan 模式的决策（含 Codex 原生问答）并在写完代码后查范围偏离。下面关于轮数的问题保留作记录；下一步测账本对一次会话决策的覆盖程度，以及更多任务、每组 ≥ 3 次的偏离检测。
+
 Change from the first draft of this plan: runs use `codex app-server` with native Plan mode (`collaborationMode: plan`) instead of `codex exec`, because `codex exec` cannot select Plan mode. So arm A gets the real `request_user_input` questions, and the responder answers them through the same API. Rounds = `request_user_input` calls + plain-text replies + `plan-ledger answers` messages before the final plan.
 
 ## Question

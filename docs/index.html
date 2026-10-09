@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>codex-plan-ledger: answer every decision in a Codex plan on one page</title>
-<meta name="description" content="Codex Plan mode, plus one offline HTML page to answer every decision at once, a decisions.json ledger in your repo, and a scope drift check. Early prototype.">
+<title>codex-plan-ledger: a decision ledger for Codex /plan, with a scope drift check</title>
+<meta name="description" content="Codex Plan mode decisions, including the questions Codex asks you, recorded as a reviewable, diffable decisions.json in your repo, plus a scope drift check after coding. Early prototype.">
 <meta name="color-scheme" content="light dark">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b6bcb'/%3E%3Cpath d='M9 10h14M9 16h14M9 22h9' stroke='white' stroke-width='3' stroke-linecap='round'/%3E%3C/svg%3E">
 <style>
@@ -90,8 +90,9 @@ footer .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
 <div class="hero" id="top">
   <div class="wrap">
     <p class="badge"><span lang="en">Early prototype · v0.1</span><span lang="zh-CN">早期原型 · v0.1</span></p>
-    <h1><span lang="en">Answer every decision in a Codex <code>/plan</code> on one page, and keep them in your repo.</span><span lang="zh-CN">把 Codex <code>/plan</code> 里的决策一页答完，写进仓库。</span></h1>
-    <p class="lede"><span lang="en">Keep using Codex's native Plan mode. When the plan arrives, a Stop hook renders one offline HTML page with every open decision. Your answers land in <code>docs/plans/&lt;id&gt;/decisions.json</code>, reviewable in PRs, and a scope drift check compares the code change with the plan.</span><span lang="zh-CN">Codex 原生 Plan 模式照常用。计划一出来，Stop hook 生成一页离线 HTML，列出所有待定决策；答案落进 <code>docs/plans/&lt;id&gt;/decisions.json</code>，能在 PR 里 review；代码写完再跑一次范围偏离检查。</span></p>
+    <h1><span lang="en">A decision ledger for Codex <code>/plan</code>, with a scope drift check after coding.</span><span lang="zh-CN">Codex <code>/plan</code> 的决策账本，写完代码再查范围偏离。</span></h1>
+    <p class="lede"><span lang="en">Keep using Codex's native Plan mode and answer its questions in Codex. When the plan arrives, a Stop hook writes the questions Codex asked you, the plan's open decisions and its stated defaults to <code>docs/plans/&lt;id&gt;/decisions.json</code>: diffable, reviewable in the PR next to the code. After coding, a scope drift check compares the changed files with the plan.</span><span lang="zh-CN">Codex 原生 Plan 模式照常用，Codex 的提问照常在 Codex 里答。计划一出来，Stop hook 把 Codex 问过你的问题、计划里待定的决策和写明的默认，一起写进 <code>docs/plans/&lt;id&gt;/decisions.json</code>：能 diff，能和代码一起在 PR 里 review。代码写完，范围偏离检查对照改动文件和计划。</span></p>
+    <p class="lede" style="font-size:15px"><span lang="en"><strong>Measured, in one line:</strong> across n = 3 pairs, rounds did not improve; the check caught scope drift 3/3 and in-file contradictions 0/3. <a href="#status">Details</a></span><span lang="zh-CN"><strong>实测一句话：</strong>n = 3 对里，轮数没有改善；范围偏离 3/3 抓到，文件内和决策相反的改动 0/3 抓到。<a href="#status">详情</a></span></p>
     <div class="install">
       <code id="cmd">npm i -g github:miniLV/codex-plan-ledger &amp;&amp; plan-ledger init --write</code>
       <button class="btn" type="button" id="copy" aria-describedby="copied"><span lang="en">Copy</span><span lang="zh-CN">复制</span></button>
@@ -107,8 +108,8 @@ footer .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
 <section id="page" aria-labelledby="page-h">
   <div class="wrap grid2">
     <div>
-      <h2 id="page-h"><span lang="en">One page instead of many rounds</span><span lang="zh-CN">一页答完，不用一轮轮来回</span></h2>
-      <p class="sub"><span lang="en">Every open decision is one card: the options, the plan's recommendation, the default and the files it affects. Anything you leave empty is recorded as "not answered; default kept", not as agreement. One button builds the reply JSON to paste into your next Codex message.</span><span lang="zh-CN">每项待定决策一张卡片：选项、计划里的推荐、默认值、影响的文件。不选的项记为“未作答，保留默认”，不算同意。一个按钮生成回传 JSON，粘到 Codex 的下一条消息里。</span></p>
+      <h2 id="page-h"><span lang="en">Every decision, in one reviewable place</span><span lang="zh-CN">所有决策，放在一个能复核的地方</span></h2>
+      <p class="sub"><span lang="en">Each decision is one card: the options, the plan's recommendation, the default and the files it affects. Questions you already answered in Codex are marked "Answered in Codex"; defaults the plan states are marked "Default, reviewable" and are not counted as open. Anything left open is recorded as "not answered; default kept", not as agreement. One button builds the reply JSON for your next Codex message.</span><span lang="zh-CN">每项决策一张卡片：选项、计划里的推荐、默认值、影响的文件。已经在 Codex 里答过的标“Codex 里已回答”；计划写明的默认标“默认，可复核”，不算待答。还没答的记为“未作答，保留默认”，不算同意。一个按钮生成回传 JSON，粘到 Codex 的下一条消息里。</span></p>
       <ul class="plain">
         <li lang="en">Rendered from plain templates. No extra model calls, no network, one file.</li>
         <li lang="zh-CN">纯模板渲染，不额外调用模型，不联网，单个文件。</li>
@@ -121,7 +122,7 @@ footer .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
     <figure>
       <img class="shot" lang="en" src="assets/decision-page-en.png" width="1200" height="1500" loading="lazy" alt="Screenshot of the decision page: one card per decision with options, a Recommended badge, the default and the affected files, and a button that builds the reply JSON.">
       <img class="shot" lang="zh-CN" src="assets/decision-page-zh.png" width="1200" height="1500" loading="lazy" alt="决策页截图：每项决策一张卡片，有选项、推荐标记、默认值和影响的文件，底部是生成回传 JSON 的按钮。">
-      <figcaption><span lang="en">Headless Chrome screenshot. Content: the synthetic example plan bundled with the repo.</span><span lang="zh-CN">无头 Chrome 截图。内容来自仓库自带的合成示例计划。</span></figcaption>
+      <figcaption><span lang="en">Headless Chrome screenshot. Content: the synthetic example plan bundled with the repo, plus one synthetic question answered in Codex.</span><span lang="zh-CN">无头 Chrome 截图。内容来自仓库自带的合成示例计划，外加一个合成的“已在 Codex 里回答”的问题。</span></figcaption>
     </figure>
   </div>
 </section>
@@ -129,7 +130,7 @@ footer .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
 <section id="demo" class="alt" aria-labelledby="demo-h">
   <div class="wrap">
     <h2 id="demo-h"><span lang="en">Live demo</span><span lang="zh-CN">在线演示</span></h2>
-    <p class="sub"><span lang="en">This is the real page the hook writes, rendered from the bundled example plan (<code>test/fixtures/send-later.message.md</code>, synthetic). Pick some options, then press the button at the bottom to see the answers JSON. Nothing leaves your browser.</span><span lang="zh-CN">这就是 hook 写出来的页面，内容来自仓库自带的示例计划（<code>test/fixtures/send-later.message.md</code>，合成样例）。选几个选项，再点底部按钮，就能看到回传 JSON。所有操作都只在你的浏览器里。</span></p>
+    <p class="sub"><span lang="en">This is the real page the hook writes, rendered from the bundled example plan (<code>test/fixtures/send-later.message.md</code>, synthetic) and one synthetic question already answered in Codex. Pick some options, then press the button at the bottom to see the answers JSON. Nothing leaves your browser.</span><span lang="zh-CN">这就是 hook 写出来的页面，内容来自仓库自带的示例计划（<code>test/fixtures/send-later.message.md</code>，合成样例），外加一个合成的“已在 Codex 里回答”的问题。选几个选项，再点底部按钮，就能看到回传 JSON。所有操作都只在你的浏览器里。</span></p>
     <div class="demo">
       <div class="demo-bar" aria-hidden="true"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span>docs/plans/demo-send-later-for-drafts/plan.html</span></div>
       <iframe id="demo-frame" src="demo/plan-en.html" title="Decision page demo" loading="lazy" allow="clipboard-write"></iframe>
@@ -141,17 +142,17 @@ footer .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
 <section id="how" aria-labelledby="how-h">
   <div class="wrap">
     <h2 id="how-h"><span lang="en">How it works</span><span lang="zh-CN">工作流程</span></h2>
-    <p class="sub"><span lang="en">Hook → HTML → <code>decisions.json</code> → scope drift check.</span><span lang="zh-CN">hook → HTML → <code>decisions.json</code> → 范围偏离检查。</span></p>
+    <p class="sub"><span lang="en">Codex <code>/plan</code> → <code>decisions.json</code> → PR diff → scope drift check.</span><span lang="zh-CN">Codex <code>/plan</code> → <code>decisions.json</code> → PR diff → 范围偏离检查。</span></p>
     <ol class="steps">
-      <li><h3><span lang="en">Stop hook</span><span lang="zh-CN">Stop hook</span></h3><p><span lang="en">When Codex outputs a <code>&lt;proposed_plan&gt;</code>, <code>plan-ledger hook-stop</code> parses it (from the message, or the session transcript when the message is empty) and lets the turn end normally.</span><span lang="zh-CN">Codex 给出 <code>&lt;proposed_plan&gt;</code> 时，<code>plan-ledger hook-stop</code> 解析计划（从消息里取；消息为空时读会话记录），然后让这一轮正常结束。</span></p></li>
-      <li><h3><span lang="en">One HTML page</span><span lang="zh-CN">一页 HTML</span></h3><p><span lang="en">All open decisions on one offline page. Answer them in one go and copy the reply JSON into your next message.</span><span lang="zh-CN">所有待定决策放在一页离线 HTML 里，一次答完，把回传 JSON 粘到下一条消息。</span></p></li>
+      <li><h3><span lang="en">Stop hook</span><span lang="zh-CN">Stop hook</span></h3><p><span lang="en">When Codex outputs a <code>&lt;proposed_plan&gt;</code>, <code>plan-ledger hook-stop</code> parses it (from the message, or the session transcript when the message is empty), reads Codex's own questions and your replies from the transcript, and lets the turn end normally.</span><span lang="zh-CN">Codex 给出 <code>&lt;proposed_plan&gt;</code> 时，<code>plan-ledger hook-stop</code> 解析计划（从消息里取；消息为空时读会话记录），并从会话记录里读出 Codex 自己的提问和你的回答，然后让这一轮正常结束。</span></p></li>
+      <li><h3><span lang="en">One HTML page</span><span lang="zh-CN">一页 HTML</span></h3><p><span lang="en">Every decision on one offline page to review: answered in Codex, still open, or a plan default. Change any of them and copy the reply JSON into your next message.</span><span lang="zh-CN">所有决策放在一页离线 HTML 里复核：Codex 里已答的、还待定的、计划默认的。哪项想改就改，把回传 JSON 粘到下一条消息。</span></p></li>
       <li><h3><code>decisions.json</code></h3><p><span lang="en">A versioned ledger next to the code, with a JSON Schema. It shows up in the PR diff: what was chosen, and why.</span><span lang="zh-CN">带版本的账本，和代码放在一起，有 JSON Schema。PR diff 里能看到选了什么、为什么。</span></p></li>
       <li><h3><span lang="en">Scope drift check</span><span lang="zh-CN">范围偏离检查</span></h3><p><span lang="en"><code>plan-ledger check --base main</code> reports changed files outside the plan, and decisions whose files were never touched. It does not read code inside planned files.</span><span lang="zh-CN"><code>plan-ledger check --base main</code> 报出计划外被改的文件，以及该改却没碰的决策。它不读计划内文件里的代码。</span></p></li>
     </ol>
     <div class="figs" style="margin-top:32px">
       <figure>
-        <img src="assets/plan-rounds.svg" width="860" loading="lazy" alt="Illustration (not measured): native /plan asks a few questions per round across several rounds; codex-plan-ledger puts every decision on one page. 示意图，不含测量数据。">
-        <figcaption><span lang="en">Illustration only. It contains no measured data.</span><span lang="zh-CN">只是示意图，不含测量数据。</span></figcaption>
+        <img src="assets/ledger-flow.svg" width="860" loading="lazy" alt="Flow: Codex /plan (its own questions and answers, plus the plan) → decisions.json in the repo → PR diff → plan-ledger check after coding. 流程示意，不含测量数据。">
+        <figcaption><span lang="en">The flow. It contains no measured data.</span><span lang="zh-CN">流程示意，不含测量数据。</span></figcaption>
       </figure>
       <figure>
         <img src="assets/ledger-pr-diff.svg" width="860" loading="lazy" alt="Example: the diff of decisions.json in a PR, where decision d2 changes from the default to an answered option with a reason. 示例：PR 里 decisions.json 的 diff。">
@@ -182,8 +183,8 @@ footer .wrap{display:flex;gap:16px;flex-wrap:wrap;justify-content:space-between}
     <ul class="plain" style="margin-top:20px">
       <li lang="en">Scope drift check, planted after implementation in the 3 plan-ledger runs: no false positive on the clean tree (3/3), unplanned new file caught (3/3), reverted planned files caught (3/3), contradicting code inside a planned file caught 0/3, as expected for v0.1.</li>
       <li lang="zh-CN">范围偏离检查（3 次 plan-ledger 运行，实现后埋入）：干净时无误报（3/3），计划外新文件抓到（3/3），把计划内文件改回原样抓到（3/3），在计划内文件里写与决策相反的代码抓到 0/3，符合 v0.1 的已知局限。</li>
-      <li lang="en">What holds up today: the decision ledger and the scope drift check. Next: make the page work with Codex's own questions instead of competing with them, then several tasks with at least 3 runs per arm.</li>
-      <li lang="zh-CN">目前站得住的是决策账本和范围偏离检查。下一步：让页面配合 Codex 自带的提问而不是替代它，再按多个任务、每组至少 3 次来测。</li>
+      <li lang="en">So plan-ledger does not aim to save rounds. It records decisions (now including Codex's own questions and answers, and the plan's stated defaults, which no longer count as open) and checks scope after coding. These changes came after the two rounds and have not been re-measured yet.</li>
+      <li lang="zh-CN">所以 plan-ledger 不以省轮次为目标。它记录决策（现在包括 Codex 自己的问答，以及计划写明的默认，后者不再算待答项），并在写完代码后查范围。这些改动在两轮实测之后，还没有重新测。</li>
     </ul>
     <p style="margin-top:16px"><a href="https://github.com/miniLV/codex-plan-ledger/blob/main/bench/results/2026-10-09-round1/summary.md"><span lang="en">Round 1 data</span><span lang="zh-CN">第 1 轮数据</span></a> · <a href="https://github.com/miniLV/codex-plan-ledger/blob/main/bench/results/2026-10-09-round2/summary.md"><span lang="en">Round 2 data</span><span lang="zh-CN">第 2 轮数据</span></a> · <a href="https://github.com/miniLV/codex-plan-ledger/blob/main/docs/measurement-plan.md"><span lang="en">Measurement plan</span><span lang="zh-CN">实测计划</span></a></p>
   </div>

@@ -1,7 +1,7 @@
 {
   "name": "codex-plan-ledger",
   "version": "0.1.0",
-  "description": "Answer every decision in a Codex /plan on one offline HTML page, keep the decisions in your repo as decisions.json, and run a scope drift check after the code is written.",
+  "description": "Decision ledger for Codex /plan: Codex's own questions and answers, open decisions and plan defaults become a reviewable, diffable decisions.json in your repo, plus a scope drift check after coding.",
   "type": "module",
   "license": "MIT",
   "author": "miniLV",

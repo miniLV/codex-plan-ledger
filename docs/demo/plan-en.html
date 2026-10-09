@@ -46,7 +46,18 @@ button{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:9px 1
 <h1>Send later for drafts</h1>
 <p class="summary">Let users schedule a draft to be sent at a chosen time. Scheduled drafts are stored server-side and sent by the existing job runner, so closing the app does not cancel them.</p>
 <p class="meta">Ledger file: <code>docs/plans/demo-send-later-for-drafts/decisions.json</code> · rev 1</p>
-<p class="count" id="count">6 decisions for you (2 of them are defaults the plan assumed)</p>
+<p class="count" id="count">4 decisions for you; 1 asked and answered in Codex, recorded in the ledger; 2 defaults the plan assumed, kept unless you change them below</p>
+<section class="card" data-id="n-send-later-entry">
+<div><span class="tag">Question</span><span class="tag done">Answered in Codex</span><span class="tag">n-send-later-entry</span></div>
+<h2>Send later entry</h2>
+<p class="q">Where should users schedule a draft?</p>
+<label class="opt"><input type="radio" name="c-n-send-later-entry" value="a" checked><span>Menu next to Send <span class="tag rec">Recommended</span></span></label>
+<label class="opt"><input type="radio" name="c-n-send-later-entry" value="b"><span>Separate schedule dialog</span></label>
+<label class="opt"><input type="radio" name="c-n-send-later-entry" value="other"><span>Other<input class="other-text" type="text" placeholder="Write your choice" value=""></span></label>
+<textarea class="why" placeholder="Why (optional)"></textarea>
+<div class="def">Default: Menu next to Send · leave it empty and it is recorded as &quot;not answered; default kept&quot;, not as agreement</div>
+
+</section>
 <section class="card" data-id="d1">
 <div><span class="tag">Question</span><span class="tag">d1</span></div>
 <h2>Where is the schedule stored?</h2>
@@ -92,7 +103,7 @@ button{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:9px 1
 <div class="files">Affects: <code>src/ui/composer/**</code></div>
 </section>
 <section class="card" data-id="d-drafts-without-recipients-cannot-be">
-<div><span class="tag">Assumption</span><span class="tag">d-drafts-without-recipients-cannot-be</span></div>
+<div><span class="tag">Assumption</span><span class="tag carried">Default, reviewable</span><span class="tag">d-drafts-without-recipients-cannot-be</span></div>
 <h2>Drafts without recipients cannot be scheduled.</h2>
 
 <label class="opt"><input type="radio" name="c-d-drafts-without-recipients-cannot-be" value="keep"><span>Drafts without recipients cannot be scheduled. <span class="tag rec">Recommended</span></span></label>
@@ -102,7 +113,7 @@ button{background:var(--acc);color:#fff;border:0;border-radius:8px;padding:9px 1
 
 </section>
 <section class="card" data-id="d-default-horizon-is-30-days-unless-d3">
-<div><span class="tag">Assumption</span><span class="tag">d-default-horizon-is-30-days-unless-d3</span></div>
+<div><span class="tag">Assumption</span><span class="tag carried">Default, reviewable</span><span class="tag">d-default-horizon-is-30-days-unless-d3</span></div>
 <h2>Default horizon is 30 days unless D3 says otherwise.</h2>
 
 <label class="opt"><input type="radio" name="c-d-default-horizon-is-30-days-unless-d3" value="keep"><span>Default horizon is 30 days unless D3 says otherwise. <span class="tag rec">Recommended</span></span></label>

@@ -1,11 +1,11 @@
 <h1 align="center">codex-plan-ledger</h1>
 
 <p align="center">
-  <strong>Answer every decision in a Codex <code>/plan</code> on one page, keep them in your repo, and check for drift after the code is written.</strong>
+  <strong>A decision ledger for Codex <code>/plan</code>: the questions Codex asked you, the open choices and the defaults the plan assumed all land in <code>decisions.json</code> in your repo, diffable and reviewable. After coding, check whether the change stayed inside the plan's scope.</strong>
 </p>
 
 <p align="center">
-  Keep using Codex's native Plan mode. When the plan arrives, you get one offline HTML page with every decision on it, answered in one go. The answers land in <code>docs/plans/&lt;id&gt;/decisions.json</code>, so they can be diffed and reviewed in PRs. After implementation, a scope drift check compares the change with the plan.
+  Keep using Codex's native Plan mode, and keep answering Codex's own questions in Codex. When the plan arrives, the <code>Stop</code> hook reads those questions and answers from the session transcript and writes them, together with the plan's open decisions and stated defaults, to <code>docs/plans/&lt;id&gt;/decisions.json</code>, plus one offline HTML page to review and edit them. The ledger is reviewed in the same PR as the code; after coding, <code>plan-ledger check</code> compares the changed files with the plan's scope.
 </p>
 
 <p align="center">
@@ -25,22 +25,24 @@
 </p>
 
 <p align="center">
-  <img src="./docs/assets/plan-rounds.svg" alt="Illustration: native /plan asks a few questions per round across several rounds; codex-plan-ledger shows every decision on one page, answered once and written to the repo. The figure contains no measured data." width="860">
+  <img src="./docs/assets/ledger-flow.svg" alt="Flow: Codex /plan (its own questions and answers, plus the plan) → decisions.json in the repo → PR diff → plan-ledger check for scope drift after coding. The figure contains no measured data." width="860">
 </p>
 
-> **Status: early prototype, v0.1.** It works and is covered by tests. There are two directional measured rounds so far (2 tasks, n = 3 pairs): **plan-ledger did not win on rounds in any pair**, and tokens show no consistent direction; see [Measured](#measured-two-rounds-directional-n--3-pairs) below. The figure above is illustrative, not a measurement. How it will be measured, and what counts as success, is in the [measurement plan](docs/measurement-plan.md).
+> **Measured, in one line:** across n = 3 pairs, rounds did not improve; the ledger's check caught scope drift (unplanned files, planned files left untouched) 3/3 and in-file contradictions of a decision 0/3. Details in [Measured](#measured-two-rounds-directional-n--3-pairs).
+>
+> **Status: early prototype, v0.1.** It works and is covered by tests. It does not replace Codex's native questions and does not promise fewer rounds; it keeps the decisions as a record and checks scope after coding. The figure above shows the flow, not a measurement.
 
 <p align="center">
-  <img src="./docs/assets/decision-page-en.png" alt="Screenshot of the decision page: one card per decision with options, a recommended badge, the default and the affected files, and a button that copies the reply JSON." width="720">
-  <br><sub>Decision page, captured with headless Chrome. The content comes from the synthetic fixture <code>test/fixtures/send-later.message.md</code>.</sub>
+  <img src="./docs/assets/decision-page-en.png" alt="Screenshot of the decision page: a summary of how many decisions need you and how many are plan defaults, one card per decision with options, a recommended badge, the default and the affected files, and a button that copies the reply JSON." width="720">
+  <br><sub>Decision page, captured with headless Chrome. The content comes from the synthetic fixture <code>test/fixtures/send-later.message.md</code>, plus one synthetic question answered in Codex.</sub>
 </p>
 
 ## What it is
 
 | Part | What it does |
 | --- | --- |
-| `plan-ledger hook-stop` | Codex `Stop` hook. Takes the `<proposed_plan>` from `last_assistant_message` (or, when it is not there, from the session transcript at `transcript_path`; see "Findings" below), renders one HTML page from plain templates, writes `decisions.json` and `plan.md`, prints the HTML path, and lets the turn end normally. **It never blocks and never waits for you.** |
-| Decision page `plan.html` | One offline file with no external resources. A summary row ("N decisions for you"), one card per decision with its options, the plan's recommendation and the affected files, and a "Build reply JSON and copy" button with the hint "Paste it into your next Codex message". The page UI defaults to Chinese; set `PLAN_LEDGER_LANG=en` or pass `--lang en`. |
+| `plan-ledger hook-stop` | Codex `Stop` hook. Takes the `<proposed_plan>` from `last_assistant_message` (or, when it is not there, from the session transcript at `transcript_path`; see "Findings" below). When a transcript is available it also reads the questions Codex asked with `request_user_input` and your replies. It renders one HTML page from plain templates, writes `decisions.json` and `plan.md`, prints the HTML path, and lets the turn end normally. **It never blocks and never waits for you.** |
+| Decision page `plan.html` | One offline file with no external resources. A summary row (how many decisions still need you, how many were answered in Codex, how many are plan defaults), one card per decision with its options, the plan's recommendation and the affected files; answered items and defaults can be changed too. A "Build reply JSON and copy" button with the hint "Paste it into your next Codex message". The page UI defaults to Chinese; set `PLAN_LEDGER_LANG=en` or pass `--lang en`. |
 | Decision ledger `decisions.json` | Versioned JSON (`schema_version`) with a [JSON Schema](schema/decisions.schema.json) and a validator. It ships in the same PR as the code, so reviewers see what was chosen and why. |
 | `plan-ledger check` | Scope drift check: compares `git diff` with each decision's `affected` files. Reports changed files outside the plan, and decisions whose files were never touched. |
 | `plan-ledger hook-prompt` | Optional `UserPromptSubmit` hook (experimental). `ledger:apply` injects the latest decisions into context; a pasted reply JSON is recorded in the ledger. |
@@ -54,9 +56,9 @@
 
 ```mermaid
 flowchart LR
-  A["Codex /plan<br/>emits proposed_plan"] --> B["Stop hook<br/>plan-ledger hook-stop"]
+  A["Codex /plan<br/>native Q&A + proposed_plan"] --> B["Stop hook<br/>plan-ledger hook-stop"]
   B --> C["docs/plans/id/<br/>decisions.json + plan.md"]
-  B --> D["plan.html<br/>answer once"]
+  B --> D["plan.html<br/>review / edit"]
   D -->|"copy reply JSON"| E["your next message"]
   E -->|"UserPromptSubmit (optional)<br/>records answers"| C
   E --> F["Codex implements"]
@@ -64,8 +66,8 @@ flowchart LR
   C --> G
 ```
 
-1. Use `/plan` in Codex as usual. When Codex outputs a `<proposed_plan>`, the `Stop` hook parses it, renders it and writes the ledger. You see one line: `plan-ledger: N decision(s) to answer → file://…/plan.html`.
-2. Open the page and answer everything at once. Anything you skip is recorded as "not answered; default kept", **not as agreement**.
+1. Use `/plan` in Codex as usual, and answer Codex's questions in Codex as usual. When Codex outputs a `<proposed_plan>`, the `Stop` hook parses it, renders it and writes the ledger. Codex's own questions and your replies are recorded as `source: "codex-native"`, answered, and never asked again. You see one line, for example `plan-ledger: nothing to answer; 1 answered in Codex; 4 plan default(s) kept, reviewable → file://…/plan.html`.
+2. Open the page to review. Answer whatever still needs you in one go; defaults the plan states ("Chosen defaults", "Assumptions") are recorded as `status: default`, are not counted as open, and can still be changed. Anything you skip is recorded as "not answered; default kept", **not as agreement**.
 3. Press "Build reply JSON and copy" and paste it into your next Codex message. With `hook-prompt` installed, the answers are also written to `decisions.json`; otherwise run `plan-ledger answer`.
 4. After implementation, run `plan-ledger check --base main`.
 
@@ -150,6 +152,7 @@ plan-ledger validate                        # validate every ledger under docs/p
       "title": "What happens if sending fails at the scheduled time?",
       "question": "What happens if sending fails at the scheduled time?",
       "kind": "question",               // question | options | tbd | decision | assumption
+      // "source": "codex-native"       // asked by Codex and answered in Codex; absent = from the plan text
       "options": [
         { "id": "a", "label": "Retry 3 times with backoff, then mark as failed", "recommended": true },
         { "id": "b", "label": "Mark as failed immediately and notify the user", "recommended": false }
@@ -165,7 +168,7 @@ plan-ledger validate                        # validate every ledger under docs/p
 }
 ```
 
-Decision points are found heuristically: `## Decisions` / `## 待决`-style sections, items ending in a question mark, `Option A/B`, `方案 A/B`, `TBD`, `choose`, `待定` and similar. Defaults listed under `## Assumptions` are shown too, so you can confirm them. Decision ids come from the title and stay stable across plan revisions; `D1:` becomes `d1`. Answers are stored as data and never executed.
+Decision points are found heuristically: `## Decisions` / `## 待决`-style sections, items ending in a question mark, `Option A/B`, `方案 A/B`, `TBD`, `choose`, `待定` and similar. Defaults under `## Assumptions`, `Chosen defaults` and similar headings are recorded as `kind: assumption`, `status: default`: shown on the page to review and edit, but not counted as decisions that need you. Decision ids come from the title and stay stable across plan revisions; `D1:` becomes `d1`. Answers are stored as data and never executed.
 
 When Codex revises the plan, earlier answers are carried forward to decisions with the same id, or else the same title, as long as the chosen option is still offered (matched by id with the same label, or by label). Carried answers get a `carried` field (`from_revision`, `match: id|title`, `previous_id`) and a "carried from rev N" tag on the page; answering again removes it. Answers whose decision or option is gone are kept in `earlier_answers` instead of being dropped.
 
@@ -192,6 +195,7 @@ If the repo root has an `INTENT.md` from [intent-tests](https://github.com/miniL
 | Parsing, rendering, ledger, `render` / `answer` / `validate` / `check` | Works, covered by tests (`npm test`, offline) |
 | `Stop` hook stdin/stdout contract | Run in a live Codex session (codex-cli 0.156.0, Plan mode; see "Findings"); covered by tests |
 | `UserPromptSubmit` hook (`ledger:apply`, recording answers) | Experimental |
+| Reading Codex's native Q&A (`request_user_input`) from the transcript | Experimental. The transcript format is not a public contract; parsing follows what codex-cli 0.156.0 actually wrote, tested on excerpts from real sessions. If it cannot be read, it is skipped and nothing else is affected |
 | Decision detection | Heuristic. Tests use 3 hand-written synthetic plans and 2 plans captured from a real Codex session (`test/fixtures/real/`). In the real session the model did not use the requested option format; see "Findings" |
 | Windows | Untested |
 
@@ -205,7 +209,9 @@ If the repo root has an `INTENT.md` from [intent-tests](https://github.com/miniL
 | 2 / strict-option | 1 / 2 | 65,931 / 49,792 / 865 / 61 → 83,141 / 55,424 / 1,284 / 134 | 180,208 / 205,644 | both pass |
 | 2 / month-unit | 1 / 1 | 79,553 / 48,256 / 853 / 0 → 66,354 / 50,048 / 781 / 59 | 179,053 / 140,020 | both pass |
 
-**Verdict (directional): plan-ledger never won on rounds** (2 losses, 1 tie in 3 pairs). Total tokens went both ways, with no consistent direction. In round 2, even with the AGENTS.md asking for open choices under `## Decisions`, Codex Plan mode still asked first with its built-in `request_user_input`, and its plans had no `## Decisions` section; the extra strict-option round came from a closing "Chosen defaults" list that the parser read as items to confirm. The data does not support "one page replaces native questions".
+**Verdict (directional): plan-ledger never won on rounds** (2 losses, 1 tie in 3 pairs). Total tokens went both ways, with no consistent direction. In round 2, even with the AGENTS.md asking for open choices under `## Decisions`, Codex Plan mode still asked first with its built-in `request_user_input`, and its plans had no `## Decisions` section; the extra strict-option round came from a closing "Chosen defaults" list that the parser read as items to confirm. The data does not support "one page replaces native questions", so the positioning is now a decision ledger plus a scope drift check.
+
+Since these two rounds (not re-run yet): Codex's own questions and answers go straight into the ledger; stated plan defaults no longer count as open; and the scripted answerer's matching had a defect fixed (it accepted "Change only `index.js`, `tests.js`, and `readme.md`" as fitting the intent "do not change test files"). See [bench/README.md](bench/README.md#changes-after-round-2-no-new-runs-yet).
 
 Scope drift check (3 plan-ledger runs, plants applied after implementation on copies): no false positive on the clean tree in 3/3; unplanned new file caught 3/3; reverting the files a decision or the plan lists caught 3/3 (round 1 both in the run and in the re-analysis); contradicting code inside the planned `index.js` caught 0/3, matching the known limit. During the round-2 strict-option run, `options.strict` in the plan text was taken for a file name and caused one false positive; that is fixed and recomputed, and the original output is kept in the data.
 
@@ -218,7 +224,7 @@ Scope drift check (3 plan-ledger runs, plants applied after implementation on co
 
 ## Status
 
-Early prototype, v0.1. The only measurements are the two directional rounds above (n = 3 pairs), and they show no advantage on rounds. What holds up today is the decision ledger (diffable, reviewable, answers carried across revisions) and the scope drift check. Whether one page saves rounds can only be tested after it works together with native `request_user_input`, then with several tasks and at least 3 runs per arm, as in [docs/measurement-plan.md](docs/measurement-plan.md).
+Early prototype, v0.1. The only measurements are the two directional rounds above (n = 3 pairs), and they show no advantage on rounds, so plan-ledger does not aim to save rounds. It does two things: the decision ledger (Codex's native Q&A, the plan's open decisions and its defaults; diffable, reviewable, answers carried across revisions) and the scope drift check (files only, not content). Content-level checks of decisions and repeated runs on more tasks are in [docs/measurement-plan.md](docs/measurement-plan.md).
 
 ## Development
 
