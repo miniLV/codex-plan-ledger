@@ -12,8 +12,8 @@ Drafts only. Nothing here has been posted. Kept at the repo root (not under `doc
 Rules for these drafts: only about this project; numbers only from
 [`bench/results/`](../bench/results/) (n = 3 pairs, directional); no claims about other tools.
 
-## Soft-launch status (2026-10-10 Asia/Shanghai)
+## Soft-launch status (2026-10-11 Asia/Shanghai)
 
 - Landing + README assets live on Pages.
 - Awesome-list PRs still open: RoggeOhta/awesome-codex-cli#393, kailiu42/awesome-coding-agents#75 (no maintainer pings).
-- Channel #1 (openai/codex Show and tell) draft ready in `promo-plan.md`; not posted yet (waiting maintainer go-ahead for a public post).
+- Channel #1 posted: [openai/codex Show and tell #53043](https://github.com/openai/codex/discussions/53043) (2026-10-11). Watch replies for ~2 to 3 hours when you can.

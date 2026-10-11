@@ -1,6 +1,6 @@
 # Promo plan (draft, nothing posted)
 
-Status of this file: plan and drafts only. Nothing here has been posted. Every channel below needs the maintainer to post from their own account.
+Status of this file: Channel #1 (openai/codex Show and tell) posted 2026-10-11 as https://github.com/openai/codex/discussions/53043. Other channels below are still drafts; post one at a time from the maintainer account, only when someone can answer for 2 to 3 hours.
 
 ## What we are promoting
 
