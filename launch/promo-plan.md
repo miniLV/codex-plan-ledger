@@ -1,6 +1,6 @@
 # Promo plan (draft, nothing posted)
 
-Status of this file: Channel #1 (openai/codex Show and tell) posted 2026-10-11 as https://github.com/openai/codex/discussions/53043. Other channels below are still drafts; post one at a time from the maintainer account, only when someone can answer for 2 to 3 hours.
+Status of this file: Channel #1 (openai/codex Show and tell) posted 2026-10-11 as https://github.com/openai/codex/discussions/53043. 掘金 article published 2026-10-12 as https://juejin.cn/post/7695576950509568041 (审核中 at publish). Other interactive channels below are still drafts; post one at a time from the maintainer account, only when someone can answer for 2 to 3 hours.
 
 ## What we are promoting
 
