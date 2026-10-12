@@ -40,12 +40,12 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 - [awesome-codex-cli #393](https://github.com/RoggeOhta/awesome-codex-cli/pull/393) — still **OPEN** (mergeable, 0 comments, updated 2026-10-09); do **not** ping maintainers
 - [openai/codex Show and tell #53043](https://github.com/openai/codex/discussions/53043) — posted 2026-10-11; 1 reply from TheodorNEngoy answered; repo issue #1 filed for later behavior↔evidence check (v0.1 stays file-level)
 - Next interactive channels (r/codex, Show HN) need a 2–3h answer window — **not** posting from this morning patrol
-- 掘金 draft in `launch/juejin-zh.md` — not confirmed posted on juejin.com; blog already covers the zh long-form
+- 掘金: box browser signed in as 小蠢驴打代码; homepage + editor/drafts returned **HTTP 403** (site-side/rate block) this morning — article **not** published. Retry from `launch/juejin-zh.md` on next patrol when 403 clears. Blog already live: https://minilv.github.io/2026/10/09/codex-plan-ledger/
 
 ## NEXT (ranked)
 
 1. **Post Channel #2 r/codex** only when someone can answer 2–3h (draft in `launch/promo-plan.md`)
-2. **掘金** article from `launch/juejin-zh.md` via 内容写作 when juejin session available (blog already live)
+2. **掘金** retry publish from `launch/juejin-zh.md` on next patrol when juejin.cn 403 clears (session ok as 小蠢驴打代码; blog already live)
 3. **Show HN** later this week, US morning window, only with live answer coverage
 4. Leave **awesome-codex-cli #393** alone unless maintainers ask
 5. **Issue #1** = later version candidate only; do not implement in v0.1
