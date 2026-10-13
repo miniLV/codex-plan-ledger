@@ -18,6 +18,7 @@ Markdown line used in submissions:
 | --- | --- | --- |
 | [RoggeOhta/awesome-codex-cli](https://github.com/RoggeOhta/awesome-codex-cli) | https://github.com/RoggeOhta/awesome-codex-cli/pull/393 | Hooks; their `owner/repo` + star-badge format |
 | [kailiu42/awesome-coding-agents](https://github.com/kailiu42/awesome-coding-agents) | https://github.com/kailiu42/awesome-coding-agents/pull/75 | CLI Agent Helpers table; description = GitHub About |
+| [ichangyou/awesome-codex](https://github.com/ichangyou/awesome-codex) | https://github.com/ichangyou/awesome-codex/pull/28 | Hooks & Automation; EN + zh-CN READMEs |
 
 ## Skipped
 
