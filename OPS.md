@@ -40,7 +40,7 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 - [awesome-coding-agents #75](https://github.com/kailiu42/awesome-coding-agents/pull/75) — **MERGED** 2026-10-11
 - [awesome-codex-cli #393](https://github.com/RoggeOhta/awesome-codex-cli/pull/393) — still **OPEN** (checked 2026-10-13 morning); do **not** ping maintainers
 - [openai/codex Show and tell #53043](https://github.com/openai/codex/discussions/53043) — posted 2026-10-11; API shows 4 comments, last update 2026-10-11 20:01 Asia/Shanghai (no new activity since); repo issue #1 filed for later behavior↔evidence check (v0.1 stays file-level)
-- **掘金** — published 2026-10-12 evening as https://juejin.cn/post/7695576950509568041 (account 小蠢驴打代码; 审核中 at publish time). Live URL; audit status not re-verified this morning without browser. Draft source: `launch/juejin-zh.md`.
+- **掘金** — **approved / public** https://juejin.cn/post/7695576950509568041 (account 小蠢驴打代码). Browser check 2026-10-13 ~10:04 Asia/Shanghai: full body visible, no 审核中; 阅读 36 · 赞和收藏 1 · 评论 0. Draft source: `launch/juejin-zh.md`.
 - Next interactive channels (r/codex, Show HN) still waiting for a 2–3h answer window — **not** posting from this morning patrol
 - V2EX / OpenAI forum still later per `launch/promo-plan.md`
 
@@ -48,11 +48,10 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 1. **Post Channel #2 r/codex** only when someone can answer 2–3h (draft in `launch/promo-plan.md`); can now link the v0.1.0 release
 2. **Show HN** Tue–Thu this week, US morning window (~23:00–01:00 Asia/Shanghai), only with live answer coverage (draft `launch/show-hn-en.md`)
-3. Re-check 掘金 audit status (needs signed-in browser; not a GitHub op)
-4. Leave **awesome-codex-cli #393** alone unless maintainers ask
-5. **Issue #1** = later version candidate only; do not implement in v0.1
-6. More **A/B** only when Mac + Codex available
-7. Optional later: V2EX 分享创造 / OpenAI Developer Forum if earlier channels get useful feedback
+3. Leave **awesome-codex-cli #393** alone unless maintainers ask
+4. **Issue #1** = later version candidate only; do not implement in v0.1
+5. More **A/B** only when Mac + Codex available
+6. Optional later: V2EX 分享创造 / OpenAI Developer Forum if earlier channels get useful feedback
 
 ## Honest-data rules
 

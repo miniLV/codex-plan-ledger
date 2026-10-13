@@ -21,5 +21,5 @@ See also root [`OPS.md`](../OPS.md) for the standing patrol / milestone log.
 - Landing + README assets live on Pages; blog zh live.
 - Awesome-list: [kailiu42/awesome-coding-agents#75](https://github.com/kailiu42/awesome-coding-agents/pull/75) merged 2026-10-11. Still open: [RoggeOhta/awesome-codex-cli#393](https://github.com/RoggeOhta/awesome-codex-cli/pull/393) (no maintainer pings).
 - Channel #1 posted: [openai/codex Show and tell #53043](https://github.com/openai/codex/discussions/53043) (2026-10-11). One reply thread answered; issue #1 filed (later version only).
-- 掘金: published https://juejin.cn/post/7695576950509568041 (2026-10-12 evening; 审核中 at publish time). Live URL; audit status not re-verified this morning without browser.
+- 掘金: **approved / public** https://juejin.cn/post/7695576950509568041 (check 2026-10-13 ~10:04 Asia/Shanghai: 阅读 36 · 赞和收藏 1 · 评论 0).
 - Next interactive channel is r/codex when someone can answer for 2 to 3 hours — not posting from this morning patrol. Show HN Tue–Thu US morning (~23:00–01:00 Asia/Shanghai) with live coverage.
