@@ -1,6 +1,6 @@
 # Promo plan
 
-Status of this file: Channel #1 (openai/codex Show and tell) posted 2026-10-11 as https://github.com/openai/codex/discussions/53043. 掘金 article **approved / public** as https://juejin.cn/post/7695576950509568041 (2026-10-13 check: 阅读 36). Soft-launch also includes awesome-coding-agents #75 (merged), [ichangyou/awesome-codex #28](https://github.com/ichangyou/awesome-codex/pull/28) (open, Hooks), and GitHub Release [v0.1.0](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0). Other interactive channels below are still drafts; post one at a time from the maintainer account, only when someone can answer for 2 to 3 hours.
+Status of this file: Channel #1 (openai/codex Show and tell) posted 2026-10-11 as https://github.com/openai/codex/discussions/53043. 掘金 article **approved / public** as https://juejin.cn/post/7695576950509568041 (2026-10-13 check: 阅读 36). Soft-launch also includes awesome-coding-agents #75 (merged), [ichangyou/awesome-codex #28](https://github.com/ichangyou/awesome-codex/pull/28) (**merged** 2026-10-15, Hooks & Automation), and GitHub Release [v0.1.0](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0). Other interactive channels below are still drafts; post one at a time from the maintainer account, only when someone can answer for 2 to 3 hours.
 
 ## What we are promoting
 
@@ -43,7 +43,7 @@ Assets to link (all public):
 | 5 | 掘金 article | Medium: long-form zh write-up; draft exists in `juejin-zh.md` | 掘金 account | Article must stand alone; avoid 标题党. |
 | 6 | OpenAI Developer Forum, Codex category | Medium-low: slower, but searchable and on-topic | community.openai.com account | Post as a workflow/tool share with a clear "not affiliated with OpenAI" line. |
 | 7 | r/ChatGPTCoding | Low-medium: broader audience, many tools | Reddit account | Read the sidebar for self-promotion limits before posting; skip if it requires a flair or ratio we can't meet. |
-| 8 | Awesome lists (already submitted) | Passive, long tail | none (done) | kailiu42/awesome-coding-agents#75 merged 2026-10-11. RoggeOhta/awesome-codex-cli#393 still open. ichangyou/awesome-codex#28 open (Hooks). Don't ping maintainers; reply only if they ask for changes. |
+| 8 | Awesome lists (already submitted) | Passive, long tail | none (done) | kailiu42/awesome-coding-agents#75 merged 2026-10-11. ichangyou/awesome-codex#28 merged 2026-10-15 (Hooks & Automation). RoggeOhta/awesome-codex-cli#393 still open. Don't ping maintainers; reply only if they ask for changes. |
 
 ### Suggested order and timing
 
