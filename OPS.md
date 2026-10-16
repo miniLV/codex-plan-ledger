@@ -4,7 +4,7 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## Last patrol
 
-**2026-10-16 ~18:05 Asia/Shanghai** (scheduled weekday evening patrol; no user message)
+**2026-10-16 ~18:05 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Same-evening follow-up ~18:10: harness import fix pushed; A/B retry deferred.
 
 ## Snapshot
 
@@ -15,16 +15,16 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 | Open issues | 1 ([#1](https://github.com/miniLV/codex-plan-ledger/issues/1), later version only) |
 | Open PRs | 0 |
 | Default branch | `main` |
-| Latest commit (pre-this-patrol) | `53453be` — ops: morning patrol 2026-10-16 — Mac smoke green on 0.162.1 |
-| CI | Green (latest CI + Pages build success on `53453be`; local `npm test` 53/53 pass) |
+| Latest commit (pre-this-patrol) | `947a52b` — ops: evening patrol 2026-10-16 — A/B aborted on harness needsAnswer |
+| CI | Green (latest CI + Pages build success on `947a52b`; local `npm test` 53/53 pass after harness fix) |
 | Homepage | https://minilv.github.io/codex-plan-ledger/ |
 | Topics | ai-agents, codex, codex-cli, coding-agents, developer-tools, html, openai-codex, plan-mode |
 | Releases | **[v0.1.0 — early prototype](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0)** published 2026-10-13 10:03 Asia/Shanghai |
 | `npm test` (this run) | 53/53 pass |
-| Mac repo | Already at `53453be` (`/Users/tyrion/Github/codex-plan-ledger`); connected |
+| Mac repo | Synced at evening start; will pull after this harness-fix push (`/Users/tyrion/Github/codex-plan-ledger`); connected |
 | Codex on Mac | `codex-cli 0.162.1` |
 | Quota gate (evening) | `SMOKE_DRY=1` config/read OK (model `gpt-6.1-sol`); no usageLimitExceeded |
-| Evening A/B | **Attempted one pair (`month-unit` × native + ledger); incomplete.** Native completed (verify pass, 201,960 tokens, 85 s wall). Ledger plan turn + Stop hook wrote ledger (`hook_live: true`, 2 decisions), then harness aborted: `ReferenceError: needsAnswer is not defined` in `bench/run.mjs` (uses `needsAnswer` without importing it from `src/ledger.js`; present since `6689687`, after round 2). No implementation on ledger arm. Artifacts kept local only under `~/cpl-bench/ab-2026-10-16-evening/` (summary.md). **Not published** to `bench/results/`; README / public n=3 unchanged. No invented numbers. |
+| Evening A/B | **Attempted one pair (`month-unit` × native + ledger); incomplete.** Native completed (verify pass, 201,960 tokens, 85 s wall). Ledger plan turn + Stop hook wrote ledger (`hook_live: true`, 2 decisions), then harness aborted: `ReferenceError: needsAnswer is not defined` in `bench/run.mjs` (uses `needsAnswer` without importing it from `src/ledger.js`; present since `6689687`, after round 2). No implementation on ledger arm. Artifacts kept local only under `~/cpl-bench/ab-2026-10-16-evening/` (summary.md). **Not published** to `bench/results/`; README / public n=3 unchanged. No invented numbers. **Follow-up same evening:** `bench/run.mjs` now imports `needsAnswer` (tests 53/53); A/B retry deferred to next morning patrol to conserve quota after native ~202k tokens. |
 
 ## Milestones
 
@@ -51,7 +51,7 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## NEXT (ranked)
 
-1. **Fix bench harness**: import `{ ANSWER_PREFIX, needsAnswer }` in `bench/run.mjs` (one-line); then optionally retry **one** measured A/B pair when quota healthy — do not expand to a multi-pair round
+1. **Optional one measured A/B pair** next morning patrol if quota healthy (harness `needsAnswer` import fixed 2026-10-16 evening); do not expand to a multi-pair round
 2. **Show HN** Tue–Thu only, US morning window (~23:00–01:00 Asia/Shanghai), only with live answer coverage (draft `launch/show-hn-en.md`) — next window Mon/Tue evening CST; **not** posting without coverage
 3. **r/codex** — user-only if wanted (bot exit IP blocked; no bot Reddit tasks); draft remains in `launch/promo-plan.md`
 4. Leave **awesome-codex-cli #393** alone unless maintainers ask

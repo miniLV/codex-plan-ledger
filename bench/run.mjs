@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { AppServer } from './lib/appserver.mjs';
 import { answerQuestions, answerText, answerLedger } from './lib/responder.mjs';
-import { ANSWER_PREFIX } from '../src/ledger.js';
+import { ANSWER_PREFIX, needsAnswer } from '../src/ledger.js';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const BIN = resolve(here, '..', 'bin', 'plan-ledger.js');
