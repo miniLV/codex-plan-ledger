@@ -4,7 +4,7 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## Last patrol
 
-**2026-10-16 ~18:05 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Same-evening follow-up ~18:10: harness import fix pushed; A/B retry deferred.
+**2026-10-19 ~10:00 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Mac disconnected — deferred optional A/B retry; no user ping.
 
 ## Snapshot
 
@@ -15,16 +15,16 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 | Open issues | 1 ([#1](https://github.com/miniLV/codex-plan-ledger/issues/1), later version only) |
 | Open PRs | 0 |
 | Default branch | `main` |
-| Latest commit (pre-this-patrol) | `947a52b` — ops: evening patrol 2026-10-16 — A/B aborted on harness needsAnswer |
-| CI | Green (latest CI + Pages build success on `947a52b`; local `npm test` 53/53 pass after harness fix) |
+| Latest commit (pre-this-patrol) | `f5c1b02` — fix(bench): import needsAnswer in run.mjs |
+| CI | Green (latest CI + Pages build success on `f5c1b02`) |
 | Homepage | https://minilv.github.io/codex-plan-ledger/ |
 | Topics | ai-agents, codex, codex-cli, coding-agents, developer-tools, html, openai-codex, plan-mode |
 | Releases | **[v0.1.0 — early prototype](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0)** published 2026-10-13 10:03 Asia/Shanghai |
 | `npm test` (this run) | 53/53 pass |
-| Mac repo | Synced at evening start; will pull after this harness-fix push (`/Users/tyrion/Github/codex-plan-ledger`); connected |
-| Codex on Mac | `codex-cli 0.162.1` |
-| Quota gate (evening) | `SMOKE_DRY=1` config/read OK (model `gpt-6.1-sol`); no usageLimitExceeded |
-| Evening A/B | **Attempted one pair (`month-unit` × native + ledger); incomplete.** Native completed (verify pass, 201,960 tokens, 85 s wall). Ledger plan turn + Stop hook wrote ledger (`hook_live: true`, 2 decisions), then harness aborted: `ReferenceError: needsAnswer is not defined` in `bench/run.mjs` (uses `needsAnswer` without importing it from `src/ledger.js`; present since `6689687`, after round 2). No implementation on ledger arm. Artifacts kept local only under `~/cpl-bench/ab-2026-10-16-evening/` (summary.md). **Not published** to `bench/results/`; README / public n=3 unchanged. No invented numbers. **Follow-up same evening:** `bench/run.mjs` now imports `needsAnswer` (tests 53/53); A/B retry deferred to next morning patrol to conserve quota after native ~202k tokens. |
+| Mac repo | **Disconnected** (`MacBook-Pro.local` not connected); A/B / live Codex smoke blocked this patrol |
+| Codex on Mac | last known `codex-cli 0.162.1` (2026-10-16) |
+| Quota gate | not checked (Mac offline) |
+| Optional A/B | **Deferred.** Harness `needsAnswer` import fixed in `f5c1b02` (2026-10-16 evening). Planned one `month-unit` retry when Mac reconnects and quota is healthy. Incomplete 2026-10-16 evening artifacts stay local-only under `~/cpl-bench/ab-2026-10-16-evening/` — **not** published. Public `bench/results` still n=3. No invented numbers. |
 
 ## Milestones
 
@@ -41,18 +41,18 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 ### Soft-launch detail
 
 - [awesome-coding-agents #75](https://github.com/kailiu42/awesome-coding-agents/pull/75) — **MERGED** 2026-10-11
-- [awesome-codex-cli #393](https://github.com/RoggeOhta/awesome-codex-cli/pull/393) — still **OPEN** (checked 2026-10-16 evening; mergeable_state clean; 0 comments; last update 2026-10-09); do **not** ping maintainers
+- [awesome-codex-cli #393](https://github.com/RoggeOhta/awesome-codex-cli/pull/393) — still **OPEN** (checked 2026-10-19 morning; mergeable_state clean; 0 comments; last update 2026-10-09); do **not** ping maintainers
 - [ichangyou/awesome-codex #28](https://github.com/ichangyou/awesome-codex/pull/28) — **MERGED** 2026-10-15 16:57 Asia/Shanghai by ichangyou (Hooks & Automation in README.md + README.zh-CN.md)
-- [openai/codex Show and tell #53043](https://github.com/openai/codex/discussions/53043) — posted 2026-10-11; still quiet (updated 2026-10-11; 1 upvote; 1 comment); repo issue #1 filed for later behavior↔evidence check (v0.1 stays file-level)
+- [openai/codex Show and tell #53043](https://github.com/openai/codex/discussions/53043) — posted 2026-10-11; still quiet; repo issue #1 filed for later behavior↔evidence check (v0.1 stays file-level)
 - **掘金** — **approved / public** https://juejin.cn/post/7695576950509568041 (account 小蠢驴打代码). Last browser check 2026-10-13 ~10:04 Asia/Shanghai: 阅读 36 · 赞和收藏 1 · 评论 0. Draft source: `launch/juejin-zh.md`.
 - Candidate extra awesome lists checked 2026-10-14 evening and **skipped** (stale, plugins-only, or learning-resources): quome-cloud/awesome-coding-agents, darknorth-123/Awesome-Codex-Plugins, Caldalis/awesome-coding-agents
-- Next interactive channels (Show HN; r/codex only via user account — bot Reddit blocked) still waiting for a 2–3h answer window — **not** posting from this evening patrol (Friday is outside the Tue–Thu Show HN window anyway)
+- Next interactive channels (Show HN; r/codex only via user account — bot Reddit blocked) still waiting for a 2–3h answer window — **not** posting from this morning patrol (Show HN window is Tue–Thu US morning / ~23:00–01:00 Asia/Shanghai; needs live answer coverage)
 - V2EX / OpenAI forum still later per `launch/promo-plan.md`
 
 ## NEXT (ranked)
 
-1. **Optional one measured A/B pair** next morning patrol if quota healthy (harness `needsAnswer` import fixed 2026-10-16 evening); do not expand to a multi-pair round
-2. **Show HN** Tue–Thu only, US morning window (~23:00–01:00 Asia/Shanghai), only with live answer coverage (draft `launch/show-hn-en.md`) — next window Mon/Tue evening CST; **not** posting without coverage
+1. **Optional one measured A/B pair** when Mac reconnects and quota is healthy (harness `needsAnswer` import fixed `f5c1b02`); do not expand to a multi-pair round
+2. **Show HN** Tue–Thu only, US morning window (~23:00–01:00 Asia/Shanghai), only with live answer coverage (draft `launch/show-hn-en.md`) — next candidate window Mon/Tue evening CST if coverage exists; **not** posting without coverage
 3. **r/codex** — user-only if wanted (bot exit IP blocked; no bot Reddit tasks); draft remains in `launch/promo-plan.md`
 4. Leave **awesome-codex-cli #393** alone unless maintainers ask
 5. **Issue #1** = later version candidate only; do not implement in v0.1
