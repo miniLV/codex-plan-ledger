@@ -6,6 +6,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 **2026-10-19 ~10:00 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Mac disconnected — deferred optional A/B retry; no user ping.
 
+**2026-10-19 ~14:25 Asia/Shanghai** (proactive ops check). Confirmed RoggeOhta/awesome-codex-cli #393 **closed without merge** by miniLV at 14:15 Asia/Shanghai; OPS link status updated. No user ping from this check.
+
 ## Snapshot
 
 | Item | Value |
@@ -41,7 +43,7 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 ### Soft-launch detail
 
 - [awesome-coding-agents #75](https://github.com/kailiu42/awesome-coding-agents/pull/75) — **MERGED** 2026-10-11
-- [awesome-codex-cli #393](https://github.com/RoggeOhta/awesome-codex-cli/pull/393) — still **OPEN** (checked 2026-10-19 morning; mergeable_state clean; 0 comments; last update 2026-10-09); do **not** ping maintainers
+- [awesome-codex-cli #393](https://github.com/RoggeOhta/awesome-codex-cli/pull/393) — **CLOSED without merge** 2026-10-19 14:15 Asia/Shanghai by miniLV (no maintainer comments; upstream README last commit 2026-09-06). Not listed. Do **not** reopen or ping.
 - [ichangyou/awesome-codex #28](https://github.com/ichangyou/awesome-codex/pull/28) — **MERGED** 2026-10-15 16:57 Asia/Shanghai by ichangyou (Hooks & Automation in README.md + README.zh-CN.md)
 - [openai/codex Show and tell #53043](https://github.com/openai/codex/discussions/53043) — posted 2026-10-11; still quiet; repo issue #1 filed for later behavior↔evidence check (v0.1 stays file-level)
 - **掘金** — **approved / public** https://juejin.cn/post/7695576950509568041 (account 小蠢驴打代码). Last browser check 2026-10-13 ~10:04 Asia/Shanghai: 阅读 36 · 赞和收藏 1 · 评论 0. Draft source: `launch/juejin-zh.md`.
@@ -54,7 +56,7 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 1. **Optional one measured A/B pair** when Mac reconnects and quota is healthy (harness `needsAnswer` import fixed `f5c1b02`); do not expand to a multi-pair round
 2. **Show HN** Tue–Thu only, US morning window (~23:00–01:00 Asia/Shanghai), only with live answer coverage (draft `launch/show-hn-en.md`) — next candidate window Mon/Tue evening CST if coverage exists; **not** posting without coverage
 3. **r/codex** — user-only if wanted (bot exit IP blocked; no bot Reddit tasks); draft remains in `launch/promo-plan.md`
-4. Leave **awesome-codex-cli #393** alone unless maintainers ask
+4. **awesome-codex-cli #393** closed without merge (2026-10-19); no reopen. Prefer other lists / Show HN for discovery.
 5. **Issue #1** = later version candidate only; do not implement in v0.1
 6. Optional later: V2EX 分享创造 / OpenAI Developer Forum if earlier channels get useful feedback
 
