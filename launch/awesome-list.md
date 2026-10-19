@@ -30,5 +30,6 @@ Markdown line used in submissions:
 | e2b-dev/awesome-sdks-for-ai-agents | No recent merges; last push 2026-07. |
 | slavakurilyak/awesome-ai-agents | Prefers issue submissions; categories target AI-agent products, not coding-agent helpers; PR path needs their Go verify toolchain. |
 | hashgraph-online/awesome-codex-plugins | Plugins-only; requires their scanner pipeline. Not a plugin. |
+| shinpr/awesome-codex-workflows | CONTRIBUTING excludes experiments/PoCs; we still label early prototype. Prefers recommendation issue first. Revisit later. |
 
 Note on RoggeOhta: maintainers are active on issues, but there were 0 PR merges in the last 90 days and a large open-PR backlog. Still submitted one PR under Hooks because the section fit is exact and CONTRIBUTING allows PRs.
