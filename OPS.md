@@ -4,6 +4,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## Last patrol
 
+**2026-10-20 ~10:03 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars still 0; CI green on `1730687`; `npm test` 53/53; Pages HTTP 200; Mac still disconnected — A/B deferred; Show and tell #53043 still quiet (1 comment, last update 2026-10-11); ichangyou/awesome-codex listing still present; milisp/awesome-codex-cli scouted (issues-only submit; <100★ quality path exists but 0★ + author-driven listings are weak — **deferred** until Show HN or clearer non-author usage); Show HN not posted this morning (owned by Tue 18:00 Asia/Shanghai window routine + needs answer coverage); no user ping.
+
 **2026-10-19 ~18:03 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Mac still disconnected — A/B retry deferred; Show HN not posted (Tue–Thu US morning window + answer coverage); no user ping.
 
 **2026-10-19 ~14:25 Asia/Shanghai** (proactive ops check). Confirmed RoggeOhta/awesome-codex-cli #393 **closed without merge** by miniLV at 14:15 Asia/Shanghai; OPS link status updated. No user ping from this check.
@@ -19,8 +21,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 | Open issues | 1 ([#1](https://github.com/miniLV/codex-plan-ledger/issues/1), later version only) |
 | Open PRs | 0 |
 | Default branch | `main` |
-| Latest commit (pre-this-patrol) | `c7e3e3a` — docs(ops): mark awesome-codex-cli #393 closed without merge |
-| CI | Green (latest CI + Pages build success on `c7e3e3a`) |
+| Latest commit (pre-this-patrol) | `1730687` — ops: evening patrol 2026-10-19 — Mac offline, soft-launch hold |
+| CI | Green (latest CI + Pages build success on `1730687`) |
 | Homepage | https://minilv.github.io/codex-plan-ledger/ (HTTP 200 verified this patrol) |
 | Topics | ai-agents, codex, codex-cli, coding-agents, developer-tools, html, openai-codex, plan-mode |
 | Releases | **[v0.1.0 — early prototype](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0)** published 2026-10-13 10:03 Asia/Shanghai |
@@ -51,6 +53,7 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 - **掘金** — **approved / public** https://juejin.cn/post/7695576950509568041 (account 小蠢驴打代码). Last browser check 2026-10-13 ~10:04 Asia/Shanghai: 阅读 36 · 赞和收藏 1 · 评论 0. Draft source: `launch/juejin-zh.md`.
 - Candidate extra awesome lists checked 2026-10-14 evening and **skipped** (stale, plugins-only, or learning-resources): quome-cloud/awesome-coding-agents, darknorth-123/Awesome-Codex-Plugins, Caldalis/awesome-coding-agents
 - **2026-10-19 evening scout:** [shinpr/awesome-codex-workflows](https://github.com/shinpr/awesome-codex-workflows) (20★, active merges) — **skipped**. CONTRIBUTING requires projects “ready for others to use, rather than as experiments or proofs of concept”; we still label early prototype. Prefers recommendation issue before PR. Revisit after a clearer “ready” bar or more public evidence.
+- **2026-10-20 morning scout:** [milisp/awesome-codex-cli](https://github.com/milisp/awesome-codex-cli) (124★, active) — issues-only “Submit a resource”; PRs restricted. Fits Tools / Code Quality & Review or Workflows. Criteria allow <100★ via quality points, but form text still emphasizes 100★ and “No users yet? Submit once you meet the criteria.” With **0★**, submission deferred; do not open a weak issue that burns the slot. KarelDO/awesome-codex skipped (legacy 2021 Codex model list). onurkanbakirci/awesome-codex-automations skipped (scheduled-automation prompts, not CLI hooks/tools).
 - Next interactive channels (Show HN; r/codex only via user account — bot Reddit blocked) still waiting for a 2–3h answer window — **not** posting from this evening patrol (next Show HN window Tue–Thu US morning / ~23:00–01:00 Asia/Shanghai; needs live answer coverage)
 - V2EX / OpenAI forum still later per `launch/promo-plan.md`
 
@@ -61,7 +64,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 3. **r/codex** — user-only if wanted (bot exit IP blocked; no bot Reddit tasks); draft remains in `launch/promo-plan.md`
 4. **awesome-codex-cli #393** closed without merge (2026-10-19); no reopen. Prefer other lists / Show HN for discovery.
 5. **Issue #1** = later version candidate only; do not implement in v0.1
-6. Optional later: V2EX 分享创造 / OpenAI Developer Forum if earlier channels get useful feedback; revisit shinpr/awesome-codex-workflows only if product framing is no longer “early prototype”
+6. **milisp/awesome-codex-cli** — issues-only resource submit; deferred at 0★ (quality path needs stronger non-author usage than our own awesome-list merges). Revisit after Show HN or measurable external use.
+7. Optional later: V2EX 分享创造 / OpenAI Developer Forum if earlier channels get useful feedback; revisit shinpr/awesome-codex-workflows only if product framing is no longer “early prototype”
 
 ## Honest-data rules
 
