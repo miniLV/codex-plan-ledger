@@ -4,6 +4,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## Last patrol
 
+**2026-10-20 ~18:05 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars still 0; CI green on `d55de49` (test+build+Pages deploy success); `npm test` 53/53; Pages HTTP 200; Mac still disconnected — A/B deferred; Show and tell #53043 still quiet (1 comment, last update 2026-10-11); ichangyou/awesome-codex listing still present; no new awesome submits (0★ soft-launch hold); Show HN **not** posted (Tue evening window open but no confirmed 2–3h answer coverage; 2026-10-19 deferral to next-week Tue–Thu is not a NOW go-ahead); no user ping.
+
 **2026-10-20 ~10:03 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars still 0; CI green on `1730687`; `npm test` 53/53; Pages HTTP 200; Mac still disconnected — A/B deferred; Show and tell #53043 still quiet (1 comment, last update 2026-10-11); ichangyou/awesome-codex listing still present; milisp/awesome-codex-cli scouted (issues-only submit; <100★ quality path exists but 0★ + author-driven listings are weak — **deferred** until Show HN or clearer non-author usage); Show HN not posted this morning (owned by Tue 18:00 Asia/Shanghai window routine + needs answer coverage); no user ping.
 
 **2026-10-19 ~18:03 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Mac still disconnected — A/B retry deferred; Show HN not posted (Tue–Thu US morning window + answer coverage); no user ping.
@@ -21,8 +23,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 | Open issues | 1 ([#1](https://github.com/miniLV/codex-plan-ledger/issues/1), later version only) |
 | Open PRs | 0 |
 | Default branch | `main` |
-| Latest commit (pre-this-patrol) | `1730687` — ops: evening patrol 2026-10-19 — Mac offline, soft-launch hold |
-| CI | Green (latest CI + Pages build success on `1730687`) |
+| Latest commit (pre-this-patrol) | `d55de49` — ops: morning patrol 2026-10-20 — Mac offline, milisp deferred |
+| CI | Green (latest CI + Pages build success on `d55de49`) |
 | Homepage | https://minilv.github.io/codex-plan-ledger/ (HTTP 200 verified this patrol) |
 | Topics | ai-agents, codex, codex-cli, coding-agents, developer-tools, html, openai-codex, plan-mode |
 | Releases | **[v0.1.0 — early prototype](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0)** published 2026-10-13 10:03 Asia/Shanghai |
@@ -54,13 +56,13 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 - Candidate extra awesome lists checked 2026-10-14 evening and **skipped** (stale, plugins-only, or learning-resources): quome-cloud/awesome-coding-agents, darknorth-123/Awesome-Codex-Plugins, Caldalis/awesome-coding-agents
 - **2026-10-19 evening scout:** [shinpr/awesome-codex-workflows](https://github.com/shinpr/awesome-codex-workflows) (20★, active merges) — **skipped**. CONTRIBUTING requires projects “ready for others to use, rather than as experiments or proofs of concept”; we still label early prototype. Prefers recommendation issue before PR. Revisit after a clearer “ready” bar or more public evidence.
 - **2026-10-20 morning scout:** [milisp/awesome-codex-cli](https://github.com/milisp/awesome-codex-cli) (124★, active) — issues-only “Submit a resource”; PRs restricted. Fits Tools / Code Quality & Review or Workflows. Criteria allow <100★ via quality points, but form text still emphasizes 100★ and “No users yet? Submit once you meet the criteria.” With **0★**, submission deferred; do not open a weak issue that burns the slot. KarelDO/awesome-codex skipped (legacy 2021 Codex model list). onurkanbakirci/awesome-codex-automations skipped (scheduled-automation prompts, not CLI hooks/tools).
-- Next interactive channels (Show HN; r/codex only via user account — bot Reddit blocked) still waiting for a 2–3h answer window — **not** posting from this evening patrol (next Show HN window Tue–Thu US morning / ~23:00–01:00 Asia/Shanghai; needs live answer coverage)
+- Next interactive channels (Show HN; r/codex only via user account — bot Reddit blocked) still waiting for a confirmed 2–3h answer window — **not** posting from this evening patrol (Tue–Thu US morning / ~23:00–01:00 Asia/Shanghai; coverage not confirmed; default hold)
 - V2EX / OpenAI forum still later per `launch/promo-plan.md`
 
 ## NEXT (ranked)
 
 1. **Optional one measured A/B pair** when Mac reconnects and quota is healthy (harness `needsAnswer` import fixed `f5c1b02`); do not expand to a multi-pair round
-2. **Show HN** Tue–Thu only, US morning window (~23:00–01:00 Asia/Shanghai), only with live answer coverage (draft `launch/show-hn-en.md`) — next candidate window Tue evening CST if coverage exists; **not** posting without coverage
+2. **Show HN** Tue–Thu only, US morning window (~23:00–01:00 Asia/Shanghai), only with live answer coverage (draft `launch/show-hn-en.md`) — 2026-10-20 Tue evening: coverage **not** confirmed → hold; next candidate Wed/Thu same window if coverage exists
 3. **r/codex** — user-only if wanted (bot exit IP blocked; no bot Reddit tasks); draft remains in `launch/promo-plan.md`
 4. **awesome-codex-cli #393** closed without merge (2026-10-19); no reopen. Prefer other lists / Show HN for discovery.
 5. **Issue #1** = later version candidate only; do not implement in v0.1
