@@ -4,6 +4,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## Last patrol
 
+**2026-10-21 ~10:03 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars still 0; CI green on `907ee35` (latest CI + Pages build success 2026-10-20 evening); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`; English is root, `/en/` 404 by design); Mac still disconnected — A/B deferred; Show and tell #53043 still quiet (1 comment, last update 2026-10-11); ichangyou/awesome-codex listing still present; no new awesome submits (0★ soft-launch hold); Show HN **not** posted this morning (owned by Tue 18:00 Asia/Shanghai window routine; 2026-10-19 user deferral to next-week Tue–Thu + answer coverage still applies — this week Wed/Thu not a go-ahead); no user ping.
+
 **2026-10-20 ~18:05 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars still 0; CI green on `d55de49` (test+build+Pages deploy success); `npm test` 53/53; Pages HTTP 200; Mac still disconnected — A/B deferred; Show and tell #53043 still quiet (1 comment, last update 2026-10-11); ichangyou/awesome-codex listing still present; no new awesome submits (0★ soft-launch hold); Show HN **not** posted (Tue evening window open but no confirmed 2–3h answer coverage; 2026-10-19 deferral to next-week Tue–Thu is not a NOW go-ahead); no user ping.
 
 **2026-10-20 ~10:03 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars still 0; CI green on `1730687`; `npm test` 53/53; Pages HTTP 200; Mac still disconnected — A/B deferred; Show and tell #53043 still quiet (1 comment, last update 2026-10-11); ichangyou/awesome-codex listing still present; milisp/awesome-codex-cli scouted (issues-only submit; <100★ quality path exists but 0★ + author-driven listings are weak — **deferred** until Show HN or clearer non-author usage); Show HN not posted this morning (owned by Tue 18:00 Asia/Shanghai window routine + needs answer coverage); no user ping.
@@ -23,8 +25,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 | Open issues | 1 ([#1](https://github.com/miniLV/codex-plan-ledger/issues/1), later version only) |
 | Open PRs | 0 |
 | Default branch | `main` |
-| Latest commit (pre-this-patrol) | `d55de49` — ops: morning patrol 2026-10-20 — Mac offline, milisp deferred |
-| CI | Green (latest CI + Pages build success on `d55de49`) |
+| Latest commit (pre-this-patrol) | `907ee35` — ops: evening patrol 2026-10-20 — Mac offline, Show HN hold |
+| CI | Green (latest CI + Pages build success on `907ee35`) |
 | Homepage | https://minilv.github.io/codex-plan-ledger/ (HTTP 200 verified this patrol) |
 | Topics | ai-agents, codex, codex-cli, coding-agents, developer-tools, html, openai-codex, plan-mode |
 | Releases | **[v0.1.0 — early prototype](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0)** published 2026-10-13 10:03 Asia/Shanghai |
@@ -62,7 +64,7 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 ## NEXT (ranked)
 
 1. **Optional one measured A/B pair** when Mac reconnects and quota is healthy (harness `needsAnswer` import fixed `f5c1b02`); do not expand to a multi-pair round
-2. **Show HN** Tue–Thu only, US morning window (~23:00–01:00 Asia/Shanghai), only with live answer coverage (draft `launch/show-hn-en.md`) — 2026-10-20 Tue evening: coverage **not** confirmed → hold; next candidate Wed/Thu same window if coverage exists
+2. **Show HN** Tue–Thu only, US morning window (~23:00–01:00 Asia/Shanghai), only with live answer coverage (draft `launch/show-hn-en.md`) — 2026-10-19 user deferral to **next-week** Tue–Thu; 2026-10-20 Tue evening held (no coverage). This week Wed/Thu still hold unless coverage is explicitly confirmed; next candidate window starts next Tue evening
 3. **r/codex** — user-only if wanted (bot exit IP blocked; no bot Reddit tasks); draft remains in `launch/promo-plan.md`
 4. **awesome-codex-cli #393** closed without merge (2026-10-19); no reopen. Prefer other lists / Show HN for discovery.
 5. **Issue #1** = later version candidate only; do not implement in v0.1
