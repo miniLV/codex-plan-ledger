@@ -4,6 +4,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## Last patrol
 
+**2026-10-22 ~18:00 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars still 0; forks 0; CI green on `25ba8c1` (test/build/deploy/report-build-status all success); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`; `/en/` 404 by design; last-modified 2026-10-22 02:03 UTC from morning ops deploy); Mac listed briefly then **disconnected** (`MacBook-Pro.local` unreachable) — A/B deferred; Show and tell #53043 still quiet (GraphQL comments=1, `updatedAt` 2026-10-11); ichangyou/awesome-codex listing still present (EN+ZH README line 125); no new awesome submits (0★ soft-launch hold); Show HN **paused** (user decision 2026-10-22 — do not ask / nudge); no user ping.
+
 **2026-10-22 ~10:02 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars still 0; CI green on `50bd585` (latest CI + Pages build success 2026-10-21 evening); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`; `/en/` 404 by design); Mac still disconnected — A/B deferred; Show and tell #53043 still quiet (API comments=4, last update 2026-10-11); ichangyou/awesome-codex listing still present (EN+ZH); no new awesome submits (0★ soft-launch hold); Show HN **not** posted (owned by Tue 18:00 Asia/Shanghai window routine; 2026-10-19 user deferral to next-week Tue–Thu + answer coverage still applies — this week Thu morning is not a go-ahead; next candidate window is next Tue evening); no user ping.
 
 **2026-10-21 ~18:02 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars still 0; CI green on `0cab095` (latest CI + Pages build success 2026-10-21 morning); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`); Mac still disconnected — A/B deferred; Show and tell #53043 still quiet (1 comment, last update 2026-10-11); ichangyou/awesome-codex listing still present (EN+ZH); no new awesome submits (0★ soft-launch hold); Show HN **not** posted (owned by Tue 18:00 Asia/Shanghai window routine; 2026-10-19 user deferral to next-week Tue–Thu + answer coverage still applies — this week Wed evening is not a go-ahead; next candidate window starts next Tue evening); no user ping.
@@ -17,13 +19,13 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 | Open issues | 1 ([#1](https://github.com/miniLV/codex-plan-ledger/issues/1), later version only) |
 | Open PRs | 0 |
 | Default branch | `main` |
-| Latest commit (pre-this-patrol) | `50bd585` — ops: evening patrol 2026-10-21 — Mac offline, Show HN hold |
-| CI | Green (latest CI + Pages build success on `50bd585`) |
+| Latest commit (pre-this-patrol) | `25ba8c1` — ops: morning patrol 2026-10-22 — Mac offline, Show HN hold |
+| CI | Green (test/build/deploy/report-build-status success on `25ba8c1`) |
 | Homepage | https://minilv.github.io/codex-plan-ledger/ (HTTP 200 verified this patrol) |
 | Topics | ai-agents, codex, codex-cli, coding-agents, developer-tools, html, openai-codex, plan-mode |
 | Releases | **[v0.1.0 — early prototype](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0)** published 2026-10-13 10:03 Asia/Shanghai |
 | `npm test` (this run) | 53/53 pass |
-| Mac repo | **Disconnected** (`MacBook-Pro.local` not connected); A/B / live Codex smoke blocked this patrol |
+| Mac repo | **Disconnected** (`MacBook-Pro.local` not connected / unreachable); A/B / live Codex smoke blocked this patrol |
 | Codex on Mac | last known `codex-cli 0.162.1` (2026-10-16) |
 | Quota gate | not checked (Mac offline) |
 | Optional A/B | **Deferred.** Harness `needsAnswer` import fixed in `f5c1b02` (2026-10-16 evening). Planned one `month-unit` retry when Mac reconnects and quota is healthy. Incomplete 2026-10-16 evening artifacts stay local-only under `~/cpl-bench/ab-2026-10-16-evening/` — **not** published. Public `bench/results` still n=3. No invented numbers. |
@@ -45,22 +47,22 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 - [awesome-coding-agents #75](https://github.com/kailiu42/awesome-coding-agents/pull/75) — **MERGED** 2026-10-11
 - [awesome-codex-cli #393](https://github.com/RoggeOhta/awesome-codex-cli/pull/393) — **CLOSED without merge** 2026-10-19 14:15 Asia/Shanghai by miniLV (no maintainer comments; upstream README last commit 2026-09-06). Not listed. Do **not** reopen or ping.
 - [ichangyou/awesome-codex #28](https://github.com/ichangyou/awesome-codex/pull/28) — **MERGED** 2026-10-15 16:57 Asia/Shanghai by ichangyou (Hooks & Automation in README.md + README.zh-CN.md); still listed this patrol
-- [openai/codex Show and tell #53043](https://github.com/openai/codex/discussions/53043) — posted 2026-10-11; still quiet (1 comment, last update 2026-10-11); repo issue #1 filed for later behavior↔evidence check (v0.1 stays file-level)
+- [openai/codex Show and tell #53043](https://github.com/openai/codex/discussions/53043) — posted 2026-10-11; still quiet (GraphQL comments=1, last update 2026-10-11); repo issue #1 filed for later behavior↔evidence check (v0.1 stays file-level)
 - **掘金** — **approved / public** https://juejin.cn/post/7695576950509568041 (account 小蠢驴打代码). Last browser check 2026-10-13 ~10:04 Asia/Shanghai: 阅读 36 · 赞和收藏 1 · 评论 0. Draft source: `launch/juejin-zh.md`.
 - Candidate extra awesome lists checked 2026-10-14 evening and **skipped** (stale, plugins-only, or learning-resources): quome-cloud/awesome-coding-agents, darknorth-123/Awesome-Codex-Plugins, Caldalis/awesome-coding-agents
 - **2026-10-19 evening scout:** [shinpr/awesome-codex-workflows](https://github.com/shinpr/awesome-codex-workflows) (20★, active merges) — **skipped**. CONTRIBUTING requires projects “ready for others to use, rather than as experiments or proofs of concept”; we still label early prototype. Prefers recommendation issue before PR. Revisit after a clearer “ready” bar or more public evidence.
 - **2026-10-20 morning scout:** [milisp/awesome-codex-cli](https://github.com/milisp/awesome-codex-cli) (124★, active) — issues-only “Submit a resource”; PRs restricted. Fits Tools / Code Quality & Review or Workflows. Criteria allow <100★ via quality points, but form text still emphasizes 100★ and “No users yet? Submit once you meet the criteria.” With **0★**, submission deferred; do not open a weak issue that burns the slot. KarelDO/awesome-codex skipped (legacy 2021 Codex model list). onurkanbakirci/awesome-codex-automations skipped (scheduled-automation prompts, not CLI hooks/tools).
-- Next interactive channels (Show HN; r/codex only via user account — bot Reddit blocked) still waiting for a confirmed 2–3h answer window — **not** posting from this evening patrol (Tue–Thu US morning / ~23:00–01:00 Asia/Shanghai; coverage not confirmed; default hold)
+- **Show HN — PAUSED** (user decision 2026-10-22). Do not ask, nudge, or schedule posting until the user reopens it. Draft remains `launch/show-hn-en.md`. r/codex remains user-only if wanted (bot exit IP blocked; no bot Reddit tasks).
 - V2EX / OpenAI forum still later per `launch/promo-plan.md`
 
 ## NEXT (ranked)
 
-1. **Optional one measured A/B pair** when Mac reconnects and quota is healthy (harness `needsAnswer` import fixed `f5c1b02`); do not expand to a multi-pair round
-2. **Show HN** Tue–Thu only, US morning window (~23:00–01:00 Asia/Shanghai), only with live answer coverage (draft `launch/show-hn-en.md`) — 2026-10-19 user deferral to **next-week** Tue–Thu; 2026-10-20 Tue evening held (no coverage). This week Wed/Thu still hold unless coverage is explicitly confirmed; next candidate window starts next Tue evening
+1. **Optional one measured A/B pair** when Mac reconnects and quota is healthy (harness `needsAnswer` import fixed `f5c1b02`); do not expand to a multi-pair round. Do not ping user solely for Mac reconnect.
+2. **Show HN — PAUSED** (user 2026-10-22). Do not ask / nudge until user reopens. Draft stays `launch/show-hn-en.md`.
 3. **r/codex** — user-only if wanted (bot exit IP blocked; no bot Reddit tasks); draft remains in `launch/promo-plan.md`
-4. **awesome-codex-cli #393** closed without merge (2026-10-19); no reopen. Prefer other lists / Show HN for discovery.
+4. **awesome-codex-cli #393** closed without merge (2026-10-19); no reopen. Prefer other lists / discovery channels the user reopens.
 5. **Issue #1** = later version candidate only; do not implement in v0.1
-6. **milisp/awesome-codex-cli** — issues-only resource submit; deferred at 0★ (quality path needs stronger non-author usage than our own awesome-list merges). Revisit after Show HN or measurable external use.
+6. **milisp/awesome-codex-cli** — issues-only resource submit; deferred at 0★ (quality path needs stronger non-author usage than our own awesome-list merges). Revisit after measurable external use or user-reopened promo.
 7. Optional later: V2EX 分享创造 / OpenAI Developer Forum if earlier channels get useful feedback; revisit shinpr/awesome-codex-workflows only if product framing is no longer “early prototype”
 
 ## Honest-data rules
