@@ -4,15 +4,9 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## Last patrol
 
+**2026-10-22 ~10:02 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars still 0; CI green on `50bd585` (latest CI + Pages build success 2026-10-21 evening); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`; `/en/` 404 by design); Mac still disconnected — A/B deferred; Show and tell #53043 still quiet (API comments=4, last update 2026-10-11); ichangyou/awesome-codex listing still present (EN+ZH); no new awesome submits (0★ soft-launch hold); Show HN **not** posted (owned by Tue 18:00 Asia/Shanghai window routine; 2026-10-19 user deferral to next-week Tue–Thu + answer coverage still applies — this week Thu morning is not a go-ahead; next candidate window is next Tue evening); no user ping.
+
 **2026-10-21 ~18:02 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars still 0; CI green on `0cab095` (latest CI + Pages build success 2026-10-21 morning); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`); Mac still disconnected — A/B deferred; Show and tell #53043 still quiet (1 comment, last update 2026-10-11); ichangyou/awesome-codex listing still present (EN+ZH); no new awesome submits (0★ soft-launch hold); Show HN **not** posted (owned by Tue 18:00 Asia/Shanghai window routine; 2026-10-19 user deferral to next-week Tue–Thu + answer coverage still applies — this week Wed evening is not a go-ahead; next candidate window starts next Tue evening); no user ping.
-
-**2026-10-21 ~10:03 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars still 0; CI green on `907ee35` (latest CI + Pages build success 2026-10-20 evening); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`; English is root, `/en/` 404 by design); Mac still disconnected — A/B deferred; Show and tell #53043 still quiet (1 comment, last update 2026-10-11); ichangyou/awesome-codex listing still present; no new awesome submits (0★ soft-launch hold); Show HN **not** posted this morning (owned by Tue 18:00 Asia/Shanghai window routine; 2026-10-19 user deferral to next-week Tue–Thu + answer coverage still applies — this week Wed/Thu not a go-ahead); no user ping.
-
-**2026-10-20 ~18:05 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars still 0; CI green on `d55de49` (test+build+Pages deploy success); `npm test` 53/53; Pages HTTP 200; Mac still disconnected — A/B deferred; Show and tell #53043 still quiet (1 comment, last update 2026-10-11); ichangyou/awesome-codex listing still present; no new awesome submits (0★ soft-launch hold); Show HN **not** posted (Tue evening window open but no confirmed 2–3h answer coverage; 2026-10-19 deferral to next-week Tue–Thu is not a NOW go-ahead); no user ping.
-
-**2026-10-20 ~10:03 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars still 0; CI green on `1730687`; `npm test` 53/53; Pages HTTP 200; Mac still disconnected — A/B deferred; Show and tell #53043 still quiet (1 comment, last update 2026-10-11); ichangyou/awesome-codex listing still present; milisp/awesome-codex-cli scouted (issues-only submit; <100★ quality path exists but 0★ + author-driven listings are weak — **deferred** until Show HN or clearer non-author usage); Show HN not posted this morning (owned by Tue 18:00 Asia/Shanghai window routine + needs answer coverage); no user ping.
-
-**2026-10-19 ~18:03 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Mac still disconnected — A/B retry deferred; Show HN not posted (Tue–Thu US morning window + answer coverage); no user ping.
 
 ## Snapshot
 
@@ -23,8 +17,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 | Open issues | 1 ([#1](https://github.com/miniLV/codex-plan-ledger/issues/1), later version only) |
 | Open PRs | 0 |
 | Default branch | `main` |
-| Latest commit (pre-this-patrol) | `0cab095` — ops: morning patrol 2026-10-21 — Mac offline, Show HN hold |
-| CI | Green (latest CI + Pages build success on `0cab095`) |
+| Latest commit (pre-this-patrol) | `50bd585` — ops: evening patrol 2026-10-21 — Mac offline, Show HN hold |
+| CI | Green (latest CI + Pages build success on `50bd585`) |
 | Homepage | https://minilv.github.io/codex-plan-ledger/ (HTTP 200 verified this patrol) |
 | Topics | ai-agents, codex, codex-cli, coding-agents, developer-tools, html, openai-codex, plan-mode |
 | Releases | **[v0.1.0 — early prototype](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0)** published 2026-10-13 10:03 Asia/Shanghai |
