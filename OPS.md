@@ -4,6 +4,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## Last patrol
 
+**2026-10-23 ~18:00 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars still 0; forks 0; CI green on `cba00a6` (CI + pages build success 2026-10-23 morning); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`; last-modified 2026-10-23 02:05 UTC); Mac still **disconnected** (`MacBook-Pro.local` `connected: false`) — A/B deferred; Show and tell #53043 still quiet (GraphQL comments=1, `updatedAt` 2026-10-11); ichangyou/awesome-codex listing still present (EN+ZH README line 125); no new awesome submit this evening (morning already scouted jqueryscript/FizzEat; milisp/shinpr/#393 unchanged); Show HN **paused** (user 2026-10-22 — do not ask / nudge); traffic 14d views 4/4 uniques (API), not a promo trigger; no user ping.
+
 **2026-10-23 ~10:02 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars still 0; forks 0; CI green on `e022da3` (CI + pages build success 2026-10-22 evening); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`; last-modified 2026-10-22 10:02 UTC); Mac still **disconnected** (`MacBook-Pro.local` `connected: false`) — A/B deferred; Show and tell #53043 still quiet (GraphQL comments=1, `updatedAt` 2026-10-11); ichangyou/awesome-codex listing still present (EN+ZH README line 125); RoggeOhta/awesome-codex-cli README still last commit 2026-09-06 (do not reopen #393); scouted jqueryscript/awesome-codex (3★, star-ordered categories, workflow floor ~100★) and FizzEat/awesome-claude-codex-skills-zh (5k★ bar) — both skipped at 0★ / early-prototype; milisp/shinpr still deferred; Show HN **paused** (user 2026-10-22 — do not ask / nudge); traffic 14d views 4/4 uniques (API), not a promo trigger; no user ping.
 
 **2026-10-22 ~18:00 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars still 0; forks 0; CI green on `25ba8c1` (test/build/deploy/report-build-status all success); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`; `/en/` 404 by design; last-modified 2026-10-22 02:03 UTC from morning ops deploy); Mac listed briefly then **disconnected** (`MacBook-Pro.local` unreachable) — A/B deferred; Show and tell #53043 still quiet (GraphQL comments=1, `updatedAt` 2026-10-11); ichangyou/awesome-codex listing still present (EN+ZH README line 125); no new awesome submits (0★ soft-launch hold); Show HN **paused** (user decision 2026-10-22 — do not ask / nudge); no user ping.
@@ -19,8 +21,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 | Open issues | 1 ([#1](https://github.com/miniLV/codex-plan-ledger/issues/1), later version only) |
 | Open PRs | 0 |
 | Default branch | `main` |
-| Latest commit (pre-this-patrol) | `e022da3` — ops: evening patrol 2026-10-22 — Mac offline, Show HN paused |
-| CI | Green (CI + pages build success on `e022da3`) |
+| Latest commit (pre-this-patrol) | `cba00a6` — ops: morning patrol 2026-10-23 — Mac offline, Show HN paused |
+| CI | Green (CI + pages build success on `cba00a6`) |
 | Homepage | https://minilv.github.io/codex-plan-ledger/ (HTTP 200 verified this patrol) |
 | Topics | ai-agents, codex, codex-cli, coding-agents, developer-tools, html, openai-codex, plan-mode |
 | Releases | **[v0.1.0 — early prototype](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0)** published 2026-10-13 10:03 Asia/Shanghai |
