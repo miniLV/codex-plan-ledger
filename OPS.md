@@ -4,6 +4,9 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## Last patrol
 
+**2026-10-27 ~18:03 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars still 0; forks 0; CI green on `d590edf` (CI + pages build success 2026-10-27 morning); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`; `/en/` 404 by design); Mac still **disconnected** (`MacBook-Pro.local` `connected: false`) — A/B deferred; Show and tell #53043 still quiet (GraphQL comments=1, `updatedAt` 2026-10-11); ichangyou/awesome-codex listing still present (EN+ZH README line 126); milisp/awesome-codex-cli still API 404; evening scout of updated awesome-codex* lists — plugins/skills/pets/skins directories (hashgraph-online, skymined, suede, legeling pets, Wangnov skins) **skipped** (wrong category); [zhuyansen/awesome-codex-skills](https://github.com/zhuyansen/awesome-codex-skills) (4★) still under ≥5★ floor; [frankxai/harness-registry](https://github.com/frankxai/harness-registry) (0★) skipped; shinpr still deferred (early-prototype framing); Show HN **paused** (user 2026-10-22 — do not ask / nudge); traffic 14d views 3/3 uniques (API), clones 282/108 — not a promo trigger; no user ping.
+
+
 **2026-10-27 ~09:58 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars still 0; forks 0; CI green on `9e20c85` (CI + pages build success 2026-10-26 evening); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`; `/en/` 404 by design); Mac still **disconnected** (`MacBook-Pro.local` `connected: false`) — A/B deferred; Show and tell #53043 still quiet (GraphQL comments=1, `updatedAt` 2026-10-11); ichangyou/awesome-codex listing still present (EN+ZH README line 126); milisp/awesome-codex-cli still API 404; RoggeOhta README still last commit 2026-09-06 (no reopen #393); morning scout of updated awesome-codex* lists — [zhuyansen/awesome-codex-skills](https://github.com/zhuyansen/awesome-codex-skills) (4★, tooling/workflows categories exist but under-50★ bar requires **≥5★** plus README quality) **skipped** at 0★; plugins/skills/pets/skins lists still wrong category; shinpr still deferred (early-prototype framing); Show HN **paused** (user 2026-10-22 — do not ask / nudge); traffic 14d views 3/3 uniques (API), clones 276/107 — not a promo trigger; no user ping.
 
 
@@ -30,8 +33,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 | Open issues | 1 ([#1](https://github.com/miniLV/codex-plan-ledger/issues/1), later version only) |
 | Open PRs | 0 |
 | Default branch | `main` |
-| Latest commit (pre-this-patrol) | `9e20c85` — ops: restore recent Last patrol history in OPS.md |
-| CI | Green (CI + pages build success on `9e20c85`) |
+| Latest commit (pre-this-patrol) | `d590edf` — ops: morning patrol 2026-10-27 — Mac offline, Show HN paused |
+| CI | Green (CI + pages build success on `d590edf`) |
 | Homepage | https://minilv.github.io/codex-plan-ledger/ (HTTP 200 verified this patrol) |
 | Topics | ai-agents, codex, codex-cli, coding-agents, developer-tools, html, openai-codex, plan-mode |
 | Releases | **[v0.1.0 — early prototype](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0)** published 2026-10-13 10:03 Asia/Shanghai |
@@ -67,6 +70,7 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 - **2026-10-26 evening scout:** Updated awesome-codex* search — [hashgraph-online/awesome-codex-plugins](https://github.com/hashgraph-online/awesome-codex-plugins) (1412★, plugins marketplace), skills directories (skymined, suede-creator-skills), skins/pets/themes — **skipped** (wrong category). shinpr still deferred on early-prototype framing. milisp still 404.
 - **2026-10-26 morning scout:** [serenakeyitan/awesome-agent-loops](https://github.com/serenakeyitan/awesome-agent-loops) (214★) — skipped (prompt gallery for `/loop`/`/goal`, not hooks/tools). High-★ skills/subagents/pets lists (composio-community/awesome-codex-skills, VoltAgent/awesome-codex-subagents, etc.) — wrong category. milisp/awesome-codex-cli returned **404** via API; remove from active NEXT until a replacement is confirmed. RoggeOhta README still frozen 2026-09-06.
 - **2026-10-27 morning scout:** [zhuyansen/awesome-codex-skills](https://github.com/zhuyansen/awesome-codex-skills) (4★; skills/plugins/workflows/tooling). Under-50★ rule needs ≥5★ + README quality bar — **skipped** at 0★. Plugins/pets/skins/skills directories still wrong category. milisp still 404.
+- **2026-10-27 evening scout:** Updated awesome-codex* search — plugins/skills/pets/skins (hashgraph-online plugins, skymined/suede skills, legeling pets, Wangnov skins) — **skipped** (wrong category). [zhuyansen/awesome-codex-skills](https://github.com/zhuyansen/awesome-codex-skills) (4★) still under ≥5★ floor; [frankxai/harness-registry](https://github.com/frankxai/harness-registry) (0★) skipped. shinpr still deferred. milisp still 404. No new PR/issue.
 - **Show HN — PAUSED** (user decision 2026-10-22). Do not ask, nudge, or schedule posting until the user reopens it. Draft remains `launch/show-hn-en.md`. r/codex remains user-only if wanted (bot exit IP blocked; no bot Reddit tasks).
 - V2EX / OpenAI forum still later per `launch/promo-plan.md`
 
