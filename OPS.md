@@ -4,6 +4,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## Last patrol
 
+**2026-10-28 ~10:05 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars still 0; CI green on `24eaf6d`; Pages HTTP 200 (root + `/zh/`); traffic 14d views 3/3 uniques; issue #1 only open item; no PRs. Mac **connected** (flapping, intermittent unreachable) — tried the planned single `month-unit` A/B pair (lean2 profile, codex-cli 0.164.0, Mac checkout `f5c1b02`, bench code unchanged since). **Both arms failed every plan turn instantly** (no tokens, verify n/a). Cause from a one-line `codex exec` check: Mac Codex default model `gpt-6.1-sol` now returns `model_not_found` ("not supported when using Codex with a ChatGPT account"); Mac network also flaky (git pull reset). Artifacts local-only `~/cpl-bench/ab-2026-10-28-morning/` — **not** a measured pair, not published; public `bench/results` still n=3. Show HN paused; no user ping.
+
 **2026-10-27 ~18:03 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars still 0; forks 0; CI green on `d590edf` (CI + pages build success 2026-10-27 morning); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`; `/en/` 404 by design); Mac still **disconnected** (`MacBook-Pro.local` `connected: false`) — A/B deferred; Show and tell #53043 still quiet (GraphQL comments=1, `updatedAt` 2026-10-11); ichangyou/awesome-codex listing still present (EN+ZH README line 126); milisp/awesome-codex-cli still API 404; evening scout of updated awesome-codex* lists — plugins/skills/pets/skins directories (hashgraph-online, skymined, suede, legeling pets, Wangnov skins) **skipped** (wrong category); [zhuyansen/awesome-codex-skills](https://github.com/zhuyansen/awesome-codex-skills) (4★) still under ≥5★ floor; [frankxai/harness-registry](https://github.com/frankxai/harness-registry) (0★) skipped; shinpr still deferred (early-prototype framing); Show HN **paused** (user 2026-10-22 — do not ask / nudge); traffic 14d views 3/3 uniques (API), clones 282/108 — not a promo trigger; no user ping.
 
 
@@ -33,16 +35,16 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 | Open issues | 1 ([#1](https://github.com/miniLV/codex-plan-ledger/issues/1), later version only) |
 | Open PRs | 0 |
 | Default branch | `main` |
-| Latest commit (pre-this-patrol) | `d590edf` — ops: morning patrol 2026-10-27 — Mac offline, Show HN paused |
+| Latest commit (pre-this-patrol) | `24eaf6d` — ops: evening patrol 2026-10-27 |
 | CI | Green (CI + pages build success on `d590edf`) |
 | Homepage | https://minilv.github.io/codex-plan-ledger/ (HTTP 200 verified this patrol) |
 | Topics | ai-agents, codex, codex-cli, coding-agents, developer-tools, html, openai-codex, plan-mode |
 | Releases | **[v0.1.0 — early prototype](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0)** published 2026-10-13 10:03 Asia/Shanghai |
 | `npm test` (this run) | 53/53 pass |
-| Mac repo | **Disconnected** (`MacBook-Pro.local` not connected); A/B / live Codex smoke blocked this patrol |
-| Codex on Mac | last known `codex-cli 0.162.1` (2026-10-16) |
-| Quota gate | not checked (Mac offline) |
-| Optional A/B | **Deferred.** Harness `needsAnswer` import fixed in `f5c1b02` (2026-10-16 evening). Planned one `month-unit` retry when Mac reconnects and quota is healthy. Incomplete 2026-10-16 evening artifacts stay local-only under `~/cpl-bench/ab-2026-10-16-evening/` — **not** published. Public `bench/results` still n=3. No invented numbers. |
+| Mac repo | Connected but flapping (2026-10-28 morning); checkout at `f5c1b02` (git pull failed on network; bench code identical to HEAD) |
+| Codex on Mac | `codex-cli 0.164.0` (2026-10-28), logged in via ChatGPT; default model `gpt-6.1-sol` → `model_not_found` for ChatGPT accounts |
+| Quota gate | n/a — blocked earlier by model_not_found, not quota |
+| Optional A/B | **Deferred.** Harness `needsAnswer` import fixed in `f5c1b02` (2026-10-16 evening). Planned one `month-unit` retry; 2026-10-28 morning attempt failed instantly on `model_not_found` (`gpt-6.1-sol`), artifacts local-only `~/cpl-bench/ab-2026-10-28-morning/`. Incomplete 2026-10-16 evening artifacts stay local-only under `~/cpl-bench/ab-2026-10-16-evening/` — **not** published. Public `bench/results` still n=3. No invented numbers. |
 
 ## Milestones
 
@@ -76,7 +78,7 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## NEXT (ranked)
 
-1. **Optional one measured A/B pair** when Mac reconnects and quota is healthy (harness `needsAnswer` import fixed `f5c1b02`); do not expand to a multi-pair round. Do not ping user solely for Mac reconnect.
+1. **Optional one measured A/B pair** — now blocked by Mac Codex default model `gpt-6.1-sol` being unsupported (2026-10-28). Retry only once the user's own Codex default works again (do not edit user's `~/.codex/config.toml`; a different model would not be comparable to the n=3 rounds). Previously: when Mac reconnects and quota is healthy (harness `needsAnswer` import fixed `f5c1b02`); do not expand to a multi-pair round. Do not ping user solely for Mac reconnect.
 2. **Show HN — PAUSED** (user 2026-10-22). Do not ask / nudge until user reopens. Draft stays `launch/show-hn-en.md`.
 3. **r/codex** — user-only if wanted (bot exit IP blocked; no bot Reddit tasks); draft remains in `launch/promo-plan.md`
 4. **awesome-codex-cli #393** closed without merge (2026-10-19); no reopen. Prefer other lists / discovery channels the user reopens.
