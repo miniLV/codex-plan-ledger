@@ -80,6 +80,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 - **Show HN — PAUSED** (user decision 2026-10-22). Do not ask, nudge, or schedule posting until the user reopens it. Draft remains `launch/show-hn-en.md`. r/codex remains user-only if wanted (bot exit IP blocked; no bot Reddit tasks).
 - V2EX / OpenAI forum still later per `launch/promo-plan.md`
 
+- 2026-10-29 ~18:05 Asia/Shanghai evening patrol: stars 0; CI green c466067; Pages 200; no PRs; issue #1 only; A/B still blocked (Mac Codex default model_not_found); Show HN paused; no user ping.
+
 ## NEXT (ranked)
 
 1. **Optional one measured A/B pair** — now blocked by Mac Codex default model `gpt-6.1-sol` being unsupported (2026-10-28). Retry only once the user's own Codex default works again (do not edit user's `~/.codex/config.toml`; a different model would not be comparable to the n=3 rounds). Previously: when Mac reconnects and quota is healthy (harness `needsAnswer` import fixed `f5c1b02`); do not expand to a multi-pair round. Do not ping user solely for Mac reconnect.
