@@ -4,6 +4,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## Last patrol
 
+**2026-10-30 ~17:57 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars 0; forks 0; CI green on `d58143d` (CI + pages build success 2026-10-30 morning); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`; last-modified 2026-10-30 01:59 UTC); issue #1 only open item; no PRs. Mac **disconnected** (`MacBook-Pro.local` `connected: false`) — A/B deferred (still blocked by prior `gpt-6.1-sol` `model_not_found` when connected). Show and tell #53043 unchanged (GraphQL comments=1, upvoteCount 1, `updatedAt` 2026-10-27). ichangyou EN+ZH listing still line 126; milisp still API 404; zhuyansen still 4★ (under ≥5★ floor); frankxai/harness-registry still 0★ skipped; shinpr still deferred (early-prototype). Evening scout of updated awesome-codex* — plugins/skills/pets/subagents/tutorials directories **skipped** (wrong category); no new submit. Show HN **paused** (user 2026-10-22 — do not ask / nudge); traffic 14d views 2/2 uniques, clones 249/85 — not a promo trigger; no user ping.
+
 **2026-10-30 ~09:57 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars 0; CI green on `a464dee`; Pages HTTP 200 (root + `/zh/`); issue #1 only open item; no PRs. `npm test` 53/53. Show and tell #53043 unchanged (comments 1, upvoteCount 1, `updatedAt` 2026-10-27). Mac **disconnected** — A/B not retried (still blocked by prior `gpt-6.1-sol` `model_not_found` when connected). ichangyou EN+ZH listing still line 126; milisp still API 404; zhuyansen still 4★ (under ≥5★ floor). Morning scout of updated awesome-codex* — plugins/skills/pets/skins/ppt/relay directories **skipped** (wrong category or 0★); no new submit. Show HN paused; traffic 14d 3/3 uniques, clones 263/93 — not a promo trigger; no user ping.
 
 **2026-10-29 ~18:05 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars 0; CI green `c466067` then OPS push `a464dee`; Pages HTTP 200; no PRs; issue #1 only; A/B still blocked (Mac Codex default `model_not_found`); Show HN paused; no user ping.
@@ -43,8 +45,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 | Open issues | 1 ([#1](https://github.com/miniLV/codex-plan-ledger/issues/1), later version only) |
 | Open PRs | 0 |
 | Default branch | `main` |
-| Latest commit (pre-this-patrol) | `a464dee` — ops: 2026-10-29 evening patrol |
-| CI | Green (CI + pages build success on `a464dee`) |
+| Latest commit (pre-this-patrol) | `d58143d` — ops: 2026-10-30 morning patrol |
+| CI | Green (CI + pages build success on `d58143d`) |
 | Homepage | https://minilv.github.io/codex-plan-ledger/ (HTTP 200 verified this patrol) |
 | Topics | ai-agents, codex, codex-cli, coding-agents, developer-tools, html, openai-codex, plan-mode |
 | Releases | **[v0.1.0 — early prototype](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0)** published 2026-10-13 10:03 Asia/Shanghai |
@@ -82,6 +84,7 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 - **2026-10-27 morning scout:** [zhuyansen/awesome-codex-skills](https://github.com/zhuyansen/awesome-codex-skills) (4★; skills/plugins/workflows/tooling). Under-50★ rule needs ≥5★ + README quality bar — **skipped** at 0★. Plugins/pets/skins/skills directories still wrong category. milisp still 404.
 - **2026-10-27 evening scout:** Updated awesome-codex* search — plugins/skills/pets/skins (hashgraph-online plugins, skymined/suede skills, legeling pets, Wangnov skins) — **skipped** (wrong category). [zhuyansen/awesome-codex-skills](https://github.com/zhuyansen/awesome-codex-skills) (4★) still under ≥5★ floor; [frankxai/harness-registry](https://github.com/frankxai/harness-registry) (0★) skipped. shinpr still deferred. milisp still 404. No new PR/issue.
 - **2026-10-30 morning scout:** Updated awesome-codex* search — plugins/skills/pets/skins/ppt/relay directories (hashgraph-online plugins, skymined/suede skills, legeling pets, zhuyansen ppt, ImYourFans relay) **skipped** (wrong category or 0★). zhuyansen/awesome-codex-skills still 4★ (under ≥5★ floor). shinpr still deferred. milisp still 404. No new PR/issue.
+- **2026-10-30 evening scout:** Updated awesome-codex* search — plugins/skills/pets/subagents/tutorials directories (composio skills, VoltAgent subagents, hashgraph-online plugins, legeling pets, etc.) **skipped** (wrong category). zhuyansen still 4★ (under ≥5★ floor); frankxai still 0★; shinpr still deferred; milisp still 404. No new PR/issue.
 - **Show HN — PAUSED** (user decision 2026-10-22). Do not ask, nudge, or schedule posting until the user reopens it. Draft remains `launch/show-hn-en.md`. r/codex remains user-only if wanted (bot exit IP blocked; no bot Reddit tasks).
 - V2EX / OpenAI forum still later per `launch/promo-plan.md`
 
