@@ -4,6 +4,10 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## Last patrol
 
+**2026-10-30 ~09:57 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars 0; CI green on `a464dee`; Pages HTTP 200 (root + `/zh/`); issue #1 only open item; no PRs. `npm test` 53/53. Show and tell #53043 unchanged (comments 1, upvoteCount 1, `updatedAt` 2026-10-27). Mac **disconnected** — A/B not retried (still blocked by prior `gpt-6.1-sol` `model_not_found` when connected). ichangyou EN+ZH listing still line 126; milisp still API 404; zhuyansen still 4★ (under ≥5★ floor). Morning scout of updated awesome-codex* — plugins/skills/pets/skins/ppt/relay directories **skipped** (wrong category or 0★); no new submit. Show HN paused; traffic 14d 3/3 uniques, clones 263/93 — not a promo trigger; no user ping.
+
+**2026-10-29 ~18:05 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars 0; CI green `c466067` then OPS push `a464dee`; Pages HTTP 200; no PRs; issue #1 only; A/B still blocked (Mac Codex default `model_not_found`); Show HN paused; no user ping.
+
 **2026-10-29 ~09:58 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars 0; CI green on `5789991`; Pages HTTP 200; issue #1 only open item; no PRs. Show and tell #53043 unchanged (comments 1, updatedAt 2026-10-27). A/B still blocked on Mac default model `model_not_found` — not retried. Show HN paused; no new scout targets; no user ping.
 
 **2026-10-28 ~18:05 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars 0; CI green on `e2b5e0c`; Pages HTTP 200 (root + `/zh/`); traffic 14d 3/3 uniques; issue #1 only open item; no PRs. Show and tell #53043: discussion `updatedAt` moved to 2026-10-27 but no new comments/replies (latest thread activity still 2026-10-11; likely an upvote, upvoteCount 1). A/B still blocked on Mac default model `model_not_found` — not retried. Show HN paused; no new list scout targets; no user ping.
@@ -39,16 +43,16 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 | Open issues | 1 ([#1](https://github.com/miniLV/codex-plan-ledger/issues/1), later version only) |
 | Open PRs | 0 |
 | Default branch | `main` |
-| Latest commit (pre-this-patrol) | `24eaf6d` — ops: evening patrol 2026-10-27 |
-| CI | Green (CI + pages build success on `d590edf`) |
+| Latest commit (pre-this-patrol) | `a464dee` — ops: 2026-10-29 evening patrol |
+| CI | Green (CI + pages build success on `a464dee`) |
 | Homepage | https://minilv.github.io/codex-plan-ledger/ (HTTP 200 verified this patrol) |
 | Topics | ai-agents, codex, codex-cli, coding-agents, developer-tools, html, openai-codex, plan-mode |
 | Releases | **[v0.1.0 — early prototype](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0)** published 2026-10-13 10:03 Asia/Shanghai |
 | `npm test` (this run) | 53/53 pass |
-| Mac repo | Connected but flapping (2026-10-28 morning); checkout at `f5c1b02` (git pull failed on network; bench code identical to HEAD) |
-| Codex on Mac | `codex-cli 0.164.0` (2026-10-28), logged in via ChatGPT; default model `gpt-6.1-sol` → `model_not_found` for ChatGPT accounts |
-| Quota gate | n/a — blocked earlier by model_not_found, not quota |
-| Optional A/B | **Deferred.** Harness `needsAnswer` import fixed in `f5c1b02` (2026-10-16 evening). Planned one `month-unit` retry; 2026-10-28 morning attempt failed instantly on `model_not_found` (`gpt-6.1-sol`), artifacts local-only `~/cpl-bench/ab-2026-10-28-morning/`. Incomplete 2026-10-16 evening artifacts stay local-only under `~/cpl-bench/ab-2026-10-16-evening/` — **not** published. Public `bench/results` still n=3. No invented numbers. |
+| Mac repo | **Disconnected** (`MacBook-Pro.local` `connected: false`) — A/B deferred |
+| Codex on Mac | `codex-cli 0.164.0` (last checked 2026-10-28), ChatGPT login; default model `gpt-6.1-sol` → `model_not_found` when last tried |
+| Quota gate | n/a — blocked earlier by model_not_found / Mac offline, not quota |
+| Optional A/B | **Deferred.** Mac disconnected this patrol. Prior 2026-10-28 morning attempt failed instantly on `model_not_found` (`gpt-6.1-sol`); artifacts local-only `~/cpl-bench/ab-2026-10-28-morning/`. Public `bench/results` still n=3. No invented numbers. |
 
 ## Milestones
 
@@ -77,14 +81,14 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 - **2026-10-26 morning scout:** [serenakeyitan/awesome-agent-loops](https://github.com/serenakeyitan/awesome-agent-loops) (214★) — skipped (prompt gallery for `/loop`/`/goal`, not hooks/tools). High-★ skills/subagents/pets lists (composio-community/awesome-codex-skills, VoltAgent/awesome-codex-subagents, etc.) — wrong category. milisp/awesome-codex-cli returned **404** via API; remove from active NEXT until a replacement is confirmed. RoggeOhta README still frozen 2026-09-06.
 - **2026-10-27 morning scout:** [zhuyansen/awesome-codex-skills](https://github.com/zhuyansen/awesome-codex-skills) (4★; skills/plugins/workflows/tooling). Under-50★ rule needs ≥5★ + README quality bar — **skipped** at 0★. Plugins/pets/skins/skills directories still wrong category. milisp still 404.
 - **2026-10-27 evening scout:** Updated awesome-codex* search — plugins/skills/pets/skins (hashgraph-online plugins, skymined/suede skills, legeling pets, Wangnov skins) — **skipped** (wrong category). [zhuyansen/awesome-codex-skills](https://github.com/zhuyansen/awesome-codex-skills) (4★) still under ≥5★ floor; [frankxai/harness-registry](https://github.com/frankxai/harness-registry) (0★) skipped. shinpr still deferred. milisp still 404. No new PR/issue.
+- **2026-10-30 morning scout:** Updated awesome-codex* search — plugins/skills/pets/skins/ppt/relay directories (hashgraph-online plugins, skymined/suede skills, legeling pets, zhuyansen ppt, ImYourFans relay) **skipped** (wrong category or 0★). zhuyansen/awesome-codex-skills still 4★ (under ≥5★ floor). shinpr still deferred. milisp still 404. No new PR/issue.
 - **Show HN — PAUSED** (user decision 2026-10-22). Do not ask, nudge, or schedule posting until the user reopens it. Draft remains `launch/show-hn-en.md`. r/codex remains user-only if wanted (bot exit IP blocked; no bot Reddit tasks).
 - V2EX / OpenAI forum still later per `launch/promo-plan.md`
 
-- 2026-10-29 ~18:05 Asia/Shanghai evening patrol: stars 0; CI green c466067; Pages 200; no PRs; issue #1 only; A/B still blocked (Mac Codex default model_not_found); Show HN paused; no user ping.
 
 ## NEXT (ranked)
 
-1. **Optional one measured A/B pair** — now blocked by Mac Codex default model `gpt-6.1-sol` being unsupported (2026-10-28). Retry only once the user's own Codex default works again (do not edit user's `~/.codex/config.toml`; a different model would not be comparable to the n=3 rounds). Previously: when Mac reconnects and quota is healthy (harness `needsAnswer` import fixed `f5c1b02`); do not expand to a multi-pair round. Do not ping user solely for Mac reconnect.
+1. **Optional one measured A/B pair** — Mac **disconnected** this patrol; when connected still blocked by default model `gpt-6.1-sol` `model_not_found` (2026-10-28). Retry only once Mac is up **and** the user's own Codex default works again (do not edit user's `~/.codex/config.toml`; a different model would not be comparable to the n=3 rounds). Do not expand to a multi-pair round. Do not ping user solely for Mac reconnect.
 2. **Show HN — PAUSED** (user 2026-10-22). Do not ask / nudge until user reopens. Draft stays `launch/show-hn-en.md`.
 3. **r/codex** — user-only if wanted (bot exit IP blocked; no bot Reddit tasks); draft remains in `launch/promo-plan.md`
 4. **awesome-codex-cli #393** closed without merge (2026-10-19); no reopen. Prefer other lists / discovery channels the user reopens.
