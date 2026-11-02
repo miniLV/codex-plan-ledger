@@ -101,6 +101,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 7. **zhuyansen/awesome-codex-skills** — deferred until ≥5★ (list floor under 50★). Category fit possible (Tooling / Workflows).
 8. Optional later: V2EX 分享创造 / OpenAI Developer Forum if earlier channels get useful feedback; revisit shinpr/awesome-codex-workflows only if product framing is no longer “early prototype”
 
+- 2026-11-02 ~18:03 Asia/Shanghai evening patrol: stars 0; CI green b3641dc; Pages 200; no PRs; issue #1 only; Mac disconnected (A/B deferred); Show HN paused; traffic 14d 2/2 uniques; no user ping.
+
 ## Honest-data rules
 
 - No fake stars / engagement
