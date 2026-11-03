@@ -4,6 +4,8 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 
 ## Last patrol
 
+**2026-11-03 ~10:05 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars 0; forks 0; CI green on `235c20c` (CI + pages build success 2026-11-02 evening); Pages HTTP 200 (root + `/zh/`); issue #1 only open item; no PRs. Mac **connected** (`bogon` / `650614d1-fe3f-4674-a2e4-e716d611de20`). A/B **attempted / blocked** (no published pair): codex-cli 0.164.0, ChatGPT login. User default now `model=jev-auto` / `model_provider=jev` → `502 Bad Gateway` on `http://127.0.0.1:18767/responses` (Jev process listening). Historical n=3 model `gpt-6.1-sol` / `codex/gpt-6.1-sol` still `model_not_found` ("not supported when using Codex with a ChatGPT account") even with `--ignore-user-config`. Working ChatGPT model probed: `gpt-6-luna` OK via `--ignore-user-config` (~4.5–5k tokens) — **not** used for A/B (OPS: different model not comparable to n=3 `codex/gpt-6.1-sol`; do not edit `~/.codex/config.toml`). Probe notes local-only `~/cpl-bench/probe-2026-11-03-morning/`; public `bench/results` still n=3. Show and tell #53043 unchanged (comments=1, upvoteCount 1, `updatedAt` 2026-10-27). ichangyou EN+ZH listing still line 126; milisp still API 404; zhuyansen/awesome-codex-skills still 4★ (under ≥5★ floor); frankxai 0★ skipped; shinpr still deferred (early-prototype). Morning scout of updated awesome-codex* — pets/plugins/subagents/ppt/skins/tutorials directories **skipped** (wrong category); no new submit. Show HN **paused** (user 2026-10-22 — do not ask / nudge); traffic 14d views 2/2 uniques, clones 275/95 — not a promo trigger; no user ping.
+
 **2026-10-30 ~17:57 Asia/Shanghai** (scheduled weekday evening patrol; no user message). Stars 0; forks 0; CI green on `d58143d` (CI + pages build success 2026-10-30 morning); `npm test` 53/53; Pages HTTP 200 (root + `/zh/`; last-modified 2026-10-30 01:59 UTC); issue #1 only open item; no PRs. Mac **disconnected** (`MacBook-Pro.local` `connected: false`) — A/B deferred (still blocked by prior `gpt-6.1-sol` `model_not_found` when connected). Show and tell #53043 unchanged (GraphQL comments=1, upvoteCount 1, `updatedAt` 2026-10-27). ichangyou EN+ZH listing still line 126; milisp still API 404; zhuyansen still 4★ (under ≥5★ floor); frankxai/harness-registry still 0★ skipped; shinpr still deferred (early-prototype). Evening scout of updated awesome-codex* — plugins/skills/pets/subagents/tutorials directories **skipped** (wrong category); no new submit. Show HN **paused** (user 2026-10-22 — do not ask / nudge); traffic 14d views 2/2 uniques, clones 249/85 — not a promo trigger; no user ping.
 
 **2026-10-30 ~09:57 Asia/Shanghai** (scheduled weekday morning patrol; no user message). Stars 0; CI green on `a464dee`; Pages HTTP 200 (root + `/zh/`); issue #1 only open item; no PRs. `npm test` 53/53. Show and tell #53043 unchanged (comments 1, upvoteCount 1, `updatedAt` 2026-10-27). Mac **disconnected** — A/B not retried (still blocked by prior `gpt-6.1-sol` `model_not_found` when connected). ichangyou EN+ZH listing still line 126; milisp still API 404; zhuyansen still 4★ (under ≥5★ floor). Morning scout of updated awesome-codex* — plugins/skills/pets/skins/ppt/relay directories **skipped** (wrong category or 0★); no new submit. Show HN paused; traffic 14d 3/3 uniques, clones 263/93 — not a promo trigger; no user ping.
@@ -45,16 +47,16 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 | Open issues | 1 ([#1](https://github.com/miniLV/codex-plan-ledger/issues/1), later version only) |
 | Open PRs | 0 |
 | Default branch | `main` |
-| Latest commit (pre-this-patrol) | `d58143d` — ops: 2026-10-30 morning patrol |
-| CI | Green (CI + pages build success on `d58143d`) |
+| Latest commit (pre-this-patrol) | `235c20c` — ops: 2026-11-02 evening patrol |
+| CI | Green (CI + pages build success on `235c20c`) |
 | Homepage | https://minilv.github.io/codex-plan-ledger/ (HTTP 200 verified this patrol) |
 | Topics | ai-agents, codex, codex-cli, coding-agents, developer-tools, html, openai-codex, plan-mode |
 | Releases | **[v0.1.0 — early prototype](https://github.com/miniLV/codex-plan-ledger/releases/tag/v0.1.0)** published 2026-10-13 10:03 Asia/Shanghai |
-| `npm test` (this run) | 53/53 pass |
-| Mac repo | **Disconnected** (`MacBook-Pro.local` `connected: false`) — A/B deferred |
-| Codex on Mac | `codex-cli 0.164.0` (last checked 2026-10-28), ChatGPT login; default model `gpt-6.1-sol` → `model_not_found` when last tried |
-| Quota gate | n/a — blocked earlier by model_not_found / Mac offline, not quota |
-| Optional A/B | **Deferred.** Mac disconnected this patrol. Prior 2026-10-28 morning attempt failed instantly on `model_not_found` (`gpt-6.1-sol`); artifacts local-only `~/cpl-bench/ab-2026-10-28-morning/`. Public `bench/results` still n=3. No invented numbers. |
+| `npm test` (this run) | not re-run (OPS-only) |
+| Mac repo | **Connected** (`bogon`) — Mac checkout was `f5c1b02`, behind `origin/main` `235c20c` (fetched; not reset this patrol) |
+| Codex on Mac | `codex-cli 0.164.0`, ChatGPT login; default `jev-auto`/`jev` → 502; `gpt-6.1-sol` still `model_not_found`; `gpt-6-luna` works with `--ignore-user-config` |
+| Quota gate | n/a — blocked by model/router, not measured quota this patrol |
+| Optional A/B | **Blocked.** Mac connected. n=3 model `gpt-6.1-sol` still `model_not_found` for ChatGPT; user default `jev-auto` 502. `gpt-6-luna` works but not comparable — not run/published. Public `bench/results` still n=3. Probe `~/cpl-bench/probe-2026-11-03-morning/`. |
 
 ## Milestones
 
@@ -86,13 +88,14 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 - **2026-10-30 morning scout:** Updated awesome-codex* search — plugins/skills/pets/skins/ppt/relay directories (hashgraph-online plugins, skymined/suede skills, legeling pets, zhuyansen ppt, ImYourFans relay) **skipped** (wrong category or 0★). zhuyansen/awesome-codex-skills still 4★ (under ≥5★ floor). shinpr still deferred. milisp still 404. No new PR/issue.
 - **2026-10-30 evening scout:** Updated awesome-codex* search — plugins/skills/pets/subagents/tutorials directories (composio skills, VoltAgent subagents, hashgraph-online plugins, legeling pets, etc.) **skipped** (wrong category). zhuyansen still 4★ (under ≥5★ floor); frankxai still 0★; shinpr still deferred; milisp still 404. No new PR/issue.
 - **2026-11-02 morning patrol:** stars 0; CI green; Pages 200; no PRs; issue #1 only; Mac disconnected (A/B deferred); zhuyansen still 4★; traffic 14d 2/2 uniques; Show HN paused. No user ping.
+- **2026-11-03 morning scout:** Updated awesome-codex* search — pets/plugins/subagents/ppt/skins/tutorials directories **skipped** (wrong category). zhuyansen/awesome-codex-skills still 4★ (under ≥5★ floor); frankxai still 0★; shinpr still deferred; milisp still 404; ichangyou listing still present. No new PR/issue.
 - **Show HN — PAUSED** (user decision 2026-10-22). Do not ask, nudge, or schedule posting until the user reopens it. Draft remains `launch/show-hn-en.md`. r/codex remains user-only if wanted (bot exit IP blocked; no bot Reddit tasks).
 - V2EX / OpenAI forum still later per `launch/promo-plan.md`
 
 
 ## NEXT (ranked)
 
-1. **Optional one measured A/B pair** — Mac **disconnected** this patrol; when connected still blocked by default model `gpt-6.1-sol` `model_not_found` (2026-10-28). Retry only once Mac is up **and** the user's own Codex default works again (do not edit user's `~/.codex/config.toml`; a different model would not be comparable to the n=3 rounds). Do not expand to a multi-pair round. Do not ping user solely for Mac reconnect.
+1. **Optional one measured A/B pair** — Mac **connected** this patrol but still blocked: n=3 model `gpt-6.1-sol` / `codex/gpt-6.1-sol` → ChatGPT `model_not_found`; user default `jev-auto`/`jev` → local router `502 Bad Gateway`. `gpt-6-luna` works with `--ignore-user-config` but is **not** comparable to n=3 — do not run/publish that as the measured pair. Retry only when `gpt-6.1-sol` works again on ChatGPT **or** user explicitly allows a new-model baseline (do not edit `~/.codex/config.toml` ourselves). Do not expand to a multi-pair round. Do not ping solely for Jev/router repair unless user reopens.
 2. **Show HN — PAUSED** (user 2026-10-22). Do not ask / nudge until user reopens. Draft stays `launch/show-hn-en.md`.
 3. **r/codex** — user-only if wanted (bot exit IP blocked; no bot Reddit tasks); draft remains in `launch/promo-plan.md`
 4. **awesome-codex-cli #393** closed without merge (2026-10-19); no reopen. Prefer other lists / discovery channels the user reopens.
@@ -101,6 +104,7 @@ Standing milestone / ops log. Factual only. Root file (not under `docs/`) so Pag
 7. **zhuyansen/awesome-codex-skills** — deferred until ≥5★ (list floor under 50★). Category fit possible (Tooling / Workflows).
 8. Optional later: V2EX 分享创造 / OpenAI Developer Forum if earlier channels get useful feedback; revisit shinpr/awesome-codex-workflows only if product framing is no longer “early prototype”
 
+- 2026-11-03 ~10:05 Asia/Shanghai morning patrol: stars 0; CI green 235c20c; Pages 200; no PRs; issue #1 only; Mac connected; A/B blocked (gpt-6.1-sol model_not_found; jev-auto 502; luna works but not comparable); Show HN paused; traffic 14d 2/2 uniques; no user ping.
 - 2026-11-02 ~18:03 Asia/Shanghai evening patrol: stars 0; CI green b3641dc; Pages 200; no PRs; issue #1 only; Mac disconnected (A/B deferred); Show HN paused; traffic 14d 2/2 uniques; no user ping.
 
 ## Honest-data rules
